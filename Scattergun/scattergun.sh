@@ -29,16 +29,18 @@ for STEP in 0 1 2 3 4 5 6 7 8 9; do
 	sleep 1
 done
 
-time dd if=${SOURCE} of=/dev/null bs=1024 count=1 iflag=fullblock
+POOLSIZE=`cat /proc/sys/kernel/random/poolsize`
+BLOCKSIZE=`expr ${POOLSIZE} / 8`
+time dd if=${SOURCE} of=/dev/null bs=${BLOCKSIZE} count=1 iflag=fullblock
 
 # sudo apt-get install rng-tools
 
-time ( cat ${SOURCE} | rngtest -c 1000 )
+( cat ${SOURCE} | time rngtest -c 1000 )
 
 # sudo apt-get install ent
 
-time ( FILE="`mktemp ./${ZERO}.XXXXXXXXXX`"; dd if=${SOURCE} of=${FILE} bs=1024 count=128 iflag=fullblock; ent ${FILE}; rm -f ${FILE} )
+( FILE="`mktemp ./${ZERO}.XXXXXXXXXX`"; dd if=${SOURCE} of=${FILE} bs=1024 count=128 iflag=fullblock; time ent ${FILE}; rm -f ${FILE} )
 
 # sudo apt-get install netpbm
 
-time ( FILE="`mktemp ./${ZERO}.XXXXXXXXXX`"; cat ${SOURCE} | rawtoppm -rgb 256 256 | pnmtopng > ${FILE}; mv -f ${FILE} ${ZERO}-${STAMP}.png )
+( FILE="`mktemp ./${ZERO}.XXXXXXXXXX`"; cat ${SOURCE} | time rawtoppm -rgb 256 256 | pnmtopng > ${FILE}; mv -f ${FILE} ${ZERO}-${STAMP}.png )
