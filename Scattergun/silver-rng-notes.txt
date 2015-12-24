@@ -1,0 +1,301 @@
+jsloan@silver:~$ pgrep -a rngd
+1282 /usr/sbin/rngd -r /dev/TrueRNG
+
+jsloan@silver:~$ sudo cat /dev/urandom | rngtest -c 1000
+rngtest 4
+Copyright (c) 2004 by Henrique de Moraes Holschuh
+This is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+rngtest: starting FIPS tests...
+rngtest: bits received from input: 20000032
+rngtest: FIPS 140-2 successes: 998
+rngtest: FIPS 140-2 failures: 2
+rngtest: FIPS 140-2(2001-10-10) Monobit: 0
+rngtest: FIPS 140-2(2001-10-10) Poker: 1
+rngtest: FIPS 140-2(2001-10-10) Runs: 0
+rngtest: FIPS 140-2(2001-10-10) Long run: 1
+rngtest: FIPS 140-2(2001-10-10) Continuous run: 0
+rngtest: input channel speed: (min=2.661; avg=8.667; max=18.626)Gibits/s
+rngtest: FIPS tests speed: (min=46.071; avg=54.538; max=55.126)Mibits/s
+rngtest: Program run time: 365561 microseconds
+
+jsloan@silver:~$ sudo cat /dev/random | rngtest -c 1000
+rngtest 4
+Copyright (c) 2004 by Henrique de Moraes Holschuh
+This is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+rngtest: starting FIPS tests...
+rngtest: bits received from input: 20000032
+rngtest: FIPS 140-2 successes: 998
+rngtest: FIPS 140-2 failures: 2
+rngtest: FIPS 140-2(2001-10-10) Monobit: 0
+rngtest: FIPS 140-2(2001-10-10) Poker: 0
+rngtest: FIPS 140-2(2001-10-10) Runs: 1
+rngtest: FIPS 140-2(2001-10-10) Long run: 1
+rngtest: FIPS 140-2(2001-10-10) Continuous run: 0
+rngtest: input channel speed: (min=59.875; avg=80.682; max=175.873)Kibits/s
+rngtest: FIPS tests speed: (min=33.818; avg=37.112; max=54.652)Mibits/s
+rngtest: Program run time: 242596135 microseconds
+
+jsloan@silver:~$ dd if=/dev/random of=random.dat bs=1024 count=128 iflag=fullblock
+128+0 records in
+128+0 records out
+131072 bytes (131 kB) copied, 12.1144 s, 10.8 kB/s
+
+jsloan@silver:~$ ent random.dat
+Entropy = 7.998600 bits per byte.
+
+Optimum compression would reduce the size
+of this 131072 byte file by 0 percent.
+
+Chi square distribution for 131072 samples is 253.52, and randomly
+would exceed this value 50.00 percent of the times.
+
+Arithmetic mean value of data bytes is 127.4090 (127.5 = random).
+Monte Carlo value for Pi is 3.145983062 (error 0.14 percent).
+Serial correlation coefficient is 0.001483 (totally uncorrelated = 0.0).
+
+jsloan@silver:~$ dd if=/dev/urandom of=urandom.dat bs=1024 count=128 iflag=fullblock
+128+0 records in
+128+0 records out
+131072 bytes (131 kB) copied, 0.0123028 s, 10.7 MB/s
+
+jsloan@silver:~$ ent urandom.dat
+Entropy = 7.998691 bits per byte.
+
+Optimum compression would reduce the size
+of this 131072 byte file by 0 percent.
+
+Chi square distribution for 131072 samples is 238.10, and randomly
+would exceed this value 75.00 percent of the times.
+
+Arithmetic mean value of data bytes is 127.4198 (127.5 = random).
+Monte Carlo value for Pi is 3.133897917 (error 0.24 percent).
+Serial correlation coefficient is -0.005254 (totally uncorrelated = 0.0).
+
+jsloan@silver:~$ cd /proc/sys/kernel/random
+jsloan@silver:random$ ls
+boot_id        read_wakeup_threshold    write_wakeup_threshold
+entropy_avail  urandom_min_reseed_secs
+poolsize       uuid
+jsloan@silver:random$ cat poolsize
+4096
+jsloan@silver:random$ cat entropy_avail
+3101
+
+jsloan@silver:~$ cat /dev/urandom | rawtoppm -rgb 256 256 | pnmtopng > urandom.png
+jsloan@silver:~$ cat /dev/random | rawtoppm -rgb 256 256 | pnmtopng > random.png
+
+
+jsloan@silver:~/src/com-diag-scattergun/Scattergun$ time dd if=/dev/random of=megabyte.dat bs=1000 count=1000 iflag=fullblock
+1000+0 records in
+1000+0 records out
+1000000 bytes (1.0 MB) copied, 93.8507 s, 10.7 kB/s
+
+real	1m33.853s
+user	0m0.015s
+sys	0m0.688s
+jsloan@silver:~/src/com-diag-scattergun/Scattergun$ ls -l
+total 3068
+-rw-r--r-- 1 jsloan jsloan 1000000 Dec 24 09:15 megabyte.dat
+-rw-r--r-- 1 jsloan jsloan 1249280 Dec 24 08:36 random.dat
+-rw-r--r-- 1 jsloan jsloan  197280 Dec 24 08:43 random.png
+-rwxrwxr-x 1 jsloan jsloan    1449 Dec 24 09:12 scattergun.sh
+-rw------- 1 jsloan jsloan  197280 Dec 23 10:52 scattergun.sh-20151223T174754.495850635+00:00.png
+-rw------- 1 jsloan jsloan  197280 Dec 23 11:37 scattergun.sh-20151223T183718.444762776+00:00.png
+-rw-r--r-- 1 jsloan jsloan  274432 Dec 24 09:13 typescript
+jsloan@silver:~/src/com-diag-scattergun/Scattergun$ cp -i megabyte.dat /home/jsloan/Projects/scattergun/usnistgov/SP800-90B_EntropyAssessment/TrueRNG.dat
+
+jsloan@silver:SP800-90B_EntropyAssessment$ python iid_main.py TrueRNG.dat
+usage: iid_main.py [-h] [-v] datafile bits_per_symbol number_of_shuffles
+iid_main.py: error: too few arguments
+jsloan@silver:SP800-90B_EntropyAssessment$ python iid_main.py TrueRNG.dat 8 1000 -v
+Read in file TrueRNG.dat, 1000000 bytes long.
+Dataset: 1000000 8-bit symbols.
+Output symbol values: min = 0, max = 255
+
+
+Compression Test:      
+	Scores                   Ranks
+	106899                   861 
+	106868                   830 
+	106820                   571 
+	106864                   724 
+	106711                    83 
+	106776                   356 
+	106707                    43*
+	106771                   351 
+	106921                   936 
+	106820                   540 
+	                         --- 
+	                           1
+Passed Compression Test
+
+Over/under Test:       
+	Scores                   Ranks
+	16  49881                452   689 
+	19  49606                842   113 
+	16  49640                468   146 
+	14  49822                 33*  557 
+	16  50031                468   921 
+	21  49741                955*  336 
+	17  49949                501   806 
+	17  49774                501   436 
+	16  49750                467   317 
+	15  49559                228    77 
+	                         ---   --- 
+	                           2     0
+Passed Over/under Test
+
+Excursion Test:        
+	Scores                   Ranks
+	17831.9                  405 
+	15029.9                  215 
+	25107.8                  780 
+	16808.5                  343 
+	14655.3                  184 
+	13654                    141 
+	25059.4                  797 
+	22094.8                  680 
+	15144.5                  224 
+	14377.2                  165 
+	                         --- 
+	                           0
+Passed Excursion Test
+
+Directional runs Test: 
+	Scores                   Ranks
+	66593     7  49820       656   501   159 
+	66455     8  49938       272   575   865 
+	66303     9  49879        42*  941   565 
+	66304     8  49875        47*  563   568 
+	66651     9  49858       798   947   449 
+	66500     7  49953       407   501   898 
+	66366     7  49863       104   501   476 
+	66241     7  49906        19*  501   767 
+	66600     8  49926       699   564   824 
+	66518     7  49827       458   501   206 
+	                         ---   ---   --- 
+	                           3     0     0
+Passed Directional runs Test
+
+Covariance Test:       
+	Scores                   Ranks
+	-8.87989                 311 
+	13.5312                  790 
+	26.9395                  947 
+	-2.47891                 442 
+	-24.4772                  88 
+	-1.44018                 453 
+	-3.2677                  430 
+	12.6687                  774 
+	-3.4209                  414 
+	8.0185                   681 
+	                         --- 
+	                           0
+Passed Covariance Test
+
+Collision Test:        
+	Scores                   Ranks
+	1  19.7504  64           501   567   501 
+	1  19.7549  63           501   607   423 
+	1  19.734  68            501   533   784 
+	1  19.5505  66           501   118   612 
+	1  19.8583  58           501   805    31*
+	1  19.7212  71           501   502   901 
+	1  19.7111  67           501   460   698 
+	1  19.929  82            501   929   998*
+	1  19.5923  56           501   188     5*
+	1  19.5757  68           501   135   777 
+	                         ---   ---   --- 
+	                           0     0     3
+Passed Collision Test
+
+** Passed iid shuffle tests
+()
+
+Chi square independence
+	score = 64819.2, degrees of freedom = 65280, cut-off = 66402.2
+** Passed chi-square independence test
+
+Chi square stability
+	score = 2240.22, degrees of freedom = 2313 cut-off = 2528.88
+** Passed chi-square stability test
+
+IID = True
+min-entropy = 7.88663
+
+Compression sanity check...
+	dataset 1 compressed length = 855192, cutoff = 788663...Pass
+
+	dataset 2 compressed length = 854944, cutoff = 788663...Pass
+
+	dataset 3 compressed length = 854560, cutoff = 788663...Pass
+
+	dataset 4 compressed length = 854912, cutoff = 788663...Pass
+
+	dataset 5 compressed length = 853688, cutoff = 788663...Pass
+
+	dataset 6 compressed length = 854208, cutoff = 788663...Pass
+
+	dataset 7 compressed length = 853656, cutoff = 788663...Pass
+
+	dataset 8 compressed length = 854168, cutoff = 788663...Pass
+
+	dataset 9 compressed length = 855368, cutoff = 788663...Pass
+
+	dataset 10 compressed length = 854560, cutoff = 788663...Pass
+
+
+Collision sanity check...
+	Dividing dataset into 4-tuples
+	Check rule 1 - do three or more 4-tuples have the same value?...Pass
+	Check rule 2 - probability of number of collisions below cutoff
+		number of collisions = 2, cutoff = 9.96325...Pass
+
+sanity check = PASS
+time: (2790.31 sec)
+jsloan@silver:SP800-90B_EntropyAssessment$ 
+
+jsloan@silver:SP800-90B_EntropyAssessment$ python noniid_main.py TrueRNG.dat 8 -v
+Read in file TrueRNG.dat, 1000000 bytes long.
+Dataset: 1000000 8-bit symbols.
+Output symbol values: min = 0, max = 255
+- Collision test          : p(max) = 0.0106201, min-entropy = 6.55706
+- Partial collection test : p(max) = 0.00772762, min-entropy = 7.01576
+- Markov test (map 6 bits): p(max) = 1.26324e-223, min-entropy = 5.78479
+- Compression test        : p(max) = 0.00871277, min-entropy = 6.84265
+- Frequency test          : p(max) = 0.004079, min-entropy = 7.55901
+min-entropy = 5.78479
+
+Compression sanity check...
+	dataset 1 compressed length = 855192, cutoff = 578479...Pass
+
+	dataset 2 compressed length = 854944, cutoff = 578479...Pass
+
+	dataset 3 compressed length = 854560, cutoff = 578479...Pass
+
+	dataset 4 compressed length = 854912, cutoff = 578479...Pass
+
+	dataset 5 compressed length = 853688, cutoff = 578479...Pass
+
+	dataset 6 compressed length = 854208, cutoff = 578479...Pass
+
+	dataset 7 compressed length = 853656, cutoff = 578479...Pass
+
+	dataset 8 compressed length = 854168, cutoff = 578479...Pass
+
+	dataset 9 compressed length = 855368, cutoff = 578479...Pass
+
+	dataset 10 compressed length = 854560, cutoff = 578479...Pass
+
+
+Collision sanity check...
+	Dividing dataset into 6-tuples
+	Check rule 1 - do three or more 6-tuples have the same value?...Pass
+	Check rule 2 - probability of number of collisions below cutoff
+		number of collisions = 0, cutoff = 0.494648...Pass
+
+sanity check = PASS
+time: (42.5101 sec)
+jsloan@silver:SP800-90B_EntropyAssessment$ 
