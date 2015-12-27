@@ -299,3 +299,380 @@ Collision sanity check...
 sanity check = PASS
 time: (42.5101 sec)
 jsloan@silver:SP800-90B_EntropyAssessment$ 
+
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash -x scattergun.sh
+++ basename scattergun.sh
++ ZERO=scattergun.sh
++ SOURCE=/dev/random
+++ date -u +%Y%m%dT%H%M%S%N%z
++ STAMP=20151226T213716046444907+0000
++ uname -a
+Linux raspberrypi 3.18.11-v7+ #781 SMP PREEMPT Tue Apr 21 18:07:59 BST 2015 armv7l GNU/Linux
++ lsb_release -a
+scattergun.sh: line 11: lsb_release: command not found
++ ls -l /dev/random
+crw-rw-rw- 1 root root 1, 8 Jan  1  1970 /dev/random
++ ls -l /dev/urandom
+crw-rw-rw- 1 root root 1, 9 Jan  1  1970 /dev/urandom
++ ls -l /dev/hwrng
+crw------- 1 root root 10, 183 Dec 26 20:47 /dev/hwrng
++ ls -l /dev/TrueRNG
+lrwxrwxrwx 1 root root 7 Dec 26 21:22 /dev/TrueRNG -> ttyACM0
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '0: '
+0: + cat /proc/sys/kernel/random/entropy_avail
+1760
++ sleep 1
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '1: '
+1: + cat /proc/sys/kernel/random/entropy_avail
+1772
++ sleep 1
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '2: '
+2: + cat /proc/sys/kernel/random/entropy_avail
+1785
++ sleep 1
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '3: '
+3: + cat /proc/sys/kernel/random/entropy_avail
+1734
++ sleep 1
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '4: '
+4: + cat /proc/sys/kernel/random/entropy_avail
+1747
++ sleep 1
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '5: '
+5: + cat /proc/sys/kernel/random/entropy_avail
+1760
++ sleep 1
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '6: '
+6: + cat /proc/sys/kernel/random/entropy_avail
+1773
++ sleep 1
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '7: '
+7: + cat /proc/sys/kernel/random/entropy_avail
+1722
++ sleep 1
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '8: '
+8: + cat /proc/sys/kernel/random/entropy_avail
+1735
++ sleep 1
++ for STEP in 0 1 2 3 4 5 6 7 8 9
++ echo -n '9: '
+9: + cat /proc/sys/kernel/random/entropy_avail
+1748
++ sleep 1
+++ cat /proc/sys/kernel/random/poolsize
++ POOLSIZE=4096
++ BLOCKSIZE=512
++ dd if=/dev/random of=/dev/null bs=512 count=1 iflag=fullblock
+1+0 records in
+1+0 records out
+512 bytes (512 B) copied, 0.00360718 s, 142 kB/s
+
+real	0m0.015s
+user	0m0.000s
+sys	0m0.010s
++ dd if=/dev/random of=/dev/null bs=512 count=1 iflag=fullblock
+1+0 records in
+1+0 records out
+512 bytes (512 B) copied, 0.00653212 s, 78.4 kB/s
+
+real	0m0.018s
+user	0m0.000s
+sys	0m0.010s
++ lsmod
++ grep bcm2708_rng
+bcm2708_rng              952  0 
++ ps -ef
++ grep rngd
+root      6541     1  0 21:30 ?        00:00:01 /usr/sbin/rngd -r /dev/TrueRNG
+pi        7395  7360  0 21:37 pts/0    00:00:00 grep rngd
++ [[ -r /etc/default/rng-tools ]]
++ . /etc/default/rng-tools
+++ HRNGDEVICE=/dev/TrueRNG
++ echo HRNGDEVICE=/dev/TrueRNG
+HRNGDEVICE=/dev/TrueRNG
++ ls -l /dev/TrueRNG
+lrwxrwxrwx 1 root root 7 Dec 26 21:22 /dev/TrueRNG -> ttyACM0
++ [[ -x /usr/bin/rngtest ]]
++ cat /dev/random
++ time /usr/bin/rngtest -c 1000
+rngtest 2-unofficial-mt.14
+Copyright (c) 2004 by Henrique de Moraes Holschuh
+This is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+rngtest: starting FIPS tests...
+rngtest: bits received from input: 20000032
+rngtest: FIPS 140-2 successes: 1000
+rngtest: FIPS 140-2 failures: 0
+rngtest: FIPS 140-2(2001-10-10) Monobit: 0
+rngtest: FIPS 140-2(2001-10-10) Poker: 0
+rngtest: FIPS 140-2(2001-10-10) Runs: 0
+rngtest: FIPS 140-2(2001-10-10) Long run: 0
+rngtest: FIPS 140-2(2001-10-10) Continuous run: 0
+rngtest: input channel speed: (min=71.524; avg=117.459; max=2006.086)Kibits/s
+rngtest: FIPS tests speed: (min=4.133; avg=6.338; max=6.627)Mibits/s
+rngtest: Program run time: 169296815 microseconds
+3.25user 0.47system 2:49.30elapsed 2%CPU (0avgtext+0avgdata 1056maxresident)k
+0inputs+0outputs (0major+68minor)pagefaults 0swaps
++ [[ -x /usr/bin/ent ]]
+++ mktemp ./scattergun.sh-ent-20151226T213716046444907+0000.XXXXXXXXXX
++ FILE=./scattergun.sh-ent-20151226T213716046444907+0000.oLgsslRu8m
++ dd if=/dev/random of=./scattergun.sh-ent-20151226T213716046444907+0000.oLgsslRu8m bs=1024 count=128 iflag=fullblock
+128+0 records in
+128+0 records out
+131072 bytes (131 kB) copied, 9.34421 s, 14.0 kB/s
+
+real	0m9.355s
+user	0m0.000s
+sys	0m0.650s
++ mv -f ./scattergun.sh-ent-20151226T213716046444907+0000.oLgsslRu8m ./scattergun.sh-ent-20151226T213716046444907+0000.oLgsslRu8m.dat
++ /usr/bin/ent ./scattergun.sh-ent-20151226T213716046444907+0000.oLgsslRu8m.dat
+Entropy = 7.998704 bits per byte.
+
+Optimum compression would reduce the size
+of this 131072 byte file by 0 percent.
+
+Chi square distribution for 131072 samples is 235.62, and randomly
+would exceed this value 75.00 percent of the times.
+
+Arithmetic mean value of data bytes is 127.5600 (127.5 = random).
+Monte Carlo value for Pi is 3.138658732 (error 0.09 percent).
+Serial correlation coefficient is 0.000790 (totally uncorrelated = 0.0).
+
+real	0m0.083s
+user	0m0.070s
+sys	0m0.010s
++ [[ ! -x /usr/bin/rawtoppm ]]
++ [[ ! -x /usr/bin/pnmtopng ]]
+++ mktemp ./scattergun.sh-rawtoppm-20151226T213716046444907+0000.XXXXXXXXXX
++ FILE=./scattergun.sh-rawtoppm-20151226T213716046444907+0000.MKUTDGMTTR
++ time /usr/bin/rawtoppm -rgb 256 256
++ cat /dev/random
++ /usr/bin/pnmtopng
+0.07user 0.04system 0:15.29elapsed 0%CPU (0avgtext+0avgdata 1204maxresident)k
+0inputs+0outputs (0major+75minor)pagefaults 0swaps
++ mv -f ./scattergun.sh-rawtoppm-20151226T213716046444907+0000.MKUTDGMTTR ./scattergun.sh-rawtoppm-20151226T213716046444907+0000.MKUTDGMTTR.png
+++ which iid_main.py
++ NISTCODE=/home/pi/scattergun/SP800-90B_EntropyAssessment/iid_main.py
++ [[ ! -z /home/pi/scattergun/SP800-90B_EntropyAssessment/iid_main.py ]]
+++ dirname /home/pi/scattergun/SP800-90B_EntropyAssessment/iid_main.py
++ NISTPATH=/home/pi/scattergun/SP800-90B_EntropyAssessment
++++ pwd
+++ mktemp /home/pi/scattergun/com-diag-scattergun/Scattergun/scattergun.sh-sp800-20151226T213716046444907+0000.XXXXXXXXXX
++ FILE=/home/pi/scattergun/com-diag-scattergun/Scattergun/scattergun.sh-sp800-20151226T213716046444907+0000.uQDAgCzlaU
++ dd if=/dev/random of=/home/pi/scattergun/com-diag-scattergun/Scattergun/scattergun.sh-sp800-20151226T213716046444907+0000.uQDAgCzlaU bs=1000 count=1000 iflag=fullblock
+1000+0 records in
+1000+0 records out
+1000000 bytes (1.0 MB) copied, 78.4663 s, 12.7 kB/s
+
+real	1m18.479s
+user	0m0.020s
+sys	0m5.070s
++ mv -f /home/pi/scattergun/com-diag-scattergun/Scattergun/scattergun.sh-sp800-20151226T213716046444907+0000.uQDAgCzlaU /home/pi/scattergun/com-diag-scattergun/Scattergun/scattergun.sh-sp800-20151226T213716046444907+0000.uQDAgCzlaU.dat
++ cd /home/pi/scattergun/SP800-90B_EntropyAssessment
++ python iid_main.py /home/pi/scattergun/com-diag-scattergun/Scattergun/scattergun.sh-sp800-20151226T213716046444907+0000.uQDAgCzlaU.dat 8 1000 -v
+Read in file /home/pi/scattergun/com-diag-scattergun/Scattergun/scattergun.sh-sp800-20151226T213716046444907+0000.uQDAgCzlaU.dat, 1000000 bytes long.
+Dataset: 1000000 8-bit symbols.
+Output symbol values: min = 0, max = 255
+
+
+Compression Test:      
+	Scores                   Ranks
+	106724                   157 
+	106714                   119 
+	106634                     5*
+	106719                    81 
+	106849                   635 
+	106803                   525 
+	106866                   762 
+	106734                   136 
+	106797                   507 
+	106907                   832 
+	                         --- 
+	                           1
+Passed Compression Test
+
+Over/under Test:       
+	Scores                   Ranks
+	15  49791                208   523 
+	17  49741                501   395 
+	21  49728                953*  271 
+	16  49490                462    29*
+	16  49891                476   744 
+	16  50003                482   903 
+	18  49577                692    88 
+	18  49606                672    97 
+	18  49749                684   375 
+	14  49496                 51    21*
+	                         ---   --- 
+	                           1     2
+Passed Over/under Test
+
+Excursion Test:        
+	Scores                   Ranks
+	35098.9                  974*
+	21258.6                  604 
+	22510.9                  677 
+	19488.6                  527 
+	13529                    111 
+	30824.3                  938 
+	23093.1                  717 
+	20572.7                  582 
+	18135.7                  447 
+	14341.3                  169 
+	                         --- 
+	                           1
+Passed Excursion Test
+
+Directional runs Test: 
+	Scores                   Ranks
+	66690     7  49799       889   501    21*
+	66387     7  49797       120   501    20*
+	66660     7  49888       805   501   649 
+	66425     7  49882       207   501   617 
+	66404     7  49961       153   501   902 
+	66857     7  49825       995*  501   205 
+	66632     7  49821       792   501   153 
+	66458     7  49858       292   501   433 
+	66327     7  49823        61   501   186 
+	66335     7  49856        69   501   421 
+	                         ---   ---   --- 
+	                           1     0     2
+Passed Directional runs Test
+
+Covariance Test:       
+	Scores                   Ranks
+	7.28015                  641 
+	16.8409                  857 
+	-2.89259                 461 
+	42.3522                  990*
+	8.7202                   687 
+	-18.9265                 134 
+	14.0767                  812 
+	30.569                   966*
+	2.00601                  521 
+	27.368                   950*
+	                         --- 
+	                           3
+Passed Covariance Test
+
+Collision Test:        
+	Scores                   Ranks
+	1  19.8007  64           501   688   501 
+	1  19.6918  67           501   408   688 
+	1  19.4357  61           501    16*  220 
+	1  19.558  57            501   115    17*
+	1  19.7673  66           501   629   609 
+	1  19.6561  63           501   292   423 
+	1  19.9115  67           501   898   730 
+	1  19.9038  58           501   890    35*
+	1  19.4241  64           501    35*  501 
+	1  19.5656  63           501   135   436 
+	                         ---   ---   --- 
+	                           0     2     2
+Passed Collision Test
+
+** Passed iid shuffle tests
+()
+
+Chi square independence
+	score = 64723.9, degrees of freedom = 65280, cut-off = 66402.2
+** Passed chi-square independence test
+
+Chi square stability
+	score = 2295.29, degrees of freedom = 2313 cut-off = 2528.88
+** Passed chi-square stability test
+
+IID = True
+min-entropy = 7.87831
+
+Compression sanity check...
+	dataset 1 compressed length = 853792, cutoff = 787831...Pass
+
+	dataset 2 compressed length = 853712, cutoff = 787831...Pass
+
+	dataset 3 compressed length = 853072, cutoff = 787831...Pass
+
+	dataset 4 compressed length = 853752, cutoff = 787831...Pass
+
+	dataset 5 compressed length = 854792, cutoff = 787831...Pass
+
+	dataset 6 compressed length = 854424, cutoff = 787831...Pass
+
+	dataset 7 compressed length = 854928, cutoff = 787831...Pass
+
+	dataset 8 compressed length = 853872, cutoff = 787831...Pass
+
+	dataset 9 compressed length = 854376, cutoff = 787831...Pass
+
+	dataset 10 compressed length = 855256, cutoff = 787831...Pass
+
+
+Collision sanity check...
+	Dividing dataset into 4-tuples
+	Check rule 1 - do three or more 4-tuples have the same value?...Pass
+	Check rule 2 - probability of number of collisions below cutoff
+		number of collisions = 8, cutoff = 10.1957...Pass
+
+sanity check = PASS
+time: (30090.4 sec)
+
+real	501m31.545s
+user	498m50.720s
+sys	2m38.150s
++ cd /home/pi/scattergun/SP800-90B_EntropyAssessment
++ python noniid_main.py /home/pi/scattergun/com-diag-scattergun/Scattergun/scattergun.sh-sp800-20151226T213716046444907+0000.uQDAgCzlaU.dat 8 -v
+Read in file /home/pi/scattergun/com-diag-scattergun/Scattergun/scattergun.sh-sp800-20151226T213716046444907+0000.uQDAgCzlaU.dat, 1000000 bytes long.
+Dataset: 1000000 8-bit symbols.
+Output symbol values: min = 0, max = 255
+- Collision test          : p(max) = 0.012146, min-entropy = 6.36338
+- Partial collection test : p(max) = 0.0093112, min-entropy = 6.74682
+- Markov test (map 6 bits): p(max) = 1.6393e-222, min-entropy = 5.7559
+- Compression test        : p(max) = 0.00924683, min-entropy = 6.75683
+- Frequency test          : p(max) = 0.004103, min-entropy = 7.5525
+min-entropy = 5.7559
+
+Compression sanity check...
+	dataset 1 compressed length = 853792, cutoff = 575590...Pass
+
+	dataset 2 compressed length = 853712, cutoff = 575590...Pass
+
+	dataset 3 compressed length = 853072, cutoff = 575590...Pass
+
+	dataset 4 compressed length = 853752, cutoff = 575590...Pass
+
+	dataset 5 compressed length = 854792, cutoff = 575590...Pass
+
+	dataset 6 compressed length = 854424, cutoff = 575590...Pass
+
+	dataset 7 compressed length = 854928, cutoff = 575590...Pass
+
+	dataset 8 compressed length = 853872, cutoff = 575590...Pass
+
+	dataset 9 compressed length = 854376, cutoff = 575590...Pass
+
+	dataset 10 compressed length = 855256, cutoff = 575590...Pass
+
+
+Collision sanity check...
+	Dividing dataset into 6-tuples
+	Check rule 1 - do three or more 6-tuples have the same value?...Pass
+	Check rule 2 - probability of number of collisions below cutoff
+		number of collisions = 0, cutoff = 0.557797...Pass
+
+sanity check = PASS
+time: (437.551 sec)
+
+real	7m17.903s
+user	7m15.910s
+sys	0m1.950s
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ 
+

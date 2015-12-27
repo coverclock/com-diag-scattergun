@@ -8,18 +8,23 @@ SOURCE=${1:-"/dev/random"}
 STAMP=$(date -u +%Y%m%dT%H%M%S%N%z)
 
 uname -a
-lsb_release -a
+
+if [[ -x /usr/bin/lsb_release ]]; then
+	/usr/bin/lsb_release -a
+fi
 
 ls -l /dev/random
 ls -l /dev/urandom
 ls -l /dev/hwrng
 ls -l /dev/TrueRNG
 
-for STEP in 0 1 2 3 4 5 6 7 8 9; do
-	echo -n "${STEP}: "
-	cat /proc/sys/kernel/random/entropy_avail
-	sleep 1
-done
+if [[ -f /proc/sys/kernel/random/entropy_avail ]]; then
+	for STEP in 0 1 2 3 4 5 6 7 8 9; do
+		echo -n "${STEP}: "
+		cat /proc/sys/kernel/random/entropy_avail
+		sleep 1
+	done
+fi
 
 POOLSIZE=$(cat /proc/sys/kernel/random/poolsize)
 BLOCKSIZE=$((${POOLSIZE} / 8))
