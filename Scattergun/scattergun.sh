@@ -5,7 +5,7 @@
 
 ZERO=$(basename $0)
 SOURCE=${1:-"/dev/random"}
-STAMP=$(date -u +%Y%m%dT%H%M%S%N%z)
+STAMP=$(date -u +%Y%m%dT%H%M%S%N)
 
 uname -a
 
