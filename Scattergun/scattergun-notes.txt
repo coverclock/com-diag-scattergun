@@ -1,7 +1,7 @@
-jsloan@silver:~$ pgrep -a rngd
+coverclock@silver:~$ pgrep -a rngd
 1282 /usr/sbin/rngd -r /dev/TrueRNG
 
-jsloan@silver:~$ sudo cat /dev/urandom | rngtest -c 1000
+coverclock@silver:~$ sudo cat /dev/urandom | rngtest -c 1000
 rngtest 4
 Copyright (c) 2004 by Henrique de Moraes Holschuh
 This is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -19,7 +19,7 @@ rngtest: input channel speed: (min=2.661; avg=8.667; max=18.626)Gibits/s
 rngtest: FIPS tests speed: (min=46.071; avg=54.538; max=55.126)Mibits/s
 rngtest: Program run time: 365561 microseconds
 
-jsloan@silver:~$ sudo cat /dev/random | rngtest -c 1000
+coverclock@silver:~$ sudo cat /dev/random | rngtest -c 1000
 rngtest 4
 Copyright (c) 2004 by Henrique de Moraes Holschuh
 This is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -37,12 +37,12 @@ rngtest: input channel speed: (min=59.875; avg=80.682; max=175.873)Kibits/s
 rngtest: FIPS tests speed: (min=33.818; avg=37.112; max=54.652)Mibits/s
 rngtest: Program run time: 242596135 microseconds
 
-jsloan@silver:~$ dd if=/dev/random of=random.dat bs=1024 count=128 iflag=fullblock
+coverclock@silver:~$ dd if=/dev/random of=random.dat bs=1024 count=128 iflag=fullblock
 128+0 records in
 128+0 records out
 131072 bytes (131 kB) copied, 12.1144 s, 10.8 kB/s
 
-jsloan@silver:~$ ent random.dat
+coverclock@silver:~$ ent random.dat
 Entropy = 7.998600 bits per byte.
 
 Optimum compression would reduce the size
@@ -55,12 +55,12 @@ Arithmetic mean value of data bytes is 127.4090 (127.5 = random).
 Monte Carlo value for Pi is 3.145983062 (error 0.14 percent).
 Serial correlation coefficient is 0.001483 (totally uncorrelated = 0.0).
 
-jsloan@silver:~$ dd if=/dev/urandom of=urandom.dat bs=1024 count=128 iflag=fullblock
+coverclock@silver:~$ dd if=/dev/urandom of=urandom.dat bs=1024 count=128 iflag=fullblock
 128+0 records in
 128+0 records out
 131072 bytes (131 kB) copied, 0.0123028 s, 10.7 MB/s
 
-jsloan@silver:~$ ent urandom.dat
+coverclock@silver:~$ ent urandom.dat
 Entropy = 7.998691 bits per byte.
 
 Optimum compression would reduce the size
@@ -73,21 +73,21 @@ Arithmetic mean value of data bytes is 127.4198 (127.5 = random).
 Monte Carlo value for Pi is 3.133897917 (error 0.24 percent).
 Serial correlation coefficient is -0.005254 (totally uncorrelated = 0.0).
 
-jsloan@silver:~$ cd /proc/sys/kernel/random
-jsloan@silver:random$ ls
+coverclock@silver:~$ cd /proc/sys/kernel/random
+coverclock@silver:random$ ls
 boot_id        read_wakeup_threshold    write_wakeup_threshold
 entropy_avail  urandom_min_reseed_secs
 poolsize       uuid
-jsloan@silver:random$ cat poolsize
+coverclock@silver:random$ cat poolsize
 4096
-jsloan@silver:random$ cat entropy_avail
+coverclock@silver:random$ cat entropy_avail
 3101
 
-jsloan@silver:~$ cat /dev/urandom | rawtoppm -rgb 256 256 | pnmtopng > urandom.png
-jsloan@silver:~$ cat /dev/random | rawtoppm -rgb 256 256 | pnmtopng > random.png
+coverclock@silver:~$ cat /dev/urandom | rawtoppm -rgb 256 256 | pnmtopng > urandom.png
+coverclock@silver:~$ cat /dev/random | rawtoppm -rgb 256 256 | pnmtopng > random.png
 
 
-jsloan@silver:~/src/com-diag-scattergun/Scattergun$ time dd if=/dev/random of=megabyte.dat bs=1000 count=1000 iflag=fullblock
+coverclock@silver:~/src/com-diag-scattergun/Scattergun$ time dd if=/dev/random of=megabyte.dat bs=1000 count=1000 iflag=fullblock
 1000+0 records in
 1000+0 records out
 1000000 bytes (1.0 MB) copied, 93.8507 s, 10.7 kB/s
@@ -95,21 +95,21 @@ jsloan@silver:~/src/com-diag-scattergun/Scattergun$ time dd if=/dev/random of=me
 real	1m33.853s
 user	0m0.015s
 sys	0m0.688s
-jsloan@silver:~/src/com-diag-scattergun/Scattergun$ ls -l
+coverclock@silver:~/src/com-diag-scattergun/Scattergun$ ls -l
 total 3068
--rw-r--r-- 1 jsloan jsloan 1000000 Dec 24 09:15 megabyte.dat
--rw-r--r-- 1 jsloan jsloan 1249280 Dec 24 08:36 random.dat
--rw-r--r-- 1 jsloan jsloan  197280 Dec 24 08:43 random.png
--rwxrwxr-x 1 jsloan jsloan    1449 Dec 24 09:12 scattergun.sh
--rw------- 1 jsloan jsloan  197280 Dec 23 10:52 scattergun.sh-20151223T174754.495850635+00:00.png
--rw------- 1 jsloan jsloan  197280 Dec 23 11:37 scattergun.sh-20151223T183718.444762776+00:00.png
--rw-r--r-- 1 jsloan jsloan  274432 Dec 24 09:13 typescript
-jsloan@silver:~/src/com-diag-scattergun/Scattergun$ cp -i megabyte.dat /home/jsloan/Projects/scattergun/usnistgov/SP800-90B_EntropyAssessment/TrueRNG.dat
+-rw-r--r-- 1 coverclock coverclock 1000000 Dec 24 09:15 megabyte.dat
+-rw-r--r-- 1 coverclock coverclock 1249280 Dec 24 08:36 random.dat
+-rw-r--r-- 1 coverclock coverclock  197280 Dec 24 08:43 random.png
+-rwxrwxr-x 1 coverclock coverclock    1449 Dec 24 09:12 scattergun.sh
+-rw------- 1 coverclock coverclock  197280 Dec 23 10:52 scattergun.sh-20151223T174754.495850635+00:00.png
+-rw------- 1 coverclock coverclock  197280 Dec 23 11:37 scattergun.sh-20151223T183718.444762776+00:00.png
+-rw-r--r-- 1 coverclock coverclock  274432 Dec 24 09:13 typescript
+coverclock@silver:~/src/com-diag-scattergun/Scattergun$ cp -i megabyte.dat /home/coverclock/Projects/scattergun/usnistgov/SP800-90B_EntropyAssessment/TrueRNG.dat
 
-jsloan@silver:SP800-90B_EntropyAssessment$ python iid_main.py TrueRNG.dat
+coverclock@silver:SP800-90B_EntropyAssessment$ python iid_main.py TrueRNG.dat
 usage: iid_main.py [-h] [-v] datafile bits_per_symbol number_of_shuffles
 iid_main.py: error: too few arguments
-jsloan@silver:SP800-90B_EntropyAssessment$ python iid_main.py TrueRNG.dat 8 1000 -v
+coverclock@silver:SP800-90B_EntropyAssessment$ python iid_main.py TrueRNG.dat 8 1000 -v
 Read in file TrueRNG.dat, 1000000 bytes long.
 Dataset: 1000000 8-bit symbols.
 Output symbol values: min = 0, max = 255
@@ -255,9 +255,9 @@ Collision sanity check...
 
 sanity check = PASS
 time: (2790.31 sec)
-jsloan@silver:SP800-90B_EntropyAssessment$ 
+coverclock@silver:SP800-90B_EntropyAssessment$ 
 
-jsloan@silver:SP800-90B_EntropyAssessment$ python noniid_main.py TrueRNG.dat 8 -v
+coverclock@silver:SP800-90B_EntropyAssessment$ python noniid_main.py TrueRNG.dat 8 -v
 Read in file TrueRNG.dat, 1000000 bytes long.
 Dataset: 1000000 8-bit symbols.
 Output symbol values: min = 0, max = 255
@@ -298,7 +298,7 @@ Collision sanity check...
 
 sanity check = PASS
 time: (42.5101 sec)
-jsloan@silver:SP800-90B_EntropyAssessment$ 
+coverclock@silver:SP800-90B_EntropyAssessment$ 
 
 pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash -x scattergun.sh
 ++ basename scattergun.sh
@@ -675,4 +675,184 @@ real	7m17.903s
 user	7m15.910s
 sys	0m1.950s
 pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ 
+
+coverclock@silver:Scattergun$ strings /usr/bin/ssh | grep random
+Couldn't obtain random bytes (error %ld)
+coverclock@silver:Scattergun$ 
+
+coverclock@silver:Scattergun$ objdump -x /usr/bin/ssh
+
+/usr/bin/ssh:     file format elf64-x86-64
+/usr/bin/ssh
+architecture: i386:x86-64, flags 0x00000150:
+HAS_SYMS, DYNAMIC, D_PAGED
+start address 0x000000000000d574
+
+Program Header:
+    PHDR off    0x0000000000000040 vaddr 0x0000000000000040 paddr 0x0000000000000040 align 2**3
+         filesz 0x00000000000001f8 memsz 0x00000000000001f8 flags r-x
+  INTERP off    0x0000000000000238 vaddr 0x0000000000000238 paddr 0x0000000000000238 align 2**0
+         filesz 0x000000000000001c memsz 0x000000000000001c flags r--
+    LOAD off    0x0000000000000000 vaddr 0x0000000000000000 paddr 0x0000000000000000 align 2**21
+         filesz 0x0000000000098f0c memsz 0x0000000000098f0c flags r-x
+    LOAD off    0x0000000000099620 vaddr 0x0000000000299620 paddr 0x0000000000299620 align 2**21
+         filesz 0x0000000000002c50 memsz 0x0000000000006900 flags rw-
+ DYNAMIC off    0x000000000009b1c0 vaddr 0x000000000029b1c0 paddr 0x000000000029b1c0 align 2**3
+         filesz 0x0000000000000250 memsz 0x0000000000000250 flags rw-
+    NOTE off    0x0000000000000254 vaddr 0x0000000000000254 paddr 0x0000000000000254 align 2**2
+         filesz 0x0000000000000044 memsz 0x0000000000000044 flags r--
+EH_FRAME off    0x000000000008b268 vaddr 0x000000000008b268 paddr 0x000000000008b268 align 2**2
+         filesz 0x0000000000001d4c memsz 0x0000000000001d4c flags r--
+   STACK off    0x0000000000000000 vaddr 0x0000000000000000 paddr 0x0000000000000000 align 2**4
+         filesz 0x0000000000000000 memsz 0x0000000000000000 flags rw-
+   RELRO off    0x0000000000099620 vaddr 0x0000000000299620 paddr 0x0000000000299620 align 2**0
+         filesz 0x00000000000029e0 memsz 0x00000000000029e0 flags r--
+
+Dynamic Section:
+  NEEDED               libselinux.so.1
+  NEEDED               libcrypto.so.1.0.0
+  NEEDED               libdl.so.2
+  NEEDED               libz.so.1
+  NEEDED               libresolv.so.2
+  NEEDED               libgssapi_krb5.so.2
+  NEEDED               libc.so.6
+  INIT                 0x00000000000093c8
+  FINI                 0x000000000005bf34
+  INIT_ARRAY           0x0000000000299620
+  INIT_ARRAYSZ         0x0000000000000008
+  FINI_ARRAY           0x0000000000299628
+  FINI_ARRAYSZ         0x0000000000000008
+  GNU_HASH             0x0000000000000298
+  STRTAB               0x0000000000002f30
+  SYMTAB               0x0000000000000518
+  STRSZ                0x000000000000168e
+  SYMENT               0x0000000000000018
+  DEBUG                0x0000000000000000
+  PLTGOT               0x000000000029b410
+  PLTRELSZ             0x00000000000021c0
+  PLTREL               0x0000000000000007
+  JMPREL               0x0000000000007208
+  RELA                 0x0000000000004a60
+  RELASZ               0x00000000000027a8
+  RELAENT              0x0000000000000018
+  BIND_NOW             0x0000000000000000
+  FLAGS_1              0x0000000000000001
+  VERNEED              0x0000000000004940
+  VERNEEDNUM           0x0000000000000005
+  VERSYM               0x00000000000045be
+  RELACOUNT            0x0000000000000178
+
+Version References:
+  required from libdl.so.2:
+    0x09691a75 0x00 12 GLIBC_2.2.5
+  required from libresolv.so.2:
+    0x09691a75 0x00 09 GLIBC_2.2.5
+  required from libgssapi_krb5.so.2:
+    0x0dbcc034 0x00 07 gssapi_krb5_2_MIT
+  required from libcrypto.so.1.0.0:
+    0x066a2b21 0x00 04 OPENSSL_1.0.1
+    0x066a2b20 0x00 03 OPENSSL_1.0.0
+  required from libc.so.6:
+    0x06969195 0x00 14 GLIBC_2.15
+    0x06969194 0x00 13 GLIBC_2.14
+    0x0d696914 0x00 11 GLIBC_2.4
+    0x0d696918 0x00 10 GLIBC_2.8
+    0x0d696913 0x00 08 GLIBC_2.3
+    0x09691974 0x00 06 GLIBC_2.3.4
+    0x06969197 0x00 05 GLIBC_2.17
+    0x09691a75 0x00 02 GLIBC_2.2.5
+
+Sections:
+Idx Name          Size      VMA               LMA               File off  Algn
+  0 .interp       0000001c  0000000000000238  0000000000000238  00000238  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  1 .note.ABI-tag 00000020  0000000000000254  0000000000000254  00000254  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  2 .note.gnu.build-id 00000024  0000000000000274  0000000000000274  00000274  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  3 .gnu.hash     00000280  0000000000000298  0000000000000298  00000298  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .dynsym       00002a18  0000000000000518  0000000000000518  00000518  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  5 .dynstr       0000168e  0000000000002f30  0000000000002f30  00002f30  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  6 .gnu.version  00000382  00000000000045be  00000000000045be  000045be  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  7 .gnu.version_r 00000120  0000000000004940  0000000000004940  00004940  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  8 .rela.dyn     000027a8  0000000000004a60  0000000000004a60  00004a60  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  9 .rela.plt     000021c0  0000000000007208  0000000000007208  00007208  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+ 10 .init         0000001a  00000000000093c8  00000000000093c8  000093c8  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 11 .plt          00001690  00000000000093f0  00000000000093f0  000093f0  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 12 .text         000514b2  000000000000aa80  000000000000aa80  0000aa80  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 13 .fini         00000009  000000000005bf34  000000000005bf34  0005bf34  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 14 .rodata       0002f325  000000000005bf40  000000000005bf40  0005bf40  2**5
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+ 15 .eh_frame_hdr 00001d4c  000000000008b268  000000000008b268  0008b268  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+ 16 .eh_frame     0000bf54  000000000008cfb8  000000000008cfb8  0008cfb8  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+ 17 .init_array   00000008  0000000000299620  0000000000299620  00099620  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 18 .fini_array   00000008  0000000000299628  0000000000299628  00099628  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 19 .jcr          00000008  0000000000299630  0000000000299630  00099630  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 20 .data.rel.ro  00001b80  0000000000299640  0000000000299640  00099640  2**5
+                  CONTENTS, ALLOC, LOAD, DATA
+ 21 .dynamic      00000250  000000000029b1c0  000000000029b1c0  0009b1c0  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 22 .got          00000be0  000000000029b410  000000000029b410  0009b410  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 23 .data         00000270  000000000029c000  000000000029c000  0009c000  2**5
+                  CONTENTS, ALLOC, LOAD, DATA
+ 24 .bss          00003ca0  000000000029c280  000000000029c280  0009c270  2**5
+                  ALLOC
+ 25 .gnu_debuglink 00000008  0000000000000000  0000000000000000  0009c270  2**0
+                  CONTENTS, READONLY
+SYMBOL TABLE:
+no symbols
+
+
+coverclock@silver:Scattergun$ 
+
+coverclock@silver:Scattergun$ strings /lib/x86_64-linux-gnu/libcrypto.so.1.0.0 | grep random
+DES_random_key
+_ossl_old_des_random_seed
+_ossl_old_des_random_key
+_ossl_096_des_random_seed
+random number generation failed
+no fips random method set
+/dev/urandom
+/dev/random
+/dev/srandom
+random number generator
+coverclock@silver:Scattergun$ 
+
+coverclock@silver:src$ git clone https://github.com/openssl/openssl
+coverclock@silver:src$ cd openssl
+coverclock@silver:src$ git checkout OpenSSL_1_0_0-stable
+coverclock@silver:src$ vi e_os.h
+
+# ifndef DEVRANDOM
+/*
+ * set this to a comma-separated list of 'random' device files to try out. My
+ * default, we will try to read at least one of these files
+ */
+#  define DEVRANDOM "/dev/urandom","/dev/random","/dev/srandom"
+# endif
+# ifndef DEVRANDOM_EGD
+/*
+ * set this to a comma-seperated list of 'egd' sockets to try out. These
+ * sockets will be tried in the order listed in case accessing the device
+ * files listed in DEVRANDOM did not return enough entropy.
+ */
+#  define DEVRANDOM_EGD "/var/run/egd-pool","/dev/egd-pool","/etc/egd-pool","/etc/entropy"
+# endif
 
