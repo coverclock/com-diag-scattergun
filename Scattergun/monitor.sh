@@ -10,13 +10,15 @@ ENTRFILE="/proc/sys/kernel/random/entropy_avail"
 
 read POOLSIZE < ${POOLFILE}
 
+GRAPH="===================================================================================================="
+
 while true; do
 
 	read ENTRSIZE < ${ENTRFILE}
 
 	PERCENT="$(( ( ${ENTRSIZE}  * 100 ) / ${POOLSIZE} ))"
 
-	echo ${POOLSIZE} ${ENTRSIZE} ${PERCENT}
+	printf "%3d%% %s\n" ${PERCENT} ${GRAPH:0:${PERCENT}}
 
 	sleep ${PERIOD}
 
