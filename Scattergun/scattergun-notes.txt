@@ -856,3 +856,202 @@ coverclock@silver:src$ vi e_os.h
 #  define DEVRANDOM_EGD "/var/run/egd-pool","/dev/egd-pool","/etc/egd-pool","/etc/entropy"
 # endif
 
+jsloan@silver:Scattergun$ dd if=/dev/random of=random.dat bs=1000 count=10000 iflag=fullblock
+10000+0 records in
+10000+0 records out
+10000000 bytes (10 MB) copied, 863.524 s, 11.6 kB/s
+jsloan@silver:Scattergun$ mv -i random.dat ~
+jsloan@silver:Scattergun$
+
+jsloan@silver:SP800-90B_EntropyAssessment$ ls -l ~/random.dat
+-rw-r--r-- 1 jsloan jsloan 10000000 Dec 29 11:43 /home/jsloan/random.dat
+jsloan@silver:SP800-90B_EntropyAssessment$ python iid_main.py ~/random.dat 8 1000 -v
+Read in file /home/jsloan/random.dat, 10000000 bytes long.
+Dataset: 10000000 8-bit symbols.
+Output symbol values: min = 0, max = 255
+
+
+Compression Test:      
+	Scores                   Ranks
+	1066749                  272 
+	1065996                    3*
+	1067135                  683 
+	1067146                  667 
+	1066933                  467 
+	1066471                   59 
+	1066768                  264 
+	1066698                  214 
+	1066778                  239 
+	1067407                  854 
+	                         --- 
+	                           1
+Passed Compression Test
+
+Over/under Test:       
+	Scores                   Ranks
+	18  498148               141   559 
+	19  497521               358   150 
+	24  497600               946   190 
+	21  498444               613   738 
+	19  497358               355   101 
+	20  499118               501   987*
+	19  498496               397   821 
+	20  497601               501   182 
+	19  498113               392   523 
+	21  498570               620   878 
+	                         ---   --- 
+	                           0     1
+Passed Over/under Test
+
+Excursion Test:        
+	Scores                   Ranks
+	80932.9                  821 
+	55715.8                  390 
+	57678.9                  432 
+	44785                    136 
+	90924.3                  893 
+	36354.6                   38*
+	73562.1                  720 
+	39897.1                   68 
+	46857.5                  200 
+	140801                  1000*
+	                         --- 
+	                           2
+Passed Excursion Test
+
+Directional runs Test: 
+	Scores                   Ranks
+	665410     9  498393     530   545   754 
+	665730     8  498227     810   501   482 
+	664882     8  498113     135   501   174 
+	664687     9  498274      59   559   551 
+	664971     8  498582     171   501   932 
+	666547     8  498373     999*  501   743 
+	665858     8  498379     890   501   756 
+	665250     8  498080     368   501    99 
+	665027     9  498307     238   564   653 
+	666187     9  498481     976*  570   881 
+	                         ---   ---   --- 
+	                           2     0     0
+Passed Directional runs Test
+
+Covariance Test:       
+	Scores                   Ranks
+	6.16139                  889 
+	3.16132                  743 
+	-3.4423                  259 
+	3.8671                   754 
+	14.4925                  995*
+	-9.51905                  52 
+	2.97793                  726 
+	2.28714                  682 
+	-3.84277                 255 
+	-4.95691                 171 
+	                         --- 
+	                           1
+Passed Covariance Test
+
+Collision Test:        
+	Scores                   Ranks
+	1  19.693  73            501   227   575 
+	1  19.7589  70           501   751   381 
+	1  19.8094  72           501   961*  501 
+	1  19.7981  69           501   940   226 
+	1  19.7063  68           501   333   149 
+	1  19.7485  70           501   667   376 
+	1  19.7342  69           501   589   262 
+	1  19.7681  71           501   814   468 
+	1  19.7245  68           501   493   173 
+	1  19.7871  72           501   903   501 
+	                         ---   ---   --- 
+	                           0     1     0
+Passed Collision Test
+
+** Passed iid shuffle tests
+()
+
+Chi square independence
+	score = 64890.5, degrees of freedom = 65280, cut-off = 66402.2
+** Passed chi-square independence test
+
+Chi square stability
+	score = 2305.59, degrees of freedom = 2313 cut-off = 2528.88
+** Passed chi-square stability test
+
+IID = True
+min-entropy = 7.96468
+
+Compression sanity check...
+	dataset 1 compressed length = 8533992, cutoff = 7.96468e+06...Pass
+
+	dataset 2 compressed length = 8527968, cutoff = 7.96468e+06...Pass
+
+	dataset 3 compressed length = 8537080, cutoff = 7.96468e+06...Pass
+
+	dataset 4 compressed length = 8537168, cutoff = 7.96468e+06...Pass
+
+	dataset 5 compressed length = 8535464, cutoff = 7.96468e+06...Pass
+
+	dataset 6 compressed length = 8531768, cutoff = 7.96468e+06...Pass
+
+	dataset 7 compressed length = 8534144, cutoff = 7.96468e+06...Pass
+
+	dataset 8 compressed length = 8533584, cutoff = 7.96468e+06...Pass
+
+	dataset 9 compressed length = 8534224, cutoff = 7.96468e+06...Pass
+
+	dataset 10 compressed length = 8539256, cutoff = 7.96468e+06...Pass
+
+
+Collision sanity check...
+	Dividing dataset into 5-tuples
+	Check rule 1 - do three or more 5-tuples have the same value?...Pass
+	Check rule 2 - probability of number of collisions below cutoff
+		number of collisions = 2, cutoff = 2.05586...Pass
+
+sanity check = PASS
+time: (28654.8 sec)
+jsloan@silver:SP800-90B_EntropyAssessment$ 
+
+jsloan@silver:SP800-90B_EntropyAssessment$ python noniid_main.py ~/random.dat 8 -v
+Read in file /home/jsloan/random.dat, 10000000 bytes long.
+Dataset: 10000000 8-bit symbols.
+Output symbol values: min = 0, max = 255
+- Collision test          : p(max) = 0.00479126, min-entropy = 7.70538
+- Partial collection test : p(max) = 0.00633764, min-entropy = 7.30184
+- Markov test (map 6 bits): p(max) = 4.09274e-229, min-entropy = 5.92725
+- Compression test        : p(max) = 0.00619507, min-entropy = 7.33466
+- Frequency test          : p(max) = 0.0039574, min-entropy = 7.84662
+min-entropy = 5.92725
+
+Compression sanity check...
+	dataset 1 compressed length = 8533992, cutoff = 5.92725e+06...Pass
+
+	dataset 2 compressed length = 8527968, cutoff = 5.92725e+06...Pass
+
+	dataset 3 compressed length = 8537080, cutoff = 5.92725e+06...Pass
+
+	dataset 4 compressed length = 8537168, cutoff = 5.92725e+06...Pass
+
+	dataset 5 compressed length = 8535464, cutoff = 5.92725e+06...Pass
+
+	dataset 6 compressed length = 8531768, cutoff = 5.92725e+06...Pass
+
+	dataset 7 compressed length = 8534144, cutoff = 5.92725e+06...Pass
+
+	dataset 8 compressed length = 8533584, cutoff = 5.92725e+06...Pass
+
+	dataset 9 compressed length = 8534224, cutoff = 5.92725e+06...Pass
+
+	dataset 10 compressed length = 8539256, cutoff = 5.92725e+06...Pass
+
+
+Collision sanity check...
+	Dividing dataset into 7-tuples
+	Check rule 1 - do three or more 7-tuples have the same value?...Pass
+	Check rule 2 - probability of number of collisions below cutoff
+		number of collisions = 0, cutoff = 0.330222...Pass
+
+sanity check = PASS
+time: (414.666 sec)
+jsloan@silver:SP800-90B_EntropyAssessment$ 
