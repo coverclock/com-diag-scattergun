@@ -6,6 +6,23 @@
 ZERO=$(basename $0)
 SOURCE=${1:-"/dev/random"}
 
+uname -a
+
+ps -ef | grep rngd | grep -v grep
+
+HRNGDEVICE=""
+if [[ -r /etc/default/rng-tools ]]; then
+	. /etc/default/rng-tools
+	echo HRNGDEVICE=${HRNGDEVICE}
+fi
+if [[ -z "${HRNGDEVICE}" ]]; then
+	HRNGDEVICE="/dev/null"
+fi
+
+ls -l /dev/random
+ls -l /dev/urandom
+ls -l ${HRNGDEVICE}
+
 read AVAILABLE < /proc/sys/kernel/random/entropy_avail
 read TOTAL < /proc/sys/kernel/random/poolsize
 
