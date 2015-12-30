@@ -5,23 +5,24 @@
 
 ZERO=$(basename $0)
 SOURCE=${1:-"/dev/random"}
+SINK=${2:-"/dev/null"}
+COUNT=${3:-"1"}
 
-uname -a
+echo ${ZERO}: ${SOURCE} ${SINK} ${COUNT}
 
-ps -ef | grep rngd | grep -v grep
+echo ${ZERO}: $(uname -a)
+
+echo ${ZERO}: $(ps -ef | grep rngd | grep -v grep)
 
 HRNGDEVICE=""
 if [[ -r /etc/default/rng-tools ]]; then
 	. /etc/default/rng-tools
-	echo HRNGDEVICE=${HRNGDEVICE}
+	echo ${ZERO}: HRNGDEVICE=${HRNGDEVICE}
+	echo ${ZERO}: $(ls -l ${HRNGDEVICE})
 fi
 if [[ -z "${HRNGDEVICE}" ]]; then
 	HRNGDEVICE="/dev/null"
 fi
-
-ls -l /dev/random
-ls -l /dev/urandom
-ls -l ${HRNGDEVICE}
 
 read AVAILABLE < /proc/sys/kernel/random/entropy_avail
 read TOTAL < /proc/sys/kernel/random/poolsize
@@ -29,7 +30,7 @@ read TOTAL < /proc/sys/kernel/random/poolsize
 FIRST=$(( ( ${AVAILABLE} + 7 ) / 8 ))
 SECOND=$(( ${TOTAL} / 8 ))
 
-echo ${AVAILABLE} ${FIRST} ${TOTAL} ${SECOND}
+echo ${ZERO}: ${AVAILABLE} ${FIRST} ${TOTAL} ${SECOND}
 
 dd if=${SOURCE} of=/dev/null bs=${FIRST} count=1 iflag=fullblock
-time dd if=${SOURCE} of=/dev/null bs=${SECOND} count=1 iflag=fullblock
+time dd if=${SOURCE} of=${SINK} bs=${SECOND} count=${COUNT} iflag=fullblock
