@@ -1055,3 +1055,75 @@ Collision sanity check...
 sanity check = PASS
 time: (414.666 sec)
 jsloan@silver:SP800-90B_EntropyAssessment$ 
+
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash consume.sh
+Linux raspberrypi 3.18.11-v7+ #781 SMP PREEMPT Tue Apr 21 18:07:59 BST 2015 armv7l GNU/Linux
+HRNGDEVICE=
+crw-rw-rw- 1 root root 1, 8 Jan  1  1970 /dev/random
+crw-rw-rw- 1 root root 1, 9 Jan  1  1970 /dev/urandom
+crw-rw-rw- 1 root root 1, 3 Jan  1  1970 /dev/null
+834 105 4096 512
+1+0 records in
+1+0 records out
+105 bytes (105 B) copied, 0.00042677 s, 246 kB/s
+1+0 records in
+1+0 records out
+512 bytes (512 B) copied, 699.388 s, 0.0 kB/s
+
+real	11m39.398s
+user	0m0.010s
+sys	0m0.000s
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ 
+
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ sudo /etc/init.d/rng-tools start
+Starting Hardware RNG entropy gatherer daemon: rngd.
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash consume.sh
+Linux raspberrypi 3.18.11-v7+ #781 SMP PREEMPT Tue Apr 21 18:07:59 BST 2015 armv7l GNU/Linux
+root      9441     1  0 16:41 ?        00:00:00 /usr/sbin/rngd -r /dev/hwrng
+HRNGDEVICE=/dev/hwrng
+crw-rw-rw- 1 root root 1, 8 Jan  1  1970 /dev/random
+crw-rw-rw- 1 root root 1, 9 Jan  1  1970 /dev/urandom
+crw------- 1 root root 10, 183 Dec 26 20:47 /dev/hwrng
+1916 240 4096 512
+1+0 records in
+1+0 records out
+240 bytes (240 B) copied, 0.00174411 s, 138 kB/s
+1+0 records in
+1+0 records out
+512 bytes (512 B) copied, 0.0036177 s, 142 kB/s
+
+real	0m0.016s
+user	0m0.010s
+sys	0m0.010s
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ lsmod | grep bcm
+bcm2708_rng              952  0 
+snd_bcm2835            18649  0 
+snd_pcm                73475  1 snd_bcm2835
+snd                    51038  5 snd_bcm2835,snd_timer,snd_pcm,snd_seq,snd_seq_device
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ 
+
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ sudo /etc/init.d/rng-tools stop
+Stopping Hardware RNG entropy gatherer daemon: rngd.
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ sudo vi /etc/default/rng-tools
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ sudo /etc/init.d/rng-tools start
+Starting Hardware RNG entropy gatherer daemon: rngd.
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash consume.sh
+Linux raspberrypi 3.18.11-v7+ #781 SMP PREEMPT Tue Apr 21 18:07:59 BST 2015 armv7l GNU/Linux
+root      9467     1  0 16:43 ?        00:00:00 /usr/sbin/rngd -r /dev/TrueRNG
+HRNGDEVICE=/dev/TrueRNG
+crw-rw-rw- 1 root root 1, 8 Jan  1  1970 /dev/random
+crw-rw-rw- 1 root root 1, 9 Jan  1  1970 /dev/urandom
+lrwxrwxrwx 1 root root 7 Dec 26 21:22 /dev/TrueRNG -> ttyACM0
+2095 262 4096 512
+1+0 records in
+1+0 records out
+262 bytes (262 B) copied, 0.00144046 s, 182 kB/s
+1+0 records in
+1+0 records out
+512 bytes (512 B) copied, 0.00268536 s, 191 kB/s
+
+real	0m0.014s
+user	0m0.010s
+sys	0m0.010s
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ 
+
