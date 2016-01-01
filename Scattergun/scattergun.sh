@@ -35,6 +35,10 @@ time dd if=${SOURCE} of=/dev/null bs=${BLOCKSIZE} count=1 iflag=fullblock
 
 lsmod | grep bcm2708_rng
 
+# modprobe intel-rng # Intel Ivy Bridge RDRAND
+
+lsmod | grep intel-rng
+
 # sudo apt-get install rng-tools
 # ${EDITOR} /etc/default/rng-tools
 # sudo /etc/init.d/rng-tools start

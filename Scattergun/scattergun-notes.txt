@@ -1056,74 +1056,339 @@ sanity check = PASS
 time: (414.666 sec)
 jsloan@silver:SP800-90B_EntropyAssessment$ 
 
-pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash consume.sh
-Linux raspberrypi 3.18.11-v7+ #781 SMP PREEMPT Tue Apr 21 18:07:59 BST 2015 armv7l GNU/Linux
-HRNGDEVICE=
-crw-rw-rw- 1 root root 1, 8 Jan  1  1970 /dev/random
-crw-rw-rw- 1 root root 1, 9 Jan  1  1970 /dev/urandom
-crw-rw-rw- 1 root root 1, 3 Jan  1  1970 /dev/null
-834 105 4096 512
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash consume.sh /dev/random hwrng.dat 2442
+consume.sh: /dev/random hwrng.dat 2442
+consume.sh: Linux raspberrypi 3.18.11-v7+ #781 SMP PREEMPT Tue Apr 21 18:07:59 BST 2015 armv7l GNU/Linux
+consume.sh: root 9546 1 19 17:17 ? 00:01:25 /usr/sbin/rngd -r /dev/hwrng
+consume.sh: HRNGDEVICE=/dev/hwrng
+consume.sh: crw------- 1 root root 10, 183 Dec 26 20:47 /dev/hwrng
+consume.sh: 1973 247 4096 512
 1+0 records in
 1+0 records out
-105 bytes (105 B) copied, 0.00042677 s, 246 kB/s
-1+0 records in
-1+0 records out
-512 bytes (512 B) copied, 699.388 s, 0.0 kB/s
+247 bytes (247 B) copied, 0.00123942 s, 199 kB/s
+2442+0 records in
+2442+0 records out
+1250304 bytes (1.3 MB) copied, 43.4272 s, 28.8 kB/s
 
-real	11m39.398s
-user	0m0.010s
-sys	0m0.000s
-pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ 
-
-pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ sudo /etc/init.d/rng-tools start
-Starting Hardware RNG entropy gatherer daemon: rngd.
-pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash consume.sh
-Linux raspberrypi 3.18.11-v7+ #781 SMP PREEMPT Tue Apr 21 18:07:59 BST 2015 armv7l GNU/Linux
-root      9441     1  0 16:41 ?        00:00:00 /usr/sbin/rngd -r /dev/hwrng
-HRNGDEVICE=/dev/hwrng
-crw-rw-rw- 1 root root 1, 8 Jan  1  1970 /dev/random
-crw-rw-rw- 1 root root 1, 9 Jan  1  1970 /dev/urandom
-crw------- 1 root root 10, 183 Dec 26 20:47 /dev/hwrng
-1916 240 4096 512
-1+0 records in
-1+0 records out
-240 bytes (240 B) copied, 0.00174411 s, 138 kB/s
-1+0 records in
-1+0 records out
-512 bytes (512 B) copied, 0.0036177 s, 142 kB/s
-
-real	0m0.016s
-user	0m0.010s
-sys	0m0.010s
-pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ lsmod | grep bcm
-bcm2708_rng              952  0 
-snd_bcm2835            18649  0 
-snd_pcm                73475  1 snd_bcm2835
-snd                    51038  5 snd_bcm2835,snd_timer,snd_pcm,snd_seq,snd_seq_device
-pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ 
-
-pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ sudo /etc/init.d/rng-tools stop
-Stopping Hardware RNG entropy gatherer daemon: rngd.
+real	0m43.449s
+user	0m0.040s
+sys	0m6.480s
 pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ sudo vi /etc/default/rng-tools
-pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ sudo /etc/init.d/rng-tools start
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ sudo /etc/init.d/rng-tools restart
+Stopping Hardware RNG entropy gatherer daemon: rngd.
 Starting Hardware RNG entropy gatherer daemon: rngd.
-pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash consume.sh
-Linux raspberrypi 3.18.11-v7+ #781 SMP PREEMPT Tue Apr 21 18:07:59 BST 2015 armv7l GNU/Linux
-root      9467     1  0 16:43 ?        00:00:00 /usr/sbin/rngd -r /dev/TrueRNG
-HRNGDEVICE=/dev/TrueRNG
-crw-rw-rw- 1 root root 1, 8 Jan  1  1970 /dev/random
-crw-rw-rw- 1 root root 1, 9 Jan  1  1970 /dev/urandom
-lrwxrwxrwx 1 root root 7 Dec 26 21:22 /dev/TrueRNG -> ttyACM0
-2095 262 4096 512
+pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ bash consume.sh /dev/random truerng.dat 2442
+consume.sh: /dev/random truerng.dat 2442
+consume.sh: Linux raspberrypi 3.18.11-v7+ #781 SMP PREEMPT Tue Apr 21 18:07:59 BST 2015 armv7l GNU/Linux
+consume.sh: root 9611 1 0 17:28 ? 00:00:00 /usr/sbin/rngd -r /dev/TrueRNG
+consume.sh: HRNGDEVICE=/dev/TrueRNG
+consume.sh: lrwxrwxrwx 1 root root 7 Dec 26 21:22 /dev/TrueRNG -> ttyACM0
+consume.sh: 2115 265 4096 512
 1+0 records in
 1+0 records out
-262 bytes (262 B) copied, 0.00144046 s, 182 kB/s
-1+0 records in
-1+0 records out
-512 bytes (512 B) copied, 0.00268536 s, 191 kB/s
+265 bytes (265 B) copied, 0.00121666 s, 218 kB/s
+2442+0 records in
+2442+0 records out
+1250304 bytes (1.3 MB) copied, 94.3964 s, 13.2 kB/s
 
-real	0m0.014s
-user	0m0.010s
-sys	0m0.010s
+real	1m34.409s
+user	0m0.050s
+sys	0m6.330s
 pi@raspberrypi ~/scattergun/com-diag-scattergun/Scattergun $ 
+
+pi@raspberrypi ~/scattergun/SP800-90B_EntropyAssessment $ python iid_main.py ../com-diag-scattergun/Scattergun/truerng.dat 8 1000 -v
+Read in file ../com-diag-scattergun/Scattergun/truerng.dat, 1250304 bytes long.
+Dataset: 1250304 8-bit symbols.
+Output symbol values: min = 0, max = 255
+
+
+Compression Test:      
+	Scores                   Ranks
+	133538                   599 
+	133540                   578 
+	133562                   725 
+	133600                   838 
+	133422                   166 
+	133378                    46*
+	133610                   894 
+	133618                   896 
+	133620                   936 
+	133539                   630 
+	                         --- 
+	                           1
+Passed Compression Test
+
+Over/under Test:       
+	Scores                   Ranks
+	17  62132                501   179 
+	17  61922                501    18*
+	15  62408                161   751 
+	19  62454                777   805 
+	17  62185                501   297 
+	16  62422                401   838 
+	17  62528                501   908 
+	15  62083                173   160 
+	16  62513                398   912 
+	15  61947                151    34*
+	                         ---   --- 
+	                           0     2
+Passed Over/under Test
+
+Excursion Test:        
+	Scores                   Ranks
+	18392.7                  294 
+	13474.6                   55 
+	24582.9                  667 
+	16612.8                  209 
+	15601.9                  130 
+	25476.3                  701 
+	20349.4                  424 
+	19583.7                  379 
+	14638.8                   87 
+	24353.7                  659 
+	                         --- 
+	                           0
+Passed Excursion Test
+
+Directional runs Test: 
+	Scores                   Ranks
+	83021     8  62397       135   532   757 
+	82965     7  62307        71   501   303 
+	83423     9  62355       944   947   609 
+	83243     7  62365       613   501   624 
+	83104     8  62303       269   501   242 
+	83195     8  62396       508   501   770 
+	83173     7  62366       441   501   656 
+	83138     8  62280       375   501    95 
+	83147     8  62313       400   517   316 
+	83028     7  62279       149   501    72 
+	                         ---   ---   --- 
+	                           0     0     0
+Passed Directional runs Test
+
+Covariance Test:       
+	Scores                   Ranks
+	16.1141                  850 
+	40.5479                  996*
+	-28.1251                  37*
+	-15.0777                 176 
+	0.0975082                485 
+	-14.8153                 153 
+	-20.9112                 107 
+	9.06367                  733 
+	-20.1352                 100 
+	26.7164                  952*
+	                         --- 
+	                           3
+Passed Covariance Test
+
+Collision Test:        
+	Scores                   Ranks
+	1  19.7417  63           501   547   331 
+	1  19.6321  62           501   252   236 
+	1  19.8959  61           501   908   138 
+	1  19.7297  68           501   515   724 
+	1  19.3674  61           501     3*  168 
+	1  19.604  62            501   171   230 
+	1  19.7109  69           501   465   772 
+	1  19.8439  62           501   835   230 
+	1  19.5928  63           501   144   346 
+	1  19.6232  61           501   226   135 
+	                         ---   ---   --- 
+	                           0     1     0
+Passed Collision Test
+
+** Passed iid shuffle tests
+()
+
+Chi square independence
+	score = 64990.5, degrees of freedom = 65280, cut-off = 66402.2
+** Passed chi-square independence test
+
+Chi square stability
+	score = 2344.09, degrees of freedom = 2313 cut-off = 2528.88
+** Passed chi-square stability test
+
+IID = True
+min-entropy = 7.89779
+
+Compression sanity check...
+	dataset 1 compressed length = 1068304, cutoff = 987460...Pass
+
+	dataset 2 compressed length = 1068320, cutoff = 987460...Pass
+
+	dataset 3 compressed length = 1068496, cutoff = 987460...Pass
+
+	dataset 4 compressed length = 1068800, cutoff = 987460...Pass
+
+	dataset 5 compressed length = 1067376, cutoff = 987460...Pass
+
+	dataset 6 compressed length = 1067024, cutoff = 987460...Pass
+
+	dataset 7 compressed length = 1068880, cutoff = 987460...Pass
+
+	dataset 8 compressed length = 1068944, cutoff = 987460...Pass
+
+	dataset 9 compressed length = 1068960, cutoff = 987460...Pass
+
+	dataset 10 compressed length = 1068312, cutoff = 987460...Pass
+
+
+Collision sanity check...
+	Dividing dataset into 4-tuples
+	Check rule 1 - do three or more 4-tuples have the same value?...Pass
+	Check rule 2 - probability of number of collisions below cutoff
+		number of collisions = 15, cutoff = 15.1008...Pass
+
+sanity check = PASS
+time: (37549.5 sec)
+pi@raspberrypi ~/scattergun/SP800-90B_EntropyAssessment $
+
+pi@raspberrypi ~/scattergun/SP800-90B_EntropyAssessment $ python iid_main.py ../com-diag-scattergun/Scattergun/hwrng.dat 8 1000 -v
+Read in file ../com-diag-scattergun/Scattergun/hwrng.dat, 1250304 bytes long.
+Dataset: 1250304 8-bit symbols.
+Output symbol values: min = 0, max = 255
+
+
+Compression Test:      
+	Scores                   Ranks
+	133426                   240 
+	133569                   696 
+	133426                   222 
+	133454                   336 
+	133407                   189 
+	133400                   152 
+	133423                   254 
+	133529                   648 
+	133521                   504 
+	133401                   154 
+	                         --- 
+	                           0
+Passed Compression Test
+
+Over/under Test:       
+	Scores                   Ranks
+	18  62135                622   215 
+	16  62516                386   921 
+	15  62315                154   582 
+	16  62201                396   378 
+	18  62887                638  1000*
+	15  62566                141   601 
+	15  62005                151    79 
+	18  62328                625   657 
+	16  62571                382   969*
+	16  62418                353   765 
+	                         ---   --- 
+	                           0     2
+Passed Over/under Test
+
+Excursion Test:        
+	Scores                   Ranks
+	19233.5                  366 
+	15908.8                  148 
+	30334.8                  863 
+	24449.2                  702 
+	21970.9                  534 
+	26216.6                  735 
+	16346.9                  175 
+	39097.7                  982*
+	25650.5                  704 
+	28717.3                  824 
+	                         --- 
+	                           1
+Passed Excursion Test
+
+Directional runs Test: 
+	Scores                   Ranks
+	82893     7  62377        23*  493   691 
+	83194     8  62338       522   510   491 
+	83183     9  62271       504   929    31*
+	83109     8  62330       288   501   457 
+	83424     8  62381       944   501   721 
+	82962     7  62405        80   501   817 
+	83122     7  62439       323   501   904 
+	83304     8  62523       762   517   987*
+	83142     7  62555       353   501   994*
+	83328     7  62297       785   501   196 
+	                         ---   ---   --- 
+	                           1     0     3
+Passed Directional runs Test
+
+Covariance Test:       
+	Scores                   Ranks
+	3.37615                  606 
+	-16.1628                 136 
+	-21.8448                  81 
+	-7.89972                 291 
+	-46.7434                   5*
+	-7.63404                 340 
+	32.6513                  982*
+	-16.4716                 138 
+	-13.7381                 171 
+	-7.47907                 354 
+	                         --- 
+	                           2
+Passed Covariance Test
+
+Collision Test:        
+	Scores                   Ranks
+	1  19.7124  65           501   443   501 
+	1  19.7234  70           501   505   841 
+	1  19.7924  64           501   697   464 
+	1  19.6578  65           501   313   501 
+	1  19.5881  70           501   152   843 
+	1  19.5936  70           501   166   833 
+	1  19.6338  58           501   224    12*
+	1  19.666  69            501   318   784 
+	1  19.8642  66           501   835   545 
+	1  19.6409  66           501   252   545 
+	                         ---   ---   --- 
+	                           0     0     1
+Passed Collision Test
+
+** Passed iid shuffle tests
+()
+
+Chi square independence
+	score = 64695.9, degrees of freedom = 65280, cut-off = 66402.2
+** Passed chi-square independence test
+
+Chi square stability
+	score = 2280.17, degrees of freedom = 2313 cut-off = 2528.88
+** Passed chi-square stability test
+
+IID = True
+min-entropy = 7.90086
+
+Compression sanity check...
+	dataset 1 compressed length = 1067408, cutoff = 987845...Pass
+
+	dataset 2 compressed length = 1068552, cutoff = 987845...Pass
+
+	dataset 3 compressed length = 1067408, cutoff = 987845...Pass
+
+	dataset 4 compressed length = 1067632, cutoff = 987845...Pass
+
+	dataset 5 compressed length = 1067256, cutoff = 987845...Pass
+
+	dataset 6 compressed length = 1067200, cutoff = 987845...Pass
+
+	dataset 7 compressed length = 1067384, cutoff = 987845...Pass
+
+	dataset 8 compressed length = 1068232, cutoff = 987845...Pass
+
+	dataset 9 compressed length = 1068168, cutoff = 987845...Pass
+
+	dataset 10 compressed length = 1067208, cutoff = 987845...Pass
+
+
+Collision sanity check...
+	Dividing dataset into 4-tuples
+	Check rule 1 - do three or more 4-tuples have the same value?...Pass
+	Check rule 2 - probability of number of collisions below cutoff
+		number of collisions = 14, cutoff = 14.9724...Pass
+
+sanity check = PASS
+time: (37834.2 sec)
+pi@raspberrypi ~/scattergun/SP800-90B_EntropyAssessment $ 
 
