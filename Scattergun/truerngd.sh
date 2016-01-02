@@ -11,7 +11,7 @@ ZERO=$(basename ${0})
 LABEL=${ZERO%\.sh}
 SOURCE=${1:-"/dev/cu.usbmodem1431"}
 SINK=${2:-"/dev/random"}
-FILE=${3:-"/var/run/${LABEL}.pid}
+FILE=${3:-"/var/run/${LABEL}.pid"}
 
 dd if=${SOURCE} of=${SINK} &
 
