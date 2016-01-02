@@ -1392,3 +1392,164 @@ sanity check = PASS
 time: (37834.2 sec)
 pi@raspberrypi ~/scattergun/SP800-90B_EntropyAssessment $ 
 
+John-Sloans-Mac-mini:Scattergun jsloan$ sudo ./truerngd.sh
+John-Sloans-Mac-mini:Scattergun jsloan$ cat /var/run/truerngd.pid
+26856
+John-Sloans-Mac-mini:Scattergun jsloan$ ps -ef | grep 26856
+    0 26856     1   0  1:09PM ttys004    0:00.61 dd if=/dev/cu.usbmodem1431 of=/dev/random
+  501 26862 23482   0  1:09PM ttys004    0:00.00 grep 26856
+John-Sloans-Mac-mini:Scattergun jsloan$ dd if=/dev/random of=random.dat bs=512 count=2442
+2442+0 records in
+2442+0 records out
+1250304 bytes transferred in 0.094404 secs (13244187 bytes/sec)
+
+John-Sloans-Mac-mini:SP800-90B_EntropyAssessment jsloan$ python iid_main.py ../com-diag-scattergun/Scattergun/random.dat 8 1000 -v
+
+John-Sloans-Mac-mini:SP800-90B_EntropyAssessment jsloan$ python iid_main.py ../com-diag-scattergun/Scattergun/random.dat 8 1000 -v
+Read in file ../com-diag-scattergun/Scattergun/random.dat, 1250304 bytes long.
+Dataset: 1250304 8-bit symbols.
+Output symbol values: min = 0, max = 255
+
+
+Compression Test:      
+	Scores                   Ranks
+	133480                   445 
+	133378                    66 
+	133438                   261 
+	133500                   462 
+	133404                    90 
+	133598                   821 
+	133473                   383 
+	133404                   140 
+	133646                   942 
+	133444                   221 
+	                         --- 
+	                           0
+Passed Compression Test
+
+Over/under Test:       
+	Scores                   Ranks
+	17  62243                501   439 
+	17  62500                501   916 
+	18  62321                610   635 
+	20  62333                896   661 
+	16  62544                402   936 
+	16  62282                377   527 
+	16  62403                385   816 
+	16  62056                381   115 
+	18  62326                622   649 
+	16  62409                365   817 
+	                         ---   --- 
+	                           0     0
+Passed Over/under Test
+
+Excursion Test:        
+	Scores                   Ranks
+	25069.9                  665 
+	28964.1                  844 
+	14066.2                   78 
+	18413                    287 
+	20381                    434 
+	43247.3                  992*
+	18393                    303 
+	31130.9                  897 
+	23515.6                  630 
+	13353                     47*
+	                         --- 
+	                           2
+Passed Excursion Test
+
+Directional runs Test: 
+	Scores                   Ranks
+	83206     8  62376       532   501   677 
+	83492     7  62366       981*  501   639 
+	83022     8  62300       141   515   250 
+	83096     8  62480       280   501   969*
+	83323     7  62290       801   501   161 
+	83377     7  62306       884   499   267 
+	83204     7  62301       496   501   236 
+	83370     7  62331       883   501   471 
+	83038     7  62299       158   501   228 
+	83218     7  62396       598   501   783 
+	                         ---   ---   --- 
+	                           1     0     1
+Passed Directional runs Test
+
+Covariance Test:       
+	Scores                   Ranks
+	2.20953                  571 
+	-22.0173                  85 
+	-10.3058                 240 
+	-2.84599                 445 
+	-19.2322                 119 
+	2.76051                  566 
+	-4.68535                 386 
+	1.53956                  546 
+	-0.820409                460 
+	-13.6939                 169 
+	                         --- 
+	                           0
+Passed Covariance Test
+
+Collision Test:        
+	Scores                   Ranks
+	1  19.8352  61           501   801   152 
+	1  19.6692  62           501   347   241 
+	1  19.7358  64           501   524   434 
+	1  19.6627  64           501   329   441 
+	1  19.6009  78           501   160   996*
+	1  19.7826  68           501   654   710 
+	1  19.7753  63           501   643   337 
+	1  19.815  69            501   762   789 
+	1  19.6956  62           501   379   233 
+	1  19.5679  62           501   126   240 
+	                         ---   ---   --- 
+	                           0     0     1
+Passed Collision Test
+
+** Passed iid shuffle tests
+()
+
+Chi square independence
+	score = 64536.5, degrees of freedom = 65280, cut-off = 66402.2
+** Passed chi-square independence test
+
+Chi square stability
+	score = 2275.59, degrees of freedom = 2313 cut-off = 2528.88
+** Passed chi-square stability test
+
+IID = True
+min-entropy = 7.89499
+
+Compression sanity check...
+	dataset 1 compressed length = 1067840, cutoff = 987111...Pass
+
+	dataset 2 compressed length = 1067024, cutoff = 987111...Pass
+
+	dataset 3 compressed length = 1067504, cutoff = 987111...Pass
+
+	dataset 4 compressed length = 1068000, cutoff = 987111...Pass
+
+	dataset 5 compressed length = 1067232, cutoff = 987111...Pass
+
+	dataset 6 compressed length = 1068784, cutoff = 987111...Pass
+
+	dataset 7 compressed length = 1067784, cutoff = 987111...Pass
+
+	dataset 8 compressed length = 1067232, cutoff = 987111...Pass
+
+	dataset 9 compressed length = 1069168, cutoff = 987111...Pass
+
+	dataset 10 compressed length = 1067552, cutoff = 987111...Pass
+
+
+Collision sanity check...
+	Dividing dataset into 4-tuples
+	Check rule 1 - do three or more 4-tuples have the same value?...Pass
+	Check rule 2 - probability of number of collisions below cutoff
+		number of collisions = 14, cutoff = 15.2182...Pass
+
+sanity check = PASS
+time: (2975.09 sec)
+John-Sloans-Mac-mini:SP800-90B_EntropyAssessment jsloan$ 
+
