@@ -1,7 +1,7 @@
 com-diag-scattergun
 -------------------
 
-Copyright 2015 Digital Aggregates Corporation, Colorado, USA.
+Copyright 2015-2016 Digital Aggregates Corporation, Colorado, USA.
 Licensed under the terms of the GNU GPL v2.
 
 This project represents my puttering around with entropy sources and
