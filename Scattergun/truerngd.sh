@@ -46,8 +46,9 @@ fi
 
 (
 	sh -c 'echo ${PPID}' > ${FILE}
-	trap "rm -f ${FILE}" HUP INT QUIT TERM EXIT
+	trap "rm -f ${FILE}; echo TRAPPED ${FILE}! 1>&2" HUP INT QUIT TERM
 	dd if=${SOURCE} of=${SINK}
+	rm -f ${FILE}
 
 ) < /dev/null > /dev/null &
 
