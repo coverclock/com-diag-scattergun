@@ -6,8 +6,10 @@
 # mailto:coverclock@diag.com
 
 ZERO=$(basename $0)
-SOURCE=${1:-"/dev/random"}
-STAMP=$(date -u +%Y%m%dT%H%M%S)
+STAMP=${1-"$(date -u +%Y%m%dT%H%M%S)"}
+SOURCE=${2:-"/dev/random"}
+
+LABEL=${ZERO%\.sh}
 
 ##################################################
 
@@ -34,15 +36,17 @@ if [[ ! -f /proc/sys/kernel/random/poolsize ]]; then
 elif [[ ! -f /proc/sys/kernel/random/entropy_avail ]]; then
 	:
 else
-	POOLSIZE="$(cat /proc/sys/kernel/random/poolsize)"
-	POOLBYTES=$(( ( ${POOLBYTES} + 7 ) / 8))
-	ENTROPYAVAIL="$(cat /proc/sys/kernel/random/entropy_avail)"
+	POOLSIZE=$(cat /proc/sys/kernel/random/poolsize)
+	echo poolsize=${POOLSIZE}bits
+	POOLBYTES=$(( ( ${POOLSIZE} + 7 ) / 8))
+	echo poolsize=${POOLBYTES}bytes
+	ENTROPYAVAIL=$(cat /proc/sys/kernel/random/entropy_avail)
+	echo entropy_avail=${ENTROPYAVAIL}bits
 	ENTROPYBYTES=$(( ( ${ENTROPYAVAIL} + 7 ) / 8 ))
-	echo poolsize=${POOLSIZE}bits=${POOLBYTES}bytes
-	echo entropy_avail=${ENTROPYAVAIL}bits=$(ENTROPYBYTES)bytes
-	dd if=/dev/random of=/dev/null bs=${ENTROPYBYTES} count=1 iflag=fullblock
-	time dd if=/dev/random of=/dev/null bs=${POOLBYTES} count=1 iflag=fullblock
-	time dd if=/dev/urandom of=/dev/null bs=${POOLBYTES} count=1 iflag=fullblock
+	echo entropy_avail=${ENTROPYBYTES}bytes
+	dd if=/dev/random of=/dev/null bs=1 count=${ENTROPYBYTES}
+	time dd if=/dev/random of=/dev/null bs=1 count=${POOLBYTES}
+	time dd if=/dev/urandom of=/dev/null bs=1 count=${POOLBYTES}
 fi
 
 ##################################################
@@ -51,7 +55,7 @@ fi
 # ${EDITOR} /etc/default/rng-tools
 # sudo /etc/init.d/rng-tools start
 
-ps -ef | grep rngd
+ps -ef | grep rngd | grep -v grep
 
 if [[ -r /etc/default/rng-tools ]]; then
 	. /etc/default/rng-tools
@@ -60,7 +64,7 @@ if [[ -r /etc/default/rng-tools ]]; then
 fi
 
 if [[ -x /usr/bin/rngtest ]]; then
-	DATA="${ZERO}-rngtest-${STAMP}.dat"
+	DATA="${LABEL}-rngtest-${STAMP}.dat"
 	BLOCKSIZE=$(( 20000 / 8 ))
 	time dd if=${SOURCE} of=${DATA} bs=${BLOCKSIZE} count=1000 iflag=fullblock
 	time /usr/bin/rngtest -c 1000 < ${DATA}
@@ -71,7 +75,7 @@ fi
 # sudo apt-get install ent
 
 if [[ -x /usr/bin/ent ]]; then
-	DATA="${ZERO}-ent-${STAMP}.dat"
+	DATA="${LABEL}-ent-${STAMP}.dat"
 	time dd if=${SOURCE} of=${DATA} bs=1024 count=128 iflag=fullblock
 	time /usr/bin/ent ${DATA}
 fi
@@ -85,8 +89,8 @@ if [[ ! -x /usr/bin/rawtoppm ]]; then
 elif [[ ! -x /usr/bin/pnmtopng ]]; then
 	:
 else
-	DATA="${ZERO}-rawtoppm-${STAMP}.dat"
-	IMAGE="${ZERO}-rawtoppm-${STAMP}.png"
+	DATA="${LABEL}-rawtoppm-${STAMP}.dat"
+	IMAGE="${LABEL}-rawtoppm-${STAMP}.png"
 	time dd if=${SOURCE} of=${DATA} bs=3 count=65536 iflag=fullblock
 	/usr/bin/rawtoppm -rgb 256 256 < ${DATA} | /usr/bin/pnmtopng > ${IMAGE}
 fi
@@ -99,7 +103,7 @@ fi
 NISTCODE=$(which iid_main.py)
 if [[ ! -z "${NISTCODE}" ]]; then
 	NISTPATH=$(dirname ${NISTCODE})
-	DATA="$(pwd)/${ZERO}-sp800-${STAMP}.dat"
+	DATA="$(pwd)/${LABEL}-sp800-${STAMP}.dat"
 	time dd if=/dev/random of=${DATA} bs=1000 count=1000 iflag=fullblock
 	( cd ${NISTPATH}; time python iid_main.py ${DATA} 8 1000 -v )
 	( cd ${NISTPATH}; time python noniid_main.py ${DATA} 8 -v )

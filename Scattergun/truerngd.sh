@@ -12,14 +12,9 @@
 ZERO=$(basename ${0})
 LABEL=${ZERO%\.sh}
 
-if [ $# -lt 1 ]; then
-	echo "usage: ${ZERO} /dev/cu.usbmodem1234 [ /dev/random [ /var/run/${LABEL}.pid ] ]" 1>&2
-	exit 1
-fi
+. ${LABEL}.conf
 
-SOURCE=${1} # /dev/cu.usbmodem1431
-SINK=${2:-"/dev/random"}
-FILE=${3:-"/var/run/${LABEL}.pid"}
+FILE=${RUNDIR}/${LABEL}.pid
 
 if [ ! -r ${SOURCE} ]; then
 	echo "${ZERO}: ${SOURCE}: no such file or directory" 1>&2
@@ -40,16 +35,11 @@ elif [ -z "${PID}" ]; then
 elif ! kill -0 ${PID} 2> /dev/null; then
 	:
 else
-	echo "${ZERO}: ${PID}: should be no such process" 1>&2
+	echo "${ZERO}: ${PID}: already running" 1>&2
 	exit 2
 fi
 
-(
-	sh -c 'echo ${PPID}' > ${FILE}
-	trap "rm -f ${FILE}; echo TRAPPED ${FILE}! 1>&2" HUP INT QUIT TERM
-	dd if=${SOURCE} of=${SINK}
-	rm -f ${FILE}
-
-) < /dev/null > /dev/null &
+dd if=${SOURCE} of=${SINK} &
+echo $! > ${FILE}
 
 exit 0
