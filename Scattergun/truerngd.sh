@@ -11,8 +11,14 @@
 
 ZERO=$(basename ${0})
 LABEL=${ZERO%\.sh}
+ROOT=$(dirname ${0})
+SOURCE=${1:-"/dev/TrueRNG"}
+SINK=${2:-"/dev/random"}
+RUNDIR=${3:-"/var/run"}
 
-. ${LABEL}.conf
+if [ -r ${ROOT}/${LABEL}.conf ]; then
+	. ${ROOT}/${LABEL}.conf
+fi
 
 FILE=${RUNDIR}/${LABEL}.pid
 
@@ -39,7 +45,12 @@ else
 	exit 2
 fi
 
-dd if=${SOURCE} of=${SINK} &
-echo $! > ${FILE}
+(
+	sh -c 'echo ${PPID}' > ${FILE}
+	dd if=${SOURCE} of=${SINK} &
+	PID=$!
+	trap "kill ${PID} 2> /dev/null; rm -f ${FILE}" HUP INT TERM EXIT
+	wait ${PID}
+) &
 
 exit 0
