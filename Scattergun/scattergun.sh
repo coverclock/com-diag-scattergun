@@ -5,13 +5,18 @@
 # https://github.com/coverclock/com-diag-scattergun
 # mailto:coverclock@diag.com
 
+RC=0
 ZERO=$(basename $0)
-STAMP=${1-"$(date -u +%Y%m%dT%H%M%S)"}
+ISO8601=$(date -u +%Y-%m-%dT%H:%M:%S)
+STAMP=${1-"${ISO8601}"}
 SOURCE=${2:-"/dev/random"}
-
 LABEL=${ZERO%\.sh}
 
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin ${STAMP} ${SOURCE}"
+
 ##################################################
+
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) platform"
 
 uname -a
 [[ -x /usr/bin/lsb_release ]] && /usr/bin/lsb_release -a
@@ -29,7 +34,17 @@ lsmod | grep bcm2708_rng
 
 lsmod | grep intel-rng
 
+ps -ef | grep rngd | grep -v grep
+
+if [[ -r /etc/default/rng-tools ]]; then
+	. /etc/default/rng-tools
+	echo HRNGDEVICE=${HRNGDEVICE}
+	ls -l ${HRNGDEVICE}
+fi
+
 ##################################################
+
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) pool"
 
 if [[ ! -f /proc/sys/kernel/random/poolsize ]]; then
 	:
@@ -51,36 +66,7 @@ fi
 
 ##################################################
 
-# sudo apt-get install rng-tools
-# ${EDITOR} /etc/default/rng-tools
-# sudo /etc/init.d/rng-tools start
-
-ps -ef | grep rngd | grep -v grep
-
-if [[ -r /etc/default/rng-tools ]]; then
-	. /etc/default/rng-tools
-	echo HRNGDEVICE=${HRNGDEVICE}
-	ls -l ${HRNGDEVICE}
-fi
-
-if [[ -x /usr/bin/rngtest ]]; then
-	DATA="${LABEL}-rngtest-${STAMP}.dat"
-	BLOCKSIZE=$(( 20000 / 8 ))
-	time dd if=${SOURCE} of=${DATA} bs=${BLOCKSIZE} count=1000 iflag=fullblock
-	time /usr/bin/rngtest -c 1000 < ${DATA}
-fi
-
-##################################################
-
-# sudo apt-get install ent
-
-if [[ -x /usr/bin/ent ]]; then
-	DATA="${LABEL}-ent-${STAMP}.dat"
-	time dd if=${SOURCE} of=${DATA} bs=1024 count=128 iflag=fullblock
-	time /usr/bin/ent ${DATA}
-fi
-
-##################################################
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) png"
 
 # sudo apt-get install netpbm
 
@@ -97,6 +83,35 @@ fi
 
 ##################################################
 
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) rngtest"
+
+# sudo apt-get install rng-tools
+# ${EDITOR} /etc/default/rng-tools
+# sudo /etc/init.d/rng-tools start
+
+if [[ -x /usr/bin/rngtest ]]; then
+	DATA="${LABEL}-rngtest-${STAMP}.dat"
+	BLOCKSIZE=$(( 20000 / 8 ))
+	time dd if=${SOURCE} of=${DATA} bs=${BLOCKSIZE} count=1000 iflag=fullblock
+	time /usr/bin/rngtest -c 1000 < ${DATA}
+fi
+
+##################################################
+
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) ent"
+
+# sudo apt-get install ent
+
+if [[ -x /usr/bin/ent ]]; then
+	DATA="${LABEL}-ent-${STAMP}.dat"
+	time dd if=${SOURCE} of=${DATA} bs=1024 count=4096 iflag=fullblock
+	time /usr/bin/ent ${DATA}
+fi
+
+##################################################
+
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) SP800-90B"
+
 # git clone http://github.com/usnistgov/SP800-90B_EntropyAssessment
 # export PATH=$PATH:$(pwd)/SP800-90B_EntropyAssessment
 
@@ -104,9 +119,25 @@ NISTCODE=$(which iid_main.py)
 if [[ ! -z "${NISTCODE}" ]]; then
 	NISTPATH=$(dirname ${NISTCODE})
 	DATA="$(pwd)/${LABEL}-sp800-${STAMP}.dat"
-	time dd if=/dev/random of=${DATA} bs=1000 count=1000 iflag=fullblock
+	time dd if=/dev/random of=${DATA} bs=1024 count=4096 iflag=fullblock
 	( cd ${NISTPATH}; time python iid_main.py ${DATA} 8 1000 -v )
 	( cd ${NISTPATH}; time python noniid_main.py ${DATA} 8 -v )
 fi
 
 ##################################################
+
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) dieharder"
+
+# sudo apt-get install dieharder
+
+if [[ -x /usr/bin/dieharder ]]; then
+	DATA="${LABEL}-dieharder-${STAMP}.dat"
+	time dd if=/dev/random of=${DATA} bs=1024 count=4096 iflag=fullblock
+	time dieharder -a -g 201 -f ${DATA}
+fi
+
+##################################################
+
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) end ${RC}"
+
+exit ${RC}
