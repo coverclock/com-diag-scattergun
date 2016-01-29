@@ -119,7 +119,7 @@ NISTCODE=$(which iid_main.py)
 if [[ ! -z "${NISTCODE}" ]]; then
 	NISTPATH=$(dirname ${NISTCODE})
 	DATA="$(pwd)/${LABEL}-sp800-${STAMP}.dat"
-	time dd if=/dev/random of=${DATA} bs=1024 count=4096 iflag=fullblock
+	time dd if=${SOURCE} of=${DATA} bs=1024 count=4096 iflag=fullblock
 	( cd ${NISTPATH}; time python iid_main.py ${DATA} 8 1000 -v )
 	( cd ${NISTPATH}; time python noniid_main.py ${DATA} 8 -v )
 fi
@@ -131,9 +131,7 @@ echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) dieharder"
 # sudo apt-get install dieharder
 
 if [[ -x /usr/bin/dieharder ]]; then
-	DATA="${LABEL}-dieharder-${STAMP}.dat"
-	time dd if=/dev/random of=${DATA} bs=1024 count=4096 iflag=fullblock
-	time dieharder -a -g 201 -f ${DATA}
+	cat ${SOURCE} | dieharder -a -g 200
 fi
 
 ##################################################

@@ -5,8 +5,11 @@
 # Licensed under the terms of the GNU GPL v2.
 # WORK IN PROGRESS
 # Used with Mac OS X 10.11.2 "El Capitan" and the TrueRNG v2.
+# When run as root and in the background, reads entropy from
+# the modem port exposed by the TrueRNG and writes it to the
+# system entropy pool.
 # Unlike the Linux rngd from rng-tools, this simple script does
-# not to any testing of the entropy stream, so cannot meet the
+# not do any testing of the entropy stream, so cannot meet the
 # FIPS 140-2 requirements.
 
 ZERO=$(basename ${0})
