@@ -32,6 +32,9 @@
 #include <stdint.h>
 #include "Quantis.h"
 
+static const QuantisDeviceType TYPES[] = { QUANTIS_DEVICE_PCI, QUANTIS_DEVICE_USB };
+static const char * NAMES[] = { "PCI", "USB" };
+
 static const char * program = "quantistool";
 static int debug = 0;
 
@@ -48,8 +51,6 @@ static void usage(void)
 
 static int query(void)
 {
-    static const QuantisDeviceType TYPES[] = { QUANTIS_DEVICE_PCI, QUANTIS_DEVICE_USB };
-    static const char * NAMES[] = { "PCI", "USB" };
     int ii;
 
     for (ii = 0; ii < (sizeof(TYPES) / sizeof(TYPES[0])); ++ii) {
@@ -177,7 +178,15 @@ int main(int argc, char * argv[])
         }
 
         if (verbose) {
-            fprintf(stderr, "%s: bytes        %zu\n", program, size);
+            int ii;
+
+            for (ii = 0; ii < (sizeof(TYPES) / sizeof(TYPES[0])); ++ii) {
+                if (TYPES[ii] == type) {
+                    fprintf(stderr, "%s: type         %s\n", program, NAMES[ii]);
+                }
+            }
+            fprintf(stderr, "%s: unit         %d\n", program, unit);
+            fprintf(stderr, "%s: size         %zu\n", program, size);
         }
 
         buffer = malloc(size);
@@ -188,7 +197,7 @@ int main(int argc, char * argv[])
 
         rc = QuantisOpen(type, unit, &handle);
         if (rc != QUANTIS_SUCCESS) {
-            perror("QuantisOpen");
+            fprintf(stderr, "%s: QuantisOpen \"%s\"\n", program, QuantisStrError(rc));
             break;
         }
 
@@ -197,7 +206,7 @@ int main(int argc, char * argv[])
         for (;;) {
             rc = QuantisReadHandled(handle, buffer, size);
             if (rc != QUANTIS_SUCCESS) {
-                perror("QuantisReadHandled");
+                fprintf(stderr, "%s: QuantisReadHandled \"%s\"\n", program, QuantisStrError(rc));
                 break;
             }
             written = fwrite(buffer, size, 1, fp);
