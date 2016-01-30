@@ -6,18 +6,20 @@
 
 ROOT=$(HOME)/src/idq-quantis
 
-QUANTISINCPATH=$(ROOT)/Lib-Apps/Quantis
-QUANTISLIBPATH=$(ROOT)/Lib-Apps/build/Quantis
+QUANTISINCPATH=$(ROOT)/Libs-Apps/Quantis
+QUANTISLIBPATH=$(ROOT)/Libs-Apps/build/Quantis
 
 CFLAGS += -I$(QUANTISINCPATH)
-LDFLAGS += -static
 LDFLAGS += -L$(QUANTISLIBPATH)
 LDFLAGS += -lQuantis
 LDFLAGS += -lusb-1.0
 LDFLAGS += -lpthread
 
-quantistool: quantistool.c
+src/quantistool: src/quantistool.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 clean:
-	rm -f quantistool
+	rm -f src/quantistool
+
+LD_LIBRARY_PATH:
+	echo export LD_LIBRARY_PATH=$(QUANTISLIBPATH):$(LD_LIBRARY_PATH)

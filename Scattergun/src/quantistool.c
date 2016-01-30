@@ -12,7 +12,7 @@
  *
  * USAGE
  *
- * idqtool [ -? ] [ -d ] [ -i ] [ -u UNIT | -p UNIT ] [ -r BYTES ]
+ * quantistool [ -? ] [ -d ] [ -i ] [ -u UNIT | -p UNIT ] [ -r BYTES ]
  *
  * EXAMPLES
  *
@@ -32,7 +32,7 @@
 #include <stdint.h>
 #include "Quantis.h"
 
-static const char * program = "idqtool";
+static const char * program = "quantistool";
 static int debug = 0;
 
 static void usage(void)
@@ -61,6 +61,7 @@ int main(int argc, char * argv[])
     QuantisDeviceHandle * handle = (QuantisDeviceHandle *)0;
     unsigned char * buffer = (unsigned char *)0;
     int rc = 0;
+    FILE * fp = (FILE *)0;
     
     int opt;
     extern char * optarg;
@@ -125,6 +126,42 @@ int main(int argc, char * argv[])
             break;
         }
 
+        if (verbose) {  
+            float software = 0.0;
+            int detected = 0;
+            int ii;
+
+            software = QuantisGetDriverVersion(type);
+            detected = QuantisCount(type);
+
+            fprintf(stderr, "%s: software     %f\n", program, software);
+            fprintf(stderr, "%s: detected     %d\n", program, detected);
+
+            for (ii = 0; ii < detected; ++ii) {
+                int hardware = 0;
+                const char * serial = (const char *)0;
+                const char * manufacturer = (const char *)0;
+                int power = 0;
+                int mask = 0;
+                int status = 0;
+
+                hardware = QuantisGetBoardVersion(type, ii);
+                serial = QuantisGetSerialNumber(type, ii);
+                manufacturer = QuantisGetManufacturer(type, ii);
+                power = QuantisGetModulesPower(type, ii);
+                mask = QuantisGetModulesMask(type, ii);
+                status = QuantisGetModulesStatus(type, ii);
+
+                fprintf(stderr, "%s: unit         %d\n", program, ii);
+                fprintf(stderr, "%s: hardware     %d\n", program, hardware);
+                fprintf(stderr, "%s: serial       \"%s\"\n", program, serial);
+                fprintf(stderr, "%s: manufacturer \"%s\"\n", program, manufacturer);
+                fprintf(stderr, "%s: power        %d\n", program, power);
+                fprintf(stderr, "%s: mask         0x%8.8x\n", program, mask);
+                fprintf(stderr, "%s: status       %d\n", program, status);
+            }
+        }
+
         buffer = malloc(reading);
         if (buffer == (unsigned char *)0) {
             perror("malloc");
@@ -137,14 +174,19 @@ int main(int argc, char * argv[])
             break;
         }
 
+        fp = stdout;
+
         for (;;) {
             rc = QuantisReadHandled(handle, buffer, reading);
             if (rc != QUANTIS_SUCCESS) {
                 perror("QuantisReadHandled");
                 break;
             }
-            written = fwrite(buffer, reading, 1, stdout);
-            if (written < reading) {
+            if (debug) {
+                fprintf(stderr, "%s: read=%zu\n", program, reading);
+            }
+            written = fwrite(buffer, reading, 1, fp);
+            if (written < 1) {
                 perror("fwrite");
                 break;
             }
