@@ -10,9 +10,10 @@ QUANTISINCPATH=$(ROOT)/Lib-Apps/Quantis
 QUANTISLIBPATH=$(ROOT)/Lib-Apps/build/Quantis
 
 CFLAGS += -I$(QUANTISINCPATH)
-LDFLAGS += -lusb-1.0
+LDFLAGS += -static
 LDFLAGS += -L$(QUANTISLIBPATH)
 LDFLAGS += -lQuantis
+LDFLAGS += -lusb-1.0
 LDFLAGS += -lpthread
 
 quantistool: quantistool.c
