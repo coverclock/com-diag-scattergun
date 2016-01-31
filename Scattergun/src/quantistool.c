@@ -4,7 +4,7 @@
  * ID Quantique Quantis tool<BR>
  * Copyright 2016 Digital Aggregates Corporation, Colorado, USA.<BR>
  * "Digital Aggregates Corporation" is a registered trademark.<BR>
- * Licensed under the terms of the GNU GPL v2.<BR>
+ * Licensed under the terms of the Scattergun license.<BR>
  * author:Chip Overclock<BR>
  * mailto:coverclock@diag.com<BR>
  * http://www.diag.com/nagivation/downloads/Scattergun.html<BR>
@@ -22,6 +22,12 @@
  * and writes it to standard output. Optionally does some other useful stuff
  * with the Quantis. This is part of the Scattergun project. This must be
  * linked with the Quantis library.
+ *
+ * The program incorporates portions of the source code of the Diminuto
+ * library, which is also a product of the Digital Aggregates Corporation.
+ * The copied portions of Diminuto are licensed under the Scattergun license,
+ * or, at your options, the original Diminuto license (which is less
+ * restrictive).
  */
 
 #include <stdlib.h>
@@ -97,7 +103,6 @@ static int query(void)
 int main(int argc, char * argv[])
 {
     int xc = 1;
-    int done = 0;
     int error = 0;
     int debug = 0;
     int verbose = 0;
@@ -159,10 +164,6 @@ int main(int argc, char * argv[])
         }
 
         if (error) {
-            break;
-        }
-
-        if (done) {
             break;
         }
 
