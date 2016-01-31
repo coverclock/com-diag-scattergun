@@ -15,8 +15,8 @@ LDFLAGS += -lQuantis
 LDFLAGS += -lusb-1.0
 LDFLAGS += -lpthread
 
-src/quantistool: src/quantistool.c
-	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+src/quantistool: src/quantistool.c src/diminuto_dump.c
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 clean:
 	rm -f src/quantistool

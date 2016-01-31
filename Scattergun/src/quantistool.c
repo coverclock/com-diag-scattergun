@@ -32,6 +32,8 @@
 #include <stdint.h>
 #include "Quantis.h"
 
+extern void diminuto_dump_generic(FILE * fp, const void * data, size_t length, int upper, char dot, int virtualize, uintptr_t address, size_t indent, size_t bpw, size_t wpl, const char * addrsep, const char * wordsep, const char * charsep, const char byteskip, const char charskip, const char * lineend);
+
 static const QuantisDeviceType TYPES[] = { QUANTIS_DEVICE_PCI, QUANTIS_DEVICE_USB };
 static const char * NAMES[] = { "PCI", "USB" };
 
@@ -201,6 +203,10 @@ int main(int argc, char * argv[])
             break;
         }
 
+        if (verbose) {
+            fprintf(stderr, "%s: handle       %p\n", program, handle);
+        }
+
         fp = stdout;
 
         for (;;) {
@@ -208,6 +214,9 @@ int main(int argc, char * argv[])
             if (rc != QUANTIS_SUCCESS) {
                 fprintf(stderr, "%s: QuantisReadHandled \"%s\"\n", program, QuantisStrError(rc));
                 break;
+            }
+            if (debug) {
+                diminuto_dump_generic(stderr, buffer, size, 0, '.', 0, 0, 0, sizeof(int32_t), 16 / sizeof(int32_t), ": ", " ", "|", ' ', ' ', "|\n");
             }
             written = fwrite(buffer, size, 1, fp);
             if (written < 1) {
