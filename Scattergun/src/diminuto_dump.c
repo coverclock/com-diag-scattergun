@@ -8,9 +8,7 @@
  * http://www.diag.com/navigation/downloads/Diminuto.html<BR>
  */
 
-#include <stdio.h>
-#include <stdint.h>
-#include <sys/types.h>
+#include "com/diag/diminuto/diminuto_dump.h"
 
 void diminuto_dump_generic(
     FILE * fp,

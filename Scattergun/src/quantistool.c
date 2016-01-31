@@ -31,8 +31,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include "Quantis.h"
-
-extern void diminuto_dump_generic(FILE * fp, const void * data, size_t length, int upper, char dot, int virtualize, uintptr_t address, size_t indent, size_t bpw, size_t wpl, const char * addrsep, const char * wordsep, const char * charsep, const char byteskip, const char charskip, const char * lineend);
+#include "com/diag/diminuto/diminuto_dump.h"
 
 static const QuantisDeviceType TYPES[] = { QUANTIS_DEVICE_PCI, QUANTIS_DEVICE_USB };
 static const char * NAMES[] = { "PCI", "USB" };
@@ -111,6 +110,7 @@ int main(int argc, char * argv[])
     unsigned char * buffer = (unsigned char *)0;
     int rc = 0;
     FILE * fp = (FILE *)0;
+    uintptr_t offset = 0;
 
     int opt;
     extern char * optarg;
@@ -198,8 +198,8 @@ int main(int argc, char * argv[])
         }
 
         rc = QuantisOpen(type, unit, &handle);
-        if (rc != QUANTIS_SUCCESS) {
-            fprintf(stderr, "%s: QuantisOpen \"%s\"\n", program, QuantisStrError(rc));
+        if (rc < QUANTIS_SUCCESS) {
+            fprintf(stderr, "%s: QuantisOpen %d \"%s\"\n", program, rc, QuantisStrError(rc));
             break;
         }
 
@@ -211,12 +211,14 @@ int main(int argc, char * argv[])
 
         for (;;) {
             rc = QuantisReadHandled(handle, buffer, size);
-            if (rc != QUANTIS_SUCCESS) {
-                fprintf(stderr, "%s: QuantisReadHandled \"%s\"\n", program, QuantisStrError(rc));
+            if (rc < QUANTIS_SUCCESS) {
+                fprintf(stderr, "%s: QuantisReadHandled %d \"%s\"\n", program, rc, QuantisStrError(rc));
                 break;
             }
             if (debug) {
-                diminuto_dump_generic(stderr, buffer, size, 0, '.', 0, 0, 0, sizeof(int32_t), 16 / sizeof(int32_t), ": ", " ", "|", ' ', ' ', "|\n");
+                diminuto_dump_virtual(stderr, buffer, size, offset);
+                fputc('\n', stderr);
+                offset += size;
             }
             written = fwrite(buffer, size, 1, fp);
             if (written < 1) {

@@ -9,6 +9,7 @@ ROOT=$(HOME)/src/idq-quantis
 QUANTISINCPATH=$(ROOT)/Libs-Apps/Quantis
 QUANTISLIBPATH=$(ROOT)/Libs-Apps/build/Quantis
 
+CFLAGS += -Iinc
 CFLAGS += -I$(QUANTISINCPATH)
 LDFLAGS += -L$(QUANTISLIBPATH)
 LDFLAGS += -lQuantis
