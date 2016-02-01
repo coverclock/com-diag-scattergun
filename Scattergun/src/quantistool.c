@@ -28,6 +28,14 @@
  * The copied portions of Diminuto are licensed under the Scattergun license,
  * or, at your options, the original Diminuto license (which is less
  * restrictive).
+ *
+ * The Quantis software library I have restricts reads to sizes of no more
+ * than 16 megabytes (16 * 1024 * 1024). But it restricts each individual
+ * read from the device to the block transfer size advertised by the device.
+ * The lsusb command suggests that the max packet size for my Quantis USB
+ * device is 512 bytes. There doesn't seem to be any mechanism to just "read
+ * what you got" so that we get all available random bits without possibly
+ * blocking to wait for more or leaving some behind.
  */
 
 #include <stdlib.h>
@@ -108,7 +116,7 @@ int main(int argc, char * argv[])
     int verbose = 0;
     QuantisDeviceType type = QUANTIS_DEVICE_USB;
     unsigned int unit = 0;
-    size_t size = QUANTIS_MAX_READ_SIZE;
+    size_t size = 512;
     size_t written = 0;
     char * end = (char *)0;
     QuantisDeviceHandle * handle = (QuantisDeviceHandle *)0;
@@ -178,6 +186,10 @@ int main(int argc, char * argv[])
 
         if (verbose) {  
             query();
+        }
+
+        if (size > QUANTIS_MAX_READ_SIZE) {
+            size = QUANTIS_MAX_READ_SIZE;
         }
 
         if (verbose) {
