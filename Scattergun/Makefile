@@ -60,7 +60,7 @@ QUANTIS=scattergun_silver_quantis
 
 quantis:	src/quantistool
 	mkdir -p $(QUANTIS)
-	quantistool | bash scattergun.sh $(QUANTIS) 2>&1 | tee $(QUANTIS)/scattergun.log
+	quantistool -v | bash scattergun.sh $(QUANTIS) 2>&1 | tee $(QUANTIS)/scattergun.log
 
 URANDOM=scattergun_silver_urandom
 

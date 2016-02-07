@@ -40,10 +40,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <stdint.h>
+#include <signal.h>
+#include <sys/types.h>
 #include "Quantis.h"
 #include "com/diag/diminuto/diminuto_dump.h"
 
@@ -52,6 +54,22 @@ static const char * NAMES[] = { "PCI", "USB" };
 
 static const char * program = "quantistool";
 static int debug = 0;
+static int verbose = 0;
+static int done = 0;
+static int report = 0;
+
+static void handler(int signum)
+{
+    if (signum == SIGPIPE) {
+        done = !0;
+    } else if (signum == SIGINT) {
+        done = !0;
+    } else if (signum == SIGHUP) {
+        report = !0;
+    } else {
+        /* Do nothing. */
+    }
+}
 
 static void usage(void)
 {
@@ -112,8 +130,6 @@ int main(int argc, char * argv[])
 {
     int xc = 1;
     int error = 0;
-    int debug = 0;
-    int verbose = 0;
     QuantisDeviceType type = QUANTIS_DEVICE_USB;
     unsigned int unit = 0;
     size_t size = 512;
@@ -122,9 +138,14 @@ int main(int argc, char * argv[])
     QuantisDeviceHandle * handle = (QuantisDeviceHandle *)0;
     unsigned char * buffer = (unsigned char *)0;
     int rc = 0;
-    FILE * fp = (FILE *)0;
+    FILE * fp = stdout;
     uintptr_t offset = 0;
-
+    struct sigaction sigpipe = { 0 };
+    struct sigaction sighup = { 0 };
+    struct sigaction sigint = { 0 };
+    size_t opens = 0;
+    size_t total = 0;
+    size_t reads = 0;
     int opt;
     extern char * optarg;
 
@@ -184,6 +205,10 @@ int main(int argc, char * argv[])
             break;
         }
 
+        if (verbose) {
+            fprintf(stderr, "%s: pid          %d\n", program, getpid());
+        }
+
         if (verbose) {  
             query();
         }
@@ -210,46 +235,83 @@ int main(int argc, char * argv[])
             break;
         }
 
-        rc = QuantisOpen(type, unit, &handle);
-        if (rc < QUANTIS_SUCCESS) {
-            fprintf(stderr, "%s: QuantisOpen %d \"%s\"\n", program, rc, QuantisStrError(rc));
+        sigpipe.sa_handler = handler;
+        sigpipe.sa_flags = 0;
+        rc = sigaction(SIGPIPE, &sigpipe, (struct sigaction *)0);
+        if (rc < 0) {
+            perror("sigaction");
             break;
         }
 
-        if (verbose) {
-            fprintf(stderr, "%s: handle       %p\n", program, handle);
+        sighup.sa_handler = handler;
+        sighup.sa_flags = SA_RESTART;
+        rc = sigaction(SIGHUP, &sighup, (struct sigaction *)0);
+        if (rc < 0) {
+            perror("sigaction");
+            break;
         }
 
-        fp = stdout;
+        sigint.sa_handler = handler;
+        sigint.sa_flags = 0;
+        rc = sigaction(SIGINT, &sighup, (struct sigaction *)0);
+        if (rc < 0) {
+            perror("sigaction");
+            break;
+        }
 
-        for (;;) {
-            rc = QuantisReadHandled(handle, buffer, size);
+        while (!done) {
+
+            rc = QuantisOpen(type, unit, &handle);
             if (rc < QUANTIS_SUCCESS) {
-                fprintf(stderr, "%s: QuantisReadHandled %d \"%s\"\n", program, rc, QuantisStrError(rc));
+                fprintf(stderr, "%s: QuantisOpen(%d,%d,%p)=%d=\"%s\"\n", program, type, unit, handle,  rc, QuantisStrError(rc));
                 break;
             }
-            if (debug) {
-                diminuto_dump_virtual(stderr, buffer, size, offset);
-                fputc('\n', stderr);
-                offset += size;
+            ++opens;
+
+            if (verbose) {
+                fprintf(stderr, "%s: handle       %p\n", program, handle);
             }
-            written = fwrite(buffer, size, 1, fp);
-            if (written < 1) {
-                perror("fwrite");
-                break;
+
+            while (!done) {
+                if (report) {
+                    fprintf(stderr, "%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
+                    report = 0;
+                }
+                rc = QuantisReadHandled(handle, buffer, size);
+                if (rc < QUANTIS_SUCCESS) {
+                    fprintf(stderr, "%s: QuantisReadHandled(%p,%p,%zu)=%d=\"%s\"\n", program, handle, buffer, size, rc, QuantisStrError(rc));
+                    break;
+                }
+                ++reads;
+                total += size;
+                if (debug) {
+                    diminuto_dump_virtual(stderr, buffer, size, offset);
+                    fputc('\n', stderr);
+                    offset += size;
+                }
+                written = fwrite(buffer, size, 1, fp);
+                if (written < 1) {
+                    perror("fwrite");
+                    break;
+                }
             }
+
+            if (handle != (QuantisDeviceHandle *)0) {
+                QuantisClose(handle);
+            }
+
         }
 
         xc = 0;
 
     } while (0);
 
-    if (handle != (QuantisDeviceHandle *)0) {
-        QuantisClose(handle);
-    }
-
     if (buffer != (unsigned char *)0) {
         free(buffer);
+    }
+
+    if (verbose) {
+        fprintf(stderr, "%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
     }
 
     return xc;
