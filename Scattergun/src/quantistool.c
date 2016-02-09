@@ -18,8 +18,8 @@
  *
  * ABSTRACT
  *
- * Continuously reads random data from a Quantis hardware entropy generator
- * and writes it to standard output. Optionally does some other useful stuff
+ * Continuously reads data from a Quantis hardware entropy generator and
+ * writes it to standard output. Optionally does some other useful stuff
  * with the Quantis. This is part of the Scattergun project. This must be
  * linked with the Quantis library.
  *
@@ -58,6 +58,12 @@ static int verbose = 0;
 static int done = 0;
 static int report = 0;
 
+/**
+ * Handle a signal. In the event of a SIGPIPE or a SIGINT, the program shuts
+ * down in an orderly fashion. In the event of a SIGHUP, it emits some
+ * statistics to standard error.
+ * @param signum is the number of the incoming signal.
+ */
 static void handler(int signum)
 {
     if (signum == SIGPIPE) {
@@ -71,6 +77,9 @@ static void handler(int signum)
     }
 }
 
+/**
+ * Emit a usage message to standard error.
+ */
 static void usage(void)
 {
     fprintf(stderr, "usage: %s [ -? ] [ -d ] [ -v ] [ -u UNIT | -p UNIT ] [ -r BYTES ]\n", program);
@@ -82,7 +91,12 @@ static void usage(void)
     fprintf(stderr, "       -?            Print menu\n");
 }
 
-static int query(void)
+/**
+ * Query the Quantis API for the kinds of ID Quantique hardware it finds on
+ * the PCI or the USB busses and its nature and emit the results to standard
+ * error.
+ */
+static void query(void)
 {
     int ii;
 
@@ -126,6 +140,11 @@ static int query(void)
     }
 }
 
+/**
+ * This is the main program.
+ * @param argc is the count of command line arguments.
+ * @param argv is a vector of pointers to the command line arguments.
+ */
 int main(int argc, char * argv[])
 {
     int xc = 1;
@@ -148,6 +167,10 @@ int main(int argc, char * argv[])
     size_t reads = 0;
     int opt;
     extern char * optarg;
+
+    /*
+     * Crack open the command line argument vector.
+     */
 
     program = ((program = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : program + 1;
 
@@ -235,6 +258,10 @@ int main(int argc, char * argv[])
             break;
         }
 
+        /*
+         * Install our signal handlers.
+         */
+
         sigpipe.sa_handler = handler;
         sigpipe.sa_flags = 0;
         rc = sigaction(SIGPIPE, &sigpipe, (struct sigaction *)0);
@@ -259,6 +286,11 @@ int main(int argc, char * argv[])
             break;
         }
 
+        /*
+         * Enter our work loop. This is how we handle retries if the Quantis
+         * library upchucks on us.
+         */
+
         while (!done) {
 
             rc = QuantisOpen(type, unit, &handle);
@@ -272,6 +304,10 @@ int main(int argc, char * argv[])
                 fprintf(stderr, "%s: handle       %p\n", program, handle);
             }
 
+            /*
+             * Enter our input/output loop.
+             */
+
             while (!done) {
                 if (report) {
                     fprintf(stderr, "%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
@@ -279,8 +315,12 @@ int main(int argc, char * argv[])
                 }
                 rc = QuantisReadHandled(handle, buffer, size);
                 if (rc < QUANTIS_SUCCESS) {
-                    fprintf(stderr, "%s: QuantisReadHandled(%p,%p,%zu)=%d=\"%s\"\n", program, handle, buffer, size, rc, QuantisStrError(rc));
-                    break;
+                    fprintf(stderr, "%s: QuantisReadHandled(%p,%p,%zu)=%d=\"%s\" 1\n", program, handle, buffer, size, rc, QuantisStrError(rc));
+                    rc = QuantisReadHandled(handle, buffer, size);
+                    if (rc < QUANTIS_SUCCESS) {
+                        fprintf(stderr, "%s: QuantisReadHandled(%p,%p,%zu)=%d=\"%s 2\"\n", program, handle, buffer, size, rc, QuantisStrError(rc));
+                        break;
+                    }
                 }
                 ++reads;
                 total += size;
@@ -305,6 +345,10 @@ int main(int argc, char * argv[])
         xc = 0;
 
     } while (0);
+
+    /*
+     * Clean up after ourselves.
+     */
 
     if (buffer != (unsigned char *)0) {
         free(buffer);
