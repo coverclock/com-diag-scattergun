@@ -1,7 +1,7 @@
 /* vi: set ts=4 expandtab shiftwidth=4: */
 /**
  * @file
- * ID Quantique Quantis tool<BR>
+ * ID Quantique Quantis Tool<BR>
  * Copyright 2016 Digital Aggregates Corporation, Colorado, USA.<BR>
  * "Digital Aggregates Corporation" is a registered trademark.<BR>
  * Licensed under the terms of the Scattergun license.<BR>
@@ -12,7 +12,7 @@
  *
  * USAGE
  *
- * quantistool [ -? ] [ -d ] [ -i ] [ -u UNIT | -p UNIT ] [ -r BYTES ]
+ * quantistool [ -? ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -o PATH ]
  *
  * EXAMPLES
  *
@@ -41,22 +41,58 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <signal.h>
+#include <syslog.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include "Quantis.h"
-#include "com/diag/diminuto/diminuto_dump.h"
 
 static const QuantisDeviceType TYPES[] = { QUANTIS_DEVICE_PCI, QUANTIS_DEVICE_USB };
 static const char * NAMES[] = { "PCI", "USB" };
 
 static const char * program = "quantistool";
+static const char * ident = "quantistool";
 static int debug = 0;
 static int verbose = 0;
 static int done = 0;
 static int report = 0;
+static int daemonize = 0;
+
+/**
+ * Emit a formatting string to either the system log or to standard error.
+ * @param format is the printf format.
+ */
+static void lprintf(const char * format, ...)
+{
+    va_list ap;
+    va_start(ap, format);
+    if (daemonize) {
+        vsyslog(LOG_DEBUG, format, ap);
+    } else {
+        vfprintf(stderr, format, ap);
+    }
+    va_end(ap);
+}
+
+/**
+ * Emit a caller provider string and an error message string corresponding to
+ * the current value of the error number (errno) to either the system log or
+ * to standard error.
+ * @param string is the string.
+ */
+static void lerror(const char * string)
+{
+    if (daemonize) {
+        syslog(LOG_ERR, "%s: %s", string, strerror(errno));
+    } else {
+        fprintf(stderr, "%s: %s", string, strerror(errno));
+    }
+}
 
 /**
  * Handle a signal. In the event of a SIGPIPE or a SIGINT, the program shuts
@@ -82,13 +118,16 @@ static void handler(int signum)
  */
 static void usage(void)
 {
-    fprintf(stderr, "usage: %s [ -? ] [ -d ] [ -v ] [ -u UNIT | -p UNIT ] [ -r BYTES ]\n", program);
-    fprintf(stderr, "       -d            Enable debug mode\n");
-    fprintf(stderr, "       -v            Enable verbose mode\n");
-    fprintf(stderr, "       -u UNIT       Use USB card UNIT\n");
-    fprintf(stderr, "       -p UNIT       Use PCI card UNIT\n");
-    fprintf(stderr, "       -r BYTES      Read at most BYTES bytes at a time\n");
-    fprintf(stderr, "       -?            Print menu\n");
+    lprintf("usage: %s [ -? ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -o PATH ]\n", program);
+    lprintf("       -d            Enable debug mode\n");
+    lprintf("       -v            Enable verbose mode\n");
+    lprintf("       -D            Run as a daemon\n");
+    lprintf("       -i IDENT      Use IDENT as the syslog identifier\n");
+    lprintf("       -u UNIT       Use USB card UNIT\n");
+    lprintf("       -p UNIT       Use PCI card UNIT\n");
+    lprintf("       -r BYTES      Read at most BYTES bytes at a time\n");
+    lprintf("       -o PATH       Write to PATH (which may be a fifo) instead of stdout\n");
+    lprintf("       -?            Print menu\n");
 }
 
 /**
@@ -110,9 +149,9 @@ static void query(void)
         software = QuantisGetDriverVersion(type);
         detected = QuantisCount(type);
 
-        fprintf(stderr, "%s: type         %s\n", program, NAMES[ii]);
-        fprintf(stderr, "%s: software     %f\n", program, software);
-        fprintf(stderr, "%s: detected     %d\n", program, detected);
+        lprintf("%s: type         %s\n", program, NAMES[ii]);
+        lprintf("%s: software     %f\n", program, software);
+        lprintf("%s: detected     %d\n", program, detected);
 
         for (jj = 0; jj < detected; ++jj) {
             int hardware = 0;
@@ -129,13 +168,13 @@ static void query(void)
             mask = QuantisGetModulesMask(type, jj);
             status = QuantisGetModulesStatus(type, jj);
 
-            fprintf(stderr, "%s: unit         %d\n", program, jj);
-            fprintf(stderr, "%s: hardware     %d\n", program, hardware);
-            fprintf(stderr, "%s: serial       \"%s\"\n", program, serial);
-            fprintf(stderr, "%s: manufacturer \"%s\"\n", program, manufacturer);
-            fprintf(stderr, "%s: power        %d\n", program, power);
-            fprintf(stderr, "%s: modules      0x%8.8x\n", program, mask);
-            fprintf(stderr, "%s: status       0x%8.8x\n", program, status);
+            lprintf("%s: unit         %d\n", program, jj);
+            lprintf("%s: hardware     %d\n", program, hardware);
+            lprintf("%s: serial       \"%s\"\n", program, serial);
+            lprintf("%s: manufacturer \"%s\"\n", program, manufacturer);
+            lprintf("%s: power        %d\n", program, power);
+            lprintf("%s: modules      0x%8.8x\n", program, mask);
+            lprintf("%s: status       0x%8.8x\n", program, status);
         }
     }
 }
@@ -165,6 +204,8 @@ int main(int argc, char * argv[])
     size_t opens = 0;
     size_t total = 0;
     size_t reads = 0;
+    int try = 0;
+    const char * path = (const char *)0;
     int opt;
     extern char * optarg;
 
@@ -174,7 +215,7 @@ int main(int argc, char * argv[])
 
     program = ((program = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : program + 1;
 
-    while ((opt = getopt(argc, argv, "dvu:p:r:?")) >= 0) {
+    while ((opt = getopt(argc, argv, "dvDu:p:r:o:i:?")) >= 0) {
 
         switch (opt) {
 
@@ -184,6 +225,10 @@ int main(int argc, char * argv[])
 
         case 'v':
             verbose = !0;
+            break;
+
+        case 'D':
+            daemonize = !0;
             break;
 
         case 'u':
@@ -200,9 +245,17 @@ int main(int argc, char * argv[])
             size = strtoul(optarg, &end, 0);
             if ((*end != '\0') || (!((0 < size) && (size <= QUANTIS_MAX_READ_SIZE)))) {
                 errno = EINVAL;
-                perror(optarg);
+                lerror(optarg);
                 error = !0;
             }
+            break;
+
+        case 'o':
+            path = optarg;
+            break;
+
+        case 'i':
+            ident = optarg;
             break;
 
         case '?':
@@ -228,8 +281,20 @@ int main(int argc, char * argv[])
             break;
         }
 
+        /*
+         * Daemonize if so configured.
+         */
+
+        if (!daemonize) {
+            /* Do nothing. */
+        } else if (daemon(0, 0) < 0) {
+            perror("daemon");
+        } else {
+            /* Do nothing. */
+        }
+
         if (verbose) {
-            fprintf(stderr, "%s: pid          %d\n", program, getpid());
+            lprintf("%s: pid          %d\n", program, getpid());
         }
 
         if (verbose) {  
@@ -245,16 +310,16 @@ int main(int argc, char * argv[])
 
             for (ii = 0; ii < (sizeof(TYPES) / sizeof(TYPES[0])); ++ii) {
                 if (TYPES[ii] == type) {
-                    fprintf(stderr, "%s: type         %s\n", program, NAMES[ii]);
+                    lprintf("%s: type         %s\n", program, NAMES[ii]);
                 }
             }
-            fprintf(stderr, "%s: unit         %d\n", program, unit);
-            fprintf(stderr, "%s: size         %zu\n", program, size);
+            lprintf("%s: unit         %d\n", program, unit);
+            lprintf("%s: size         %zu\n", program, size);
         }
 
         buffer = malloc(size);
         if (buffer == (unsigned char *)0) {
-            perror("malloc");
+            lerror("malloc");
             break;
         }
 
@@ -266,7 +331,7 @@ int main(int argc, char * argv[])
         sigpipe.sa_flags = 0;
         rc = sigaction(SIGPIPE, &sigpipe, (struct sigaction *)0);
         if (rc < 0) {
-            perror("sigaction");
+            lerror("sigaction");
             break;
         }
 
@@ -274,7 +339,7 @@ int main(int argc, char * argv[])
         sighup.sa_flags = SA_RESTART;
         rc = sigaction(SIGHUP, &sighup, (struct sigaction *)0);
         if (rc < 0) {
-            perror("sigaction");
+            lerror("sigaction");
             break;
         }
 
@@ -282,57 +347,75 @@ int main(int argc, char * argv[])
         sigint.sa_flags = 0;
         rc = sigaction(SIGINT, &sighup, (struct sigaction *)0);
         if (rc < 0) {
-            perror("sigaction");
+            lerror("sigaction");
             break;
         }
 
         /*
-         * Enter our work loop. This is how we handle retries if the Quantis
-         * library upchucks on us.
+         * Switch from stdout to PATH if so configured.
+         */
+
+        if (path != (const char *)0) {
+            if (verbose) {
+                lprintf("%s: path         \"%s\"\n", program, path);
+            }
+            fp = fopen(path, "a");
+            if (fp == (FILE *)0) {
+                lerror(path);
+                break;
+            }
+        }
+
+        /*
+         * Enter our work loop.
          */
 
         while (!done) {
 
             rc = QuantisOpen(type, unit, &handle);
             if (rc < QUANTIS_SUCCESS) {
-                fprintf(stderr, "%s: QuantisOpen(%d,%d,%p)=%d=\"%s\"\n", program, type, unit, handle,  rc, QuantisStrError(rc));
+                lprintf("%s: QuantisOpen(%d,%d,%p)=%d=\"%s\"\n", program, type, unit, handle,  rc, QuantisStrError(rc));
                 break;
             }
             ++opens;
 
             if (verbose) {
-                fprintf(stderr, "%s: handle       %p\n", program, handle);
+                lprintf("%s: handle       %p\n", program, handle);
             }
 
             /*
-             * Enter our input/output loop.
+             * Enter our input/output loop. If the read fails we try it again,
+             * since sometimes the libusb data transfer seems to hiccup for no
+             * obvious reason. If it fails the second time, we close the device
+             * and reopen it.
              */
 
             while (!done) {
                 if (report) {
-                    fprintf(stderr, "%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
+                    lprintf("%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
                     report = 0;
                 }
                 rc = QuantisReadHandled(handle, buffer, size);
                 if (rc < QUANTIS_SUCCESS) {
-                    fprintf(stderr, "%s: QuantisReadHandled(%p,%p,%zu)=%d=\"%s\" 1\n", program, handle, buffer, size, rc, QuantisStrError(rc));
+                    lprintf("%s: QuantisReadHandled(%p,%p,%zu)=%d=\"%s\" try=1\n", program, handle, buffer, size, rc, QuantisStrError(rc));
                     rc = QuantisReadHandled(handle, buffer, size);
                     if (rc < QUANTIS_SUCCESS) {
-                        fprintf(stderr, "%s: QuantisReadHandled(%p,%p,%zu)=%d=\"%s 2\"\n", program, handle, buffer, size, rc, QuantisStrError(rc));
+                        lprintf("%s: QuantisReadHandled(%p,%p,%zu)=%d=\"%s\" try=2\n", program, handle, buffer, size, rc, QuantisStrError(rc));
                         break;
                     }
                 }
+                if (rc < QUANTIS_SUCCESS) {
+                    break;
+                }
                 ++reads;
                 total += size;
-                if (debug) {
-                    diminuto_dump_virtual(stderr, buffer, size, offset);
-                    fputc('\n', stderr);
-                    offset += size;
-                }
                 written = fwrite(buffer, size, 1, fp);
                 if (written < 1) {
-                    perror("fwrite");
+                    lerror("fwrite");
                     break;
+                }
+                if (debug) {
+                    lprintf("%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
                 }
             }
 
@@ -350,12 +433,16 @@ int main(int argc, char * argv[])
      * Clean up after ourselves.
      */
 
+    if (fp != (FILE *)0) {
+        fclose(fp);
+    }
+
     if (buffer != (unsigned char *)0) {
         free(buffer);
     }
 
     if (verbose) {
-        fprintf(stderr, "%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
+        lprintf("%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
     }
 
     return xc;
