@@ -67,3 +67,10 @@ URANDOM=scattergun_silver_urandom
 urandom:
 	mkdir -p $(URANDOM)
 	dd if=/dev/urandom | bash scattergun.sh $(URANDOM) 2>&1 | tee $(URANDOM)/scattergun.log
+
+RANDOM=scattergun_silver_random
+
+random:	src/quantistool
+	mkdir -p $(RANDOM)
+	quantistool -v -o FIFO &
+	dd if=FIFO | bash scattergun.sh $(QUANTIS) 2>&1 | tee $(QUANTIS)/scattergun.log

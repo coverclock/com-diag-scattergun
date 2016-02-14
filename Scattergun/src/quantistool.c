@@ -19,15 +19,11 @@
  * ABSTRACT
  *
  * Continuously reads data from a Quantis hardware entropy generator and
- * writes it to standard output. Optionally does some other useful stuff
+ * writes it to standard output, or to a specified file system path. This
+ * latter object could be a FIFO, which could allow generated entropy to be
+ * read by another program, like rngd. Optionally does some other useful stuff
  * with the Quantis. This is part of the Scattergun project. This must be
  * linked with the Quantis library.
- *
- * The program incorporates portions of the source code of the Diminuto
- * library, which is also a product of the Digital Aggregates Corporation.
- * The copied portions of Diminuto are licensed under the Scattergun license,
- * or, at your options, the original Diminuto license (which is less
- * restrictive).
  *
  * The Quantis software library I have restricts reads to sizes of no more
  * than 16 megabytes (16 * 1024 * 1024). But it restricts each individual
@@ -285,12 +281,14 @@ int main(int argc, char * argv[])
          * Daemonize if so configured.
          */
 
-        if (!daemonize) {
-            /* Do nothing. */
-        } else if (daemon(0, 0) < 0) {
-            perror("daemon");
-        } else {
-            /* Do nothing. */
+        if (daemonize) {
+            openlog(ident, LOG_CONS | LOG_PID, LOG_DAEMON);
+            if (daemon(0, 0) < 0) {
+                perror("daemon");
+                break;
+            }
+            closelog();
+            openlog(ident, LOG_CONS | LOG_PID, LOG_DAEMON);
         }
 
         if (verbose) {
