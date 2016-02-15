@@ -16,8 +16,9 @@ USNISTGOVROOT=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment
 
 CFLAGS += -Iinc
 CFLAGS += -I$(QUANTISINCPATH)
-LDFLAGS += -L$(QUANTISLIBPATH)
-LDFLAGS += -lQuantis
+#LDFLAGS += -L$(QUANTISLIBPATH)
+#LDFLAGS += -lQuantis
+LDFLAGS += $(QUANTISLIBPATH)/libQuantis.a
 LDFLAGS += -lusb-1.0
 LDFLAGS += -lpthread
 

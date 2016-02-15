@@ -12,7 +12,7 @@
  *
  * USAGE
  *
- * quantistool [ -? ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -o PATH ]
+ * quantistool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -o PATH ]
  *
  * EXAMPLES
  *
@@ -112,18 +112,19 @@ static void handler(int signum)
 /**
  * Emit a usage message to standard error.
  */
-static void usage(void)
+static void usage(int nomenu)
 {
-    lprintf("usage: %s [ -? ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -o PATH ]\n", program);
+    lprintf("usage: %s [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -o PATH ]\n", program);
+    if (nomenu) { return; }
     lprintf("       -d            Enable debug mode\n");
     lprintf("       -v            Enable verbose mode\n");
     lprintf("       -D            Run as a daemon\n");
     lprintf("       -i IDENT      Use IDENT as the syslog identifier\n");
     lprintf("       -u UNIT       Use USB card UNIT\n");
     lprintf("       -p UNIT       Use PCI card UNIT\n");
-    lprintf("       -r BYTES      Read at most BYTES bytes at a time\n");
+    lprintf("       -r BYTES      Read at most BYTES bytes at a time (0 to exit)\n");
     lprintf("       -o PATH       Write to PATH (which may be a fifo) instead of stdout\n");
-    lprintf("       -?            Print menu\n");
+    lprintf("       -h            Print help menu\n");
 }
 
 /**
@@ -211,7 +212,7 @@ int main(int argc, char * argv[])
 
     program = ((program = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : program + 1;
 
-    while ((opt = getopt(argc, argv, "dvDu:p:r:o:i:?")) >= 0) {
+    while ((opt = getopt(argc, argv, "dvDu:p:r:o:i:h")) >= 0) {
 
         switch (opt) {
 
@@ -239,7 +240,7 @@ int main(int argc, char * argv[])
 
         case 'r':
             size = strtoul(optarg, &end, 0);
-            if ((*end != '\0') || (!((0 < size) && (size <= QUANTIS_MAX_READ_SIZE)))) {
+            if ((*end != '\0') || (!((0 <= size) && (size <= QUANTIS_MAX_READ_SIZE)))) {
                 errno = EINVAL;
                 lerror(optarg);
                 error = !0;
@@ -254,8 +255,9 @@ int main(int argc, char * argv[])
             ident = optarg;
             break;
 
-        case '?':
-            usage();
+        case 'h':
+            xc = 0;
+            error = !0;
             break;
 
         default:
@@ -273,12 +275,41 @@ int main(int argc, char * argv[])
     do {
 
         if (error) {
-            usage();
+            usage(xc);
             break;
         }
 
+        if (verbose) {  
+            query();
+        }
+
         /*
-         * Daemonize if so configured.
+         * If the user specifies a read size of zero, we just exit. This
+         * allows them to use the verbose option to query the Quantis
+         * devices on the USB or PCI bus without actually doing anything
+         * else.
+         */
+
+        if (size == 0) {
+            xc = 0;
+            break;
+        } else if (size > QUANTIS_MAX_READ_SIZE) {
+            size = QUANTIS_MAX_READ_SIZE;
+        } else {
+            /* Do nothing. */
+        }
+
+        /*
+         * Daemonize if so configured. Why do we do this stuff with the
+         * system log? If we daemonize, we want to direct subsequent messages
+         * to the system log, since standard error will be redirected to
+         * /dev/null. But it is convenient to direct all the messages to the
+         * same place, so if a daemon we start off using the system log.
+         * But if daemon(3) works as I think it should (it is really under-
+         * documented), it should close the socket used to communicate with
+         * the system log daemon. So we close it (in case it isn't already
+         * closed) and (re)open it. (I am highly tempted not to use the
+         * daemon(3) function and port the equivalent function from Diminuto.)
          */
 
         if (daemonize) {
@@ -293,14 +324,6 @@ int main(int argc, char * argv[])
 
         if (verbose) {
             lprintf("%s: pid          %d\n", program, getpid());
-        }
-
-        if (verbose) {  
-            query();
-        }
-
-        if (size > QUANTIS_MAX_READ_SIZE) {
-            size = QUANTIS_MAX_READ_SIZE;
         }
 
         if (verbose) {
@@ -385,7 +408,7 @@ int main(int argc, char * argv[])
              * Enter our input/output loop. If the read fails we try it again,
              * since sometimes the libusb data transfer seems to hiccup for no
              * obvious reason. If it fails the second time, we close the device
-             * and reopen it.
+             * and reopen it. As long as the open succeeds, we soldier on.
              */
 
             while (!done) {

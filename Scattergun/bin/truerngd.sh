@@ -13,14 +13,14 @@
 # FIPS 140-2 requirements.
 
 ZERO=$(basename ${0})
-LABEL=${ZERO%\.sh}
-ROOT=$(dirname ${0})
 SOURCE=${1:-"/dev/TrueRNG"}
 SINK=${2:-"/dev/random"}
 RUNDIR=${3:-"/var/run"}
+ETCDIR=${4:-"/etc"}
+LABEL=${ZERO%\.sh}
 
-if [ -r ${ROOT}/${LABEL}.conf ]; then
-	. ${ROOT}/${LABEL}.conf
+if [ -r ${ETCDIR}/${LABEL}.conf ]; then
+	. ${ETCDIR}/${LABEL}.conf
 fi
 
 FILE=${RUNDIR}/${LABEL}.pid
