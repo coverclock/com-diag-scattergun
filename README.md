@@ -21,11 +21,11 @@ assess the randomness of an entropy source, a Makefile to drive the tests,
 and the output of the test suite when it was run on a variety of hardware
 entropy generators.
 
-    ./Scattergun/etc/default/rng-tools-quantis
-    ./Scattergun/etc/init.d/quantistool
-    ./Scattergun/etc/init.d/rng-tools.diff
-    ./Scattergun/etc/udev/rules.d/99-idq-quantis.rules
     ./Scattergun/src/quantistool.c
+    ./Scattergun/etc/init.d/quantistool
+    ./Scattergun/etc/udev/rules.d/99-idq-quantis.rules
+    ./Scattergun/etc/init.d/rng-tools.diff
+    ./Scattergun/etc/default/rng-tools-quantis
 
 It has a utility, written in C, that extracts random bits from the Quantis
 random number generator made by ID Quantique and write them to standard output,
