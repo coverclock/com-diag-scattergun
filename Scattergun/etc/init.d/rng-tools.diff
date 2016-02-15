@@ -1,0 +1,10 @@
+--- /etc/init.d/rng-tools	2014-12-20 22:34:08.000000000 -0700
++++ ./rng-tools	2016-02-15 11:07:17.539613200 -0700
+@@ -33,6 +33,7 @@ set -e
+ 
+ finddevice () {
+ 	[ -c "${HRNGDEVICE}" ] && return 0
++	[ -p "${HRNGDEVICE}" ] && return 0
+ 	for i in ${DEVICELIST} ; do
+ 		if [ -c "/dev/$i" ] ; then
+ 			HRNGDEVICE="/dev/$i"
