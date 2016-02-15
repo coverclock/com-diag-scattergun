@@ -71,7 +71,6 @@ urandom:
 
 RANDOM=scattergun_silver_random
 
-random:	src/quantistool
+random:
 	mkdir -p $(RANDOM)
-	quantistool -v -o FIFO &
-	dd if=FIFO | bash scattergun.sh $(QUANTIS) 2>&1 | tee $(QUANTIS)/scattergun.log
+	dd if=/dev/random | bash scattergun.sh $(RANDOM) 2>&1 | tee $(RANDOM)/scattergun.log
