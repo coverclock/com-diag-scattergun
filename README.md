@@ -12,20 +12,20 @@ mentor REDACTED, who has a wealth of deep expertise in this domain.
 
 Scattergun includes a variety of artifacts that might be useful.
 
-./Scattergun/bin/scattergun.sh
-./Scattergun/Makefile
-./Scattergun/dat
+    ./Scattergun/bin/scattergun.sh
+    ./Scattergun/Makefile
+    ./Scattergun/dat
 
 It has a script that runs a suite of tests (none of which I wrote) that
 assess the randomness of an entropy source, a Makefile to drive the tests,
 and the output of the test suite when it was run on a variety of hardware
 entropy generators.
 
-./Scattergun/etc/default/rng-tools-quantis
-./Scattergun/etc/init.d/quantistool
-./Scattergun/etc/init.d/rng-tools.diff
-./Scattergun/etc/udev/rules.d/99-idq-quantis.rules
-./Scattergun/src/quantistool.c
+    ./Scattergun/etc/default/rng-tools-quantis
+    ./Scattergun/etc/init.d/quantistool
+    ./Scattergun/etc/init.d/rng-tools.diff
+    ./Scattergun/etc/udev/rules.d/99-idq-quantis.rules
+    ./Scattergun/src/quantistool.c
 
 It has a utility, written in C, that extracts random bits from the Quantis
 random number generator made by ID Quantique and write them to standard output,
@@ -38,16 +38,16 @@ into a Linux server so it can be used as an entropy source for the system
 entropy pool for the the generation of seeds for cryptographic keys and the
 like.
 
-./Scattergun/bin/truerngd.sh
-./Scattergun/etc/truerngd.conf
+    ./Scattergun/bin/truerngd.sh
+    ./Scattergun/etc/truerngd.conf
 
 It has a simple script (admittedly experimental) to use a ubld.it TrueRNG USB
 entropy generator (which is about the size and shape of a thumb drive) to fill
 the system entropy pool on a Mac OS X system.
 
-./Scattergun/etc/udev/rules.d/99-TrueRNG.rules
-./Scattergun/etc/default/rng-tools-TrueRNG
-./Scattergun/etc/default/rng-tools-TrueRNGpro
+    ./Scattergun/etc/udev/rules.d/99-TrueRNG.rules
+    ./Scattergun/etc/default/rng-tools-TrueRNG
+    ./Scattergun/etc/default/rng-tools-TrueRNGpro
 
 It has some udev rules and rng-tools configuration files that make it easy to
 use a ubld.it TrueRNG or TrueRNGpro hardware entropy generators to fill the
