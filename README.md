@@ -14,7 +14,7 @@ Scattergun includes a variety of artifacts that might be useful.
 
     ./Scattergun/bin/scattergun.sh
     ./Scattergun/Makefile
-    ./Scattergun/dat
+    ./Scattergun/out
 
 It has a script that runs a suite of tests (none of which I wrote) that
 assess the randomness of an entropy source, a Makefile to drive the tests,
