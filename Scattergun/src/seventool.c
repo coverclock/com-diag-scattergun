@@ -12,13 +12,13 @@
  *
  * USAGE
  *
- * seventool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -o PATH ]
+ * seventool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R | -S ] [ -o PATH ]
  *
  * EXAMPLES
  *
  * ABSTRACT
  *
- * Continuously reads random words using the rdrand or rdseed instructions
+ * Continuously reads a word of entropy using the rdrand or rdseed instructions
  * available on various Intel processors such as certain models of the i7 and
  * writes it to standard output, or to a specified file system path. This
  * latter object could be a FIFO, which could allow generated entropy to be
@@ -160,6 +160,7 @@ static inline void cpuid(uint32_t * ap, uint32_t * bp, uint32_t * cp, uint32_t *
 {
     asm volatile ("cpuid" : "=a" (*ap), "=b" (*bp), "=c" (*cp), "=d" (*dp) : "a" (l), "c" (s) );
     
+    lprintf("%s: cpuid\n", program);
     lprintf("%s: leaf         %d\n", program, l);
     lprintf("%s: subleaf      %d\n", program, s);
     lprintf("%s: eax          0x%8.8x\n", program, *ap);
