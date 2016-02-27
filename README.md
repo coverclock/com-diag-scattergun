@@ -38,6 +38,14 @@ into a Linux server so it can be used as an entropy source for the system
 entropy pool for the the generation of seeds for cryptographic keys and the
 like.
 
+    ./Scattergun/src/seventool.c
+
+It has a utility, written in C, that examines the host processor using the
+Intel cpuid instruction, and if it indicates that the processor implements
+either the rdrand or rdseed instruction, extracts random bits using the
+specified instruction and writes them to standard output, or to a file which
+can be a named pipe.
+
     ./Scattergun/bin/truerngd.sh
     ./Scattergun/etc/truerngd.conf
 
