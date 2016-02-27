@@ -376,7 +376,7 @@ int main(int argc, char * argv[])
     }
 
     if (verbose) {
-        lprintf("%s: tries=%zu reads=%zu total=%zu\n", program, tries, reads, total);
+        lprintf("%s: tries=%zu size=%zu reads=%zu total=%zu\n", program, tries, sizeof(word), reads, total);
     }
 
     return xc;
