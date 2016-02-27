@@ -229,6 +229,7 @@ int main(int argc, char * argv[])
     size_t tries = 0;
     size_t total = 0;
     size_t reads = 0;
+    size_t consecutive = 0;
     const char * path = (const char *)0;
     enum mode mode = FAIL;
     int opt;
@@ -433,7 +434,10 @@ int main(int argc, char * argv[])
                 /* Do nothing (fail). */
             }
             if (carry) {
-                /* Do nothing (nominal). */
+                consecutive = 0;
+            } else if ((++consecutive) >= 10) {
+                lprintf("%s: consecutive=%zu\n", program, consecutive);
+                break;
             } else if ((rc = nanosleep(&request, (struct timespec *)0)) >= 0) {
                 continue;
             } else if (errno == EINTR) {
