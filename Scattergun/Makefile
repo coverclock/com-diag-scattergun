@@ -6,38 +6,49 @@
 
 ROOT=$(HOME)/src
 
-QUANTISROOT=$(ROOT)/idq-quantis
-QUANTISINCPATH=$(QUANTISROOT)/Libs-Apps/Quantis
-QUANTISLIBPATH=$(QUANTISROOT)/Libs-Apps/build/Quantis
+USNISTGOV_ROOT=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment
+QUANTIS_ROOT=$(ROOT)/idq-quantis
 
-USNISTGOVROOT=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment
+export PATH:=$(shell pwd)/bin:$(shell pwd)/src:$(USNISTGOV_ROOT):$(PATH)
+export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 ################################################################################
 
-CFLAGS += -Iinc
-CFLAGS += -I$(QUANTISINCPATH)
-#LDFLAGS += -L$(QUANTISLIBPATH)
-#LDFLAGS += -lQuantis
-LDFLAGS += $(QUANTISLIBPATH)/libQuantis.a
-LDFLAGS += -lusb-1.0
-LDFLAGS += -lpthread
-
-src/quantistool: src/quantistool.c
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+all:
 
 clean:
-	rm -f src/quantistool
+	rm -f src/quantistool src/seventool
+
+################################################################################
+
+QUANTIS_INCPATH=$(QUANTIS_ROOT)/Libs-Apps/Quantis
+QUANTIS_LIBPATH=$(QUANTIS_ROOT)/Libs-Apps/build/Quantis
+
+QUANTIS_CFLAGS += -I$(QUANTIS_INCPATH)
+#QUANTIS_LDFLAGS += -L$(QUANTIS_LIBPATH)
+#QUANTIS_LDFLAGS += -lQuantis
+QUANTIS_LDFLAGS += $(QUANTIS_LIBPATH)/libQuantis.a
+QUANTIS_LDFLAGS += -lusb-1.0
+QUANTIS_LDFLAGS += -lpthread
+
+src/quantistool: src/quantistool.c
+	$(CC) $(QUANTIS_CFLAGS) -o $@ $^ $(QUANTIS_LDFLAGS)
+
+################################################################################
+
+SEVEN_CFLAGS +=
+SEVEN_LDFLAGS += 
+
+src/seventool: src/seventool.c
+	$(CC) $(SEVEN_CFLAGS) -o $@ $^ $(SEVEN_LDFLAGS)
 
 ################################################################################
 
 environment:
-	echo export PATH=$(shell pwd)/bin:$(shell pwd)/src:$(USNISTGOVROOT):$(PATH)
+	echo export PATH=$(shell pwd)/bin:$(shell pwd)/src:$(USNISTGOV_ROOT):$(PATH)
 	echo export LD_LIBRARY_PATH=$(QUANTISLIBPATH):$(LD_LIBRARY_PATH)
 
 ################################################################################
-
-export PATH:=$(shell pwd)/bin:$(shell pwd)/src:$(USNISTGOVROOT):$(PATH)
-export LD_LIBRARY_PATH:=$(QUANTISLIBPATH):$(LD_LIBRARY_PATH)
 
 TRUERNG=scattergun_silver_TrueRNG
 
@@ -45,11 +56,15 @@ TrueRNG:
 	mkdir -p $(TRUERNG)
 	( ( dd if=/dev/TrueRNG | bash scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1 ) &
 
+################################################################################
+
 TRUERNGPRO=scattergun_silver_TrueRNGPro
 
 TrueRNGPro:
 	mkdir -p $(TRUERNGPRO)
 	( ( dd if=/dev/TrueRNGPro | bash scattergun.sh $(TRUERNGPRO) ) > $(TRUERNGPRO)/scattergun.log 2>&1 ) &
+
+################################################################################
 
 BCM2708=scattergun_betty_bcm2708
 
@@ -57,17 +72,31 @@ bcm2708:
 	mkdir -p $(BCM2708)
 	( ( dd if=/dev/random | bash scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1 ) &
 
+################################################################################
+
 QUANTIS=scattergun_silver_quantis
 
 quantis:	src/quantistool
 	mkdir -p $(QUANTIS)
 	( ( quantistool -v | bash scattergun.sh $(QUANTIS) ) > $(QUANTIS)/scattergun.log 2>&1 ) &
 
+################################################################################
+
 RDRAND=scattergun_mercury_rdrand
 
-rdrand:	src/ivybridgetool
+rdrand:	src/seventool
 	mkdir -p $(RDRAND)
-	( ( ivybridgetool -v | bash scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1 ) &
+	( ( seventool -v -R | bash scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1 ) &
+
+################################################################################
+
+RDSEED=scattergun_mercury_rdseed
+
+rdseed:	src/seventool
+	mkdir -p $(RDSEED)
+	( ( seventool -v -S | bash scattergun.sh $(RDSEED) ) > $(RDSEED)/scattergun.log 2>&1 ) &
+
+################################################################################
 
 URANDOM=scattergun_silver_urandom
 
@@ -75,8 +104,12 @@ urandom:
 	mkdir -p $(URANDOM)
 	( ( dd if=/dev/urandom | bash scattergun.sh $(URANDOM) ) > $(URANDOM)/scattergun.log 2>&1 ) &
 
+################################################################################
+
 RANDOM=scattergun_silver_random
 
 random:
 	mkdir -p $(RANDOM)
 	( ( dd if=/dev/random | bash scattergun.sh $(RANDOM) ) > $(RANDOM)/scattergun.log 2>&1 ) &
+
+################################################################################

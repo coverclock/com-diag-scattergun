@@ -34,6 +34,10 @@ lsmod | grep bcm2708_rng
 
 lsmod | grep intel-rng
 
+cat /proc/cpuinfo | grep rdrand
+
+cat /proc/cpuinfo | grep rdseed
+
 ps -ef | grep rngd | grep -v grep
 
 if [[ -r /etc/default/rng-tools ]]; then
