@@ -27,6 +27,30 @@
  * the Scattergun project.
  */
 
+#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
+#   define SCATTERGUN_HAS_RDRAND
+#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
+#   define SCATTERGUN_HAS_RDRAND
+#elif defined(SCATTERGUN_HAS_RDRAND_INSTRUCTION)
+#   define SCATTERGUN_HAS_RDRAND
+#else
+#   undef SCATTERGUN_HAS_RDRAND
+#endif
+
+#if defined(SCATTERGUN_HAS_RDSEED_INLINE)
+#   define SCATTERGUN_HAS_RDSEED
+#elif defined(SCATTERGUN_HAS_RDSEED_INTRINSIC)
+#   define SCATTERGUN_HAS_RDSEED
+#elif defined(SCATTERGUN_HAS_RDSEED_INSTRUCTION)
+#   define SCATTERGUN_HAS_RDSEED
+#else
+#   undef SCATTERGUN_HAS_RDSEED
+#endif
+
+#if !defined(SCATTERGUN_HAS_RDRAND) && !defined(SCATTERGUN_HAS_RDSEED)
+#   error Neither RDRAND nor RDSEED defined!
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -106,6 +130,7 @@ static void handler(int signum)
 
 /**
  * Emit a usage message to standard error.
+ * @param nomenu if true supresses the printing of the menu.
  */
 static void usage(int nomenu)
 {
@@ -122,9 +147,63 @@ static void usage(int nomenu)
 }
 
 /**
+ * Run the cpuid instruction with the specified leaf and subleaf and return the
+ * resulting values of the EAX, EBX, ECX< and EDX registers.
+ * @param ap points to the variable into which EAX is returned.
+ * @param bp points to the variable into which EBX is returned.
+ * @param cp points to the variable into which ECX is returned.
+ * @param dp points to the variable into which EDX is returned.
+ * @param l is the cpuid leaf to be loaded in register EAX.
+ * @param s is the cpuid subleaf to be loaded into register ECX. 
  */
-static void query(void)
+static inline void cpuid(uint32_t * ap, uint32_t * bp, uint32_t * cp, uint32_t * dp, uint32_t l, uint32_t s)
 {
+    asm volatile ("cpuid" : "=a" (*ap), "=b" (*bp), "=c" (*cp), "=d" (*dp) : "a" (l), "c" (s) );
+    
+    lprintf("%s: leaf         %d\n", program, l);
+    lprintf("%s: subleaf      %d\n", program, s);
+    lprintf("%s: eax          0x%8.8x\n", program, *ap);
+    lprintf("%s: ebx          0x%8.8x\n", program, *bp);
+    lprintf("%s: ecx          0x%8.8x\n", program, *cp);
+    lprintf("%s: edx          0x%8.8x\n", program, *dp);
+}
+
+/**
+ * Use the cpuid instruction to query the CPU to see what kind it is, and if
+ * it is an Intel, whether it implements the rdrand or the rdseed instruction.
+ * (Note that some AMD processors implement these instructions as well.)
+ * @return a mask with the RDRAND and/or RDSEED bits set if supported.
+ */
+static int query(void)
+{
+    int result = 0;
+    uint32_t a;
+    uint32_t b;
+    uint32_t c;
+    uint32_t d;
+
+    cpuid(&a, &b, &c, &d, 0, 0);
+    if ((memcmp((char *)&b, "Genu", 4) == 0) && (memcmp((char *)&d, "ineI", 4) == 0) && (memcmp((char *)&c, "ntel", 4) == 0)) {
+        lprintf("%s: cpu          Intel\n", program);
+        cpuid(&a, &b, &c, &d, 1, 0);
+        if (c & 0x40000000) {
+            lprintf("%s: rdrand       available\n", program);
+            result |= 1<<RDRAND;
+        } else {
+            lprintf("%s: rdrand       unavailable\n", program);
+        }
+        cpuid(&a, &b, &c, &d, 7, 0);
+        if (b & 0x00040000) {
+            lprintf("%s: rdseed       available\n", program);
+            result |= 1<<RDSEED;
+        } else {
+            lprintf("%s: rdseed       unavailable\n", program);
+        }
+    } else {
+        lprintf("%s: cpu          other\n", program);
+    }
+
+    return result;
 }
 
 /**
@@ -220,10 +299,6 @@ int main(int argc, char * argv[])
             break;
         }
 
-        if (verbose) {  
-            query();
-        }
-
         /*
          * Daemonize if so configured. Why do we do this stuff with the
          * system log? If we daemonize, we want to direct subsequent messages
@@ -249,6 +324,17 @@ int main(int argc, char * argv[])
 
         if (verbose) {
             lprintf("%s: pid          %d\n", program, getpid());
+        }
+
+        if (verbose) {  
+            rc = query();
+            if ((mode == RDRAND) && ((rc & (1 << RDRAND)) == 0)) {
+                break;
+            } else if ((mode == RDSEED) && ((rc & (1 << RDSEED)) == 0)) {
+                break;
+            } else {
+                /* Do nothing. */
+            }
         }
 
         /*
@@ -315,28 +401,32 @@ int main(int argc, char * argv[])
             }
             ++tries;
             if (mode == RDRAND) {
-#if 0
+#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
                 word = CAFEBEEF;
                 carry = _rdrand32_step(&word);
-#elif 0
+#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
                 word = CAFEBEEF;
                 carry = __builtin_ia32_rdrand32_step(&word);
-#elif 1
+#elif defined(SCATTERGUN_HAS_RDRAND_INSTRUCTION)
                 word = CAFEBEEF;
                 carry = 1;
                 asm volatile ("rdrand %0; setc %1" : "=r" (word), "=qm" (carry) );
+#else
+                break;
 #endif
             } else if (mode == RDSEED) {
-#if 0
+#if SCATTERGUN_HAS_RDSEED_INLINE
                 word = CAFEBEEF;
                 carry = _rdseed32_step(&word);
-#elif 0
+#elif SCATTERGUN_HAS_RDSEED_INTRINSIC
                 word = CAFEBEEF;
-                carry = __builtin_ia32_rdrand32_step(&word);
-#elif 1
+                carry = __builtin_ia32_rdseed32_step(&word);
+#elif SCATTERGUN_HAS_RDSEED_INSTRUCTION
                 word = CAFEBEEF;
                 carry = 1;
                 asm volatile ("rdseed %0; setc %1" : "=r" (word), "=qm" (carry) );
+#else
+                break;
 #endif
             } else {
                 /* Do nothing (fail). */

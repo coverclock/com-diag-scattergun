@@ -111,6 +111,7 @@ static void handler(int signum)
 
 /**
  * Emit a usage message to standard error.
+ * @param nomenu if true suppresses the printing of the menu.
  */
 static void usage(int nomenu)
 {
@@ -279,10 +280,6 @@ int main(int argc, char * argv[])
             break;
         }
 
-        if (verbose) {  
-            query();
-        }
-
         /*
          * If the user specifies a read size of zero, we just exit. This
          * allows them to use the verbose option to query the Quantis
@@ -324,6 +321,10 @@ int main(int argc, char * argv[])
 
         if (verbose) {
             lprintf("%s: pid          %d\n", program, getpid());
+        }
+
+        if (verbose) {  
+            query();
         }
 
         if (verbose) {

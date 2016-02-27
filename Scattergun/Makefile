@@ -36,7 +36,8 @@ src/quantistool: src/quantistool.c
 
 ################################################################################
 
-SEVEN_CFLAGS +=
+SEVEN_CFLAGS += -DSCATTERGUN_HAS_RDRAND_INSTRUCTION
+SEVEN_CFLAGS += -DSCATTERGUN_HAS_RDSEED_INSTRUCTION
 SEVEN_LDFLAGS += 
 
 src/seventool: src/seventool.c
