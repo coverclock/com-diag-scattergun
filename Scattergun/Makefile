@@ -43,34 +43,40 @@ TRUERNG=scattergun_silver_TrueRNG
 
 TrueRNG:
 	mkdir -p $(TRUERNG)
-	dd if=/dev/TrueRNG | bash scattergun.sh $(TRUERNG) 2>&1 | tee $(TRUERNG)/scattergun.log
+	( ( dd if=/dev/TrueRNG | bash scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1 ) &
 
 TRUERNGPRO=scattergun_silver_TrueRNGPro
 
 TrueRNGPro:
 	mkdir -p $(TRUERNGPRO)
-	dd if=/dev/TrueRNGPro | bash scattergun.sh $(TRUERNGPRO) 2>&1 | tee $(TRUERNGPRO)/scattergun.log
+	( ( dd if=/dev/TrueRNGPro | bash scattergun.sh $(TRUERNGPRO) ) > $(TRUERNGPRO)/scattergun.log 2>&1 ) &
 
 BCM2708=scattergun_betty_bcm2708
 
 bcm2708:
 	mkdir -p $(BCM2708)
-	dd if=/dev/random | bash scattergun.sh $(BCM2708) 2>&1 | tee $(BCM2708)/scattergun.log
+	( ( dd if=/dev/random | bash scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1 ) &
 
 QUANTIS=scattergun_silver_quantis
 
 quantis:	src/quantistool
 	mkdir -p $(QUANTIS)
-	quantistool -v | bash scattergun.sh $(QUANTIS) 2>&1 | tee $(QUANTIS)/scattergun.log
+	( ( quantistool -v | bash scattergun.sh $(QUANTIS) ) > $(QUANTIS)/scattergun.log 2>&1 ) &
+
+RDRAND=scattergun_mercury_rdrand
+
+rdrand:	src/ivybridgetool
+	mkdir -p $(RDRAND)
+	( ( ivybridgetool -v | bash scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1 ) &
 
 URANDOM=scattergun_silver_urandom
 
 urandom:
 	mkdir -p $(URANDOM)
-	dd if=/dev/urandom | bash scattergun.sh $(URANDOM) 2>&1 | tee $(URANDOM)/scattergun.log
+	( ( dd if=/dev/urandom | bash scattergun.sh $(URANDOM) ) > $(URANDOM)/scattergun.log 2>&1 ) &
 
 RANDOM=scattergun_silver_random
 
 random:
 	mkdir -p $(RANDOM)
-	dd if=/dev/random | bash scattergun.sh $(RANDOM) 2>&1 | tee $(RANDOM)/scattergun.log
+	( ( dd if=/dev/random | bash scattergun.sh $(RANDOM) ) > $(RANDOM)/scattergun.log 2>&1 ) &
