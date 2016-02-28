@@ -12,7 +12,7 @@
  *
  * USAGE
  *
- * seventool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R | -S ] [ -o PATH ]
+ * seventool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R [ -r ] | -S ] [ -o PATH ]
  *
  * EXAMPLES
  *
@@ -134,13 +134,14 @@ static void handler(int signum)
  */
 static void usage(int nomenu)
 {
-    lprintf("usage: %s [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R | -S ] [ -o PATH ]\n", program);
+    lprintf("usage: %s [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R [ -r ] | -S ] [ -o PATH ]\n", program);
     if (nomenu) { return; }
     lprintf("       -d            Enable debug mode\n");
     lprintf("       -v            Enable verbose mode\n");
     lprintf("       -D            Run as a daemon\n");
     lprintf("       -i IDENT      Use IDENT as the syslog identifier\n");
     lprintf("       -R            Use the rdrand instruction\n");
+    lprintf("       -r            Force the rdrand DRNG to reseed beforehand\n");
     lprintf("       -S            Use the rdseed instruction\n");
     lprintf("       -o PATH       Write to PATH (which may be a fifo) instead of stdout\n");
     lprintf("       -h            Print help menu\n");
@@ -208,6 +209,47 @@ static int query(void)
 }
 
 /**
+ * Force the rdrand mechanism to reseed. We do this by calling rdrand just
+ * one more time than its reseed cycle. The rdrand DRNG is guaranteed to
+ * produce no more than (511 * 2) or 1022 64-bit results using the same seed.
+ * Where exactly in this loop the rdrand reseeds is transparent and unknowable.
+ * @return true if the all of the rdrand calls succeeded, false otherwise.
+ */
+static int reseed(void)
+{
+    static const int RESEED = ((511 * 2 * 64) / sizeof(uint32_t)) + 1;
+    int count = 0;
+    uint32_t word = 0;
+    uint8_t carry = 1;
+    int ii;
+
+    if (verbose) {
+        lprintf("%s: reseeding    %d\n", program, RESEED);
+    }
+
+    for (ii = 0; ii < RESEED; ++ii) {
+#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
+        carry = _rdrand32_step(&word);
+#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
+        carry = __builtin_ia32_rdrand32_step(&word);
+#elif defined(SCATTERGUN_HAS_RDRAND_INSTRUCTION)
+        asm volatile ("rdrand %0; setc %1" : "=r" (word), "=qm" (carry) );
+#else
+        break;
+#endif
+        if (carry) {
+            ++count;
+        }
+    }
+
+    if (verbose) {
+        lprintf("%s: reseeded     %d\n", program, count);
+    }
+
+    return (count == RESEED);
+}
+
+/**
  * This is the main program.
  * @param argc is the count of command line arguments.
  * @param argv is a vector of pointers to the command line arguments.
@@ -232,6 +274,7 @@ int main(int argc, char * argv[])
     size_t consecutive = 0;
     const char * path = (const char *)0;
     enum mode mode = FAIL;
+    int doreseed = 0;
     int opt;
     extern char * optarg;
     uint32_t word;
@@ -245,7 +288,7 @@ int main(int argc, char * argv[])
 
     program = ((program = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : program + 1;
 
-    while ((opt = getopt(argc, argv, "dvDo:i:hRS")) >= 0) {
+    while ((opt = getopt(argc, argv, "dvDo:i:hRrS")) >= 0) {
 
         switch (opt) {
 
@@ -276,6 +319,10 @@ int main(int argc, char * argv[])
 
         case 'R':
             mode = RDRAND;
+            break;
+
+        case 'r':
+            doreseed = !0;
             break;
 
         case 'S':
@@ -382,13 +429,29 @@ int main(int argc, char * argv[])
             }
         }
 
-        /*
-         * Enter our work loop.
-         */
-
         if (verbose) {
             lprintf("%s: mode         %s\n", program, MODE[mode]);
         }
+
+        /*
+         * Force a reseed if requested and if using rdrand.
+         */
+
+        if (mode != RDRAND) {
+            /* Do nothing. */
+        } else if (!doreseed) {
+            /* Do nothing. */
+        } else if (reseed()) {
+            /* Do nothing. */
+        } else if (!verbose) {
+            /* Do nothing. */
+        } else {
+            lprintf("%s: reseed       failed\n", program);
+        }
+
+        /*
+         * Enter our work loop.
+         */
 
         request.tv_sec = 0;
         request.tv_nsec = 1000000;
