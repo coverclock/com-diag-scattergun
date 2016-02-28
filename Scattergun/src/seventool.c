@@ -27,30 +27,6 @@
  * the Scattergun project.
  */
 
-#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
-#   define SCATTERGUN_HAS_RDRAND
-#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
-#   define SCATTERGUN_HAS_RDRAND
-#elif defined(SCATTERGUN_HAS_RDRAND_INSTRUCTION)
-#   define SCATTERGUN_HAS_RDRAND
-#else
-#   undef SCATTERGUN_HAS_RDRAND
-#endif
-
-#if defined(SCATTERGUN_HAS_RDSEED_INLINE)
-#   define SCATTERGUN_HAS_RDSEED
-#elif defined(SCATTERGUN_HAS_RDSEED_INTRINSIC)
-#   define SCATTERGUN_HAS_RDSEED
-#elif defined(SCATTERGUN_HAS_RDSEED_INSTRUCTION)
-#   define SCATTERGUN_HAS_RDSEED
-#else
-#   undef SCATTERGUN_HAS_RDSEED
-#endif
-
-#if !defined(SCATTERGUN_HAS_RDRAND) && !defined(SCATTERGUN_HAS_RDSEED)
-#   error Neither RDRAND nor RDSEED defined!
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -103,9 +79,9 @@ static void lprintf(const char * format, ...)
 static void lerror(const char * string)
 {
     if (daemonize) {
-        syslog(LOG_ERR, "%s: %s", string, strerror(errno));
+        syslog(LOG_ERR, "%s: %s\n", string, strerror(errno));
     } else {
-        fprintf(stderr, "%s: %s", string, strerror(errno));
+        fprintf(stderr, "%s: %s\n", string, strerror(errno));
     }
 }
 
@@ -157,7 +133,7 @@ static void usage(int nomenu)
  * @param l is the cpuid leaf to be loaded in register EAX.
  * @param s is the cpuid subleaf to be loaded into register ECX. 
  */
-static inline void cpuid(uint32_t * ap, uint32_t * bp, uint32_t * cp, uint32_t * dp, uint32_t l, uint32_t s)
+static void cpuid(uint32_t * ap, uint32_t * bp, uint32_t * cp, uint32_t * dp, uint32_t l, uint32_t s)
 {
     asm volatile ("cpuid" : "=a" (*ap), "=b" (*bp), "=c" (*cp), "=d" (*dp) : "a" (l), "c" (s) );
     
@@ -168,6 +144,50 @@ static inline void cpuid(uint32_t * ap, uint32_t * bp, uint32_t * cp, uint32_t *
     lprintf("%s: ebx          0x%8.8x\n", program, *bp);
     lprintf("%s: ecx          0x%8.8x\n", program, *cp);
     lprintf("%s: edx          0x%8.8x\n", program, *dp);
+}
+
+/**
+ * Run the rdrand instruction.
+ * @param wp points to the result word.
+ * @return the carry bit indicating success.
+ */
+static inline uint8_t rdrand(uint32_t * wp)
+{
+#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
+    return _rdrand32_step(wp);
+#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
+    return __builtin_ia32_rdrand32_step(wp);
+#elif defined(SCATTERGUN_HAS_RDRAND_MNEMONIC)
+    uint8_t carry = 1;
+    asm volatile ("rdrand %0; setc %1" : "=r" (*wp), "=qm" (carry));
+    return carry;
+#else
+    uint8_t carry = 1;
+    asm volatile (".byte 0x0f,0xc7,0xf0; setc %0" : "=qm" (carry), "=a" (*wp));
+    return carry;
+#endif
+}
+
+/**
+ * Run the rdseed instruction.
+ * @param wp points to the result word.
+ * @return the carry bit indicating success.
+ */
+static inline uint8_t rdseed(uint32_t * wp)
+{
+#if defined(SCATTERGUN_HAS_RDSEED_INLINE)
+    return _rdseed32_step(wp);
+#elif defined(SCATTERGUN_HAS_RDSEED_INTRINSIC)
+    return __builtin_ia32_rdseed32_step(wp);
+#elif defined(SCATTERGUN_HAS_RDSEED_MNEMONIC)
+    uint8_t carry = 1;
+    asm volatile ("rdseed %0; setc %1" : "=r" (*wp), "=qm" (carry));
+    return carry;
+#else
+    uint8_t carry = 1;
+    asm volatile (".byte 0x0f,0xc7,0xf8; setc %0" : "=qm" (carry), "=a" (*wp));
+    return carry;
+#endif
 }
 
 /**
@@ -185,6 +205,7 @@ static int query(void)
     uint32_t d;
 
     cpuid(&a, &b, &c, &d, 0, 0);
+
     if ((memcmp((char *)&b, "Genu", 4) == 0) && (memcmp((char *)&d, "ineI", 4) == 0) && (memcmp((char *)&c, "ntel", 4) == 0)) {
         lprintf("%s: cpu          Intel\n", program);
         cpuid(&a, &b, &c, &d, 1, 0);
@@ -228,15 +249,7 @@ static int reseed(void)
     }
 
     for (ii = 0; ii < RESEED; ++ii) {
-#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
-        carry = _rdrand32_step(&word);
-#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
-        carry = __builtin_ia32_rdrand32_step(&word);
-#elif defined(SCATTERGUN_HAS_RDRAND_INSTRUCTION)
-        asm volatile ("rdrand %0; setc %1" : "=r" (word), "=qm" (carry) );
-#else
-        break;
-#endif
+        carry = rdrand(&word);
         if (carry) {
             ++count;
         }
@@ -281,6 +294,8 @@ int main(int argc, char * argv[])
     uint8_t carry;
     static const uint32_t CAFEBEEF = 0xCAFEBEEF;
     static const uint32_t DEADCODE = 0xDEADC0DE;
+    static const uint32_t NANOSECONDS = 1000000;
+    static const size_t CONSECUTIVE = 10;
 
     /*
      * Crack open the command line argument vector.
@@ -453,53 +468,36 @@ int main(int argc, char * argv[])
          * Enter our work loop.
          */
 
-        request.tv_sec = 0;
-        request.tv_nsec = 1000000;
+        request.tv_sec = NANOSECONDS / 1000000000;
+        request.tv_nsec = NANOSECONDS % 1000000000;
 
-        word = DEADCODE;
-        carry = 1;
+        xc = 0;
 
         while (!done) {
+
             if (report) {
                 lprintf("%s: tries=%zu size=%zu reads=%zu total=%zu\n", program, tries, sizeof(word), reads, total);
                 report = 0;
             }
+
             ++tries;
+
             if (mode == RDRAND) {
-#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
                 word = CAFEBEEF;
-                carry = _rdrand32_step(&word);
-#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
-                word = CAFEBEEF;
-                carry = __builtin_ia32_rdrand32_step(&word);
-#elif defined(SCATTERGUN_HAS_RDRAND_INSTRUCTION)
-                word = CAFEBEEF;
-                carry = 1;
-                asm volatile ("rdrand %0; setc %1" : "=r" (word), "=qm" (carry) );
-#else
-                break;
-#endif
+                carry = rdrand(&word);
             } else if (mode == RDSEED) {
-#if SCATTERGUN_HAS_RDSEED_INLINE
                 word = CAFEBEEF;
-                carry = _rdseed32_step(&word);
-#elif SCATTERGUN_HAS_RDSEED_INTRINSIC
-                word = CAFEBEEF;
-                carry = __builtin_ia32_rdseed32_step(&word);
-#elif SCATTERGUN_HAS_RDSEED_INSTRUCTION
-                word = CAFEBEEF;
-                carry = 1;
-                asm volatile ("rdseed %0; setc %1" : "=r" (word), "=qm" (carry) );
-#else
-                break;
-#endif
+                carry = rdseed(&word);
             } else {
-                /* Do nothing (fail). */
+                word = DEADCODE;
+                carry = 1;
             }
+
             if (carry) {
                 consecutive = 0;
-            } else if ((++consecutive) >= 10) {
+            } else if ((++consecutive) >= CONSECUTIVE) {
                 lprintf("%s: consecutive=%zu\n", program, consecutive);
+                xc = 2;
                 break;
             } else if ((rc = nanosleep(&request, (struct timespec *)0)) >= 0) {
                 continue;
@@ -507,21 +505,32 @@ int main(int argc, char * argv[])
                 continue;
             } else {
                 lerror("nanosleep");
+                xc = 2;
                 break;
             }
+
             ++reads;
             total += sizeof(word);
+
             written = fwrite(&word, sizeof(word), 1, fp);
-            if (written < 1) {
+            if (written >= 1) {
+                /* Do nothing: nominal. */
+            } else if (!ferror(fp)) {
+                break;
+            } else if (errno == EPIPE) {
                 lerror("fwrite");
                 break;
+            } else {
+                lerror("fwrite");
+                xc = 2;
+                break;
             }
+
             if (debug) {
                 lprintf("%s: tries=%zu size=%zu reads=%zu total=%zu\n", program, tries, sizeof(word), reads, total);
             }
-        }
 
-        xc = 0;
+        }
 
     } while (0);
 

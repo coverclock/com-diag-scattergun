@@ -1,10 +1,3 @@
-# ubld.it TrueRNG and TrueRNGpro
-#
-# This rule creates a symlin to newly attached CDC-ACM device 
-# Also includes fix for wrong termios settings on some linux kernels
-# New! includes ignore for modemmanger
-# (Thanks neoaeon)
+# ubld.it TrueRNG
 SUBSYSTEM=="tty", ATTRS{product}=="TrueRNG", SYMLINK+="TrueRNG", RUN+="/bin/stty raw -echo -ixoff -F /dev/%k speed 3000000"
 ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="f5fe", ENV{ID_MM_DEVICE_IGNORE}="1"
-SUBSYSTEM=="tty", ATTRS{product}=="TrueRNGpro", SYMLINK+="TrueRNGpro", RUN+="/bin/stty raw -echo -ixoff -F /dev/%k speed 3000000"
-ATTRS{idVendor}=="16d0", ATTRS{idProduct}=="0aa0", ENV{ID_MM_DEVICE_IGNORE}="1"
