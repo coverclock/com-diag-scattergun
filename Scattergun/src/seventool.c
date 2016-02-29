@@ -175,9 +175,7 @@ static inline uint8_t rdrand(uint32_t * wp)
  */
 static inline uint8_t rdseed(uint32_t * wp)
 {
-#if defined(SCATTERGUN_HAS_RDSEED_INLINE)
-    return _rdseed32_step(wp);
-#elif defined(SCATTERGUN_HAS_RDSEED_INTRINSIC)
+#if defined(SCATTERGUN_HAS_RDSEED_INTRINSIC)
     return __builtin_ia32_rdseed32_step(wp);
 #elif defined(SCATTERGUN_HAS_RDSEED_MNEMONIC)
     uint8_t carry = 1;
