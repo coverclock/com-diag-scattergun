@@ -124,17 +124,6 @@ TrueRNGPro:
 
 ################################################################################
 
-BCM2708=scattergun_betty_bcm2708
-
-bcm2708:
-	mkdir -p $(BCM2708)
-	( ( dd if=/dev/random | bash scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1 ) &
-	tail -f $(BCM2708)/scattergun.log
-
-.PHONY:	bcm2708
-
-################################################################################
-
 QUANTIS=scattergun_silver_quantis
 
 quantis:	src/quantistool
@@ -143,6 +132,17 @@ quantis:	src/quantistool
 	tail -f $(QUANTIS)/scattergun.log
 
 .PHONY:	quantis
+
+################################################################################
+
+ONERNG=scattergun_silver_onerng
+
+onerng:	src/onerngtool
+	mkdir -p $(ONERNG)
+	( ( onerngtool -v | bash scattergun.sh $(ONERNG) ) > $(ONERNG)/scattergun.log 2>&1 ) &
+	tail -f $(ONERNG)/scattergun.log
+
+.PHONY:	onerng
 
 ################################################################################
 
@@ -165,6 +165,17 @@ random:
 	tail -f $(RANDOM)/scattergun.log
 
 .PHONY:	random
+
+################################################################################
+
+BCM2708=scattergun_betty_bcm2708
+
+bcm2708:
+	mkdir -p $(BCM2708)
+	( ( dd if=/dev/random | bash scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1 ) &
+	tail -f $(BCM2708)/scattergun.log
+
+.PHONY:	bcm2708
 
 ################################################################################
 

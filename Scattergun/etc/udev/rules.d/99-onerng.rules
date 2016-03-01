@@ -1,2 +1,0 @@
-# Moonbase Otago OneRNG
-ACTION=="add", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6086", ENV{ID_MM_DEVICE_IGNORE}="1", ENV{ID_MM_CANDIDATE}="0", OWNER:="root", GROUP:="root", MODE:="0600", SYMLINK+="onerng", RUN+="/usr/local/bin/onernginit.sh %k"

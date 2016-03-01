@@ -25,6 +25,8 @@ uname -a
 [[ -c /dev/urandom ]] && ls -l /dev/urandom
 [[ -c /dev/hwrng ]] && ls -l /dev/hwrng
 [[ -c /dev/TrueRNG ]] && ls -l /dev/TrueRNG
+[[ -c /dev/TrueRNGpro ]] && ls -l /dev/TrueRNGpro
+[[ -c /dev/OneRNG ]] && ls -l /dev/OneRNG
 
 # modprobe bcm2708_rng # Raspberry Pi 2 Model B v1.1 2014
 
