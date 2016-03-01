@@ -18,7 +18,7 @@ DAEMON=/usr/local/sbin/quantistool
 NAME=quantistool
 DESC="quantistool Hardware RNG entropy generator daemon"
 PIDFILE=/var/run/${NAME}.pid
-HRNGDEVICE=/var/tmp/quantistool
+HRNGDEVICE=/var/run/quantis.fifo
 ETCFILE=/etc/default/rng-tools
 OPTIONS="-D -i ${NAME} -v -u 0 -o ${HRNGDEVICE}"
 

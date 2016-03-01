@@ -1,1 +1,1 @@
-HRNGDEVICE=/var/tmp/quantistool
+HRNGDEVICE=/var/run/quantis.fifo

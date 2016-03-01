@@ -183,7 +183,7 @@ RDRAND=scattergun_mercury_rdrand
 
 rdrand:	src/seventool
 	mkdir -p $(RDRAND)
-	( ( seventool -v -R | bash scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1 ) &
+	( ( seventool -v -R -c | bash scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1 ) &
 	tail -f $(RDRAND)/scattergun.log
 
 .PHONY: rdrand
@@ -194,7 +194,7 @@ RDSEED=scattergun_mercury_rdseed
 
 rdseed:	src/seventool
 	mkdir -p $(RDSEED)
-	( ( seventool -v -S | bash scattergun.sh $(RDSEED) ) > $(RDSEED)/scattergun.log 2>&1 ) &
+	( ( seventool -v -S -c | bash scattergun.sh $(RDSEED) ) > $(RDSEED)/scattergun.log 2>&1 ) &
 	tail -f $(RDSEED)/scattergun.log
 
 .PHONY: rdseed
