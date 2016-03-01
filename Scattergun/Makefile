@@ -41,6 +41,7 @@ export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 ################################################################################
 
+ALL  = $(OUT)/setup
 ALL += $(OUT)/quantistool
 ALL += $(OUT)/seventool
 ALL += $(OUT)/seventool-binary
@@ -129,11 +130,10 @@ $(OUT)/truerngd.sh:	bin/truerngd.sh
 
 ################################################################################
 
-environment:
-	echo export PATH=$(shell pwd)/bin:$(shell pwd)/src:$(USNISTGOV_ROOT):$(PATH)
-	echo export LD_LIBRARY_PATH=$(QUANTISLIBPATH):$(LD_LIBRARY_PATH)
-
-.PHONY: environment
+$(OUT)/setup:
+	cp /dev/null $@
+	echo export PATH=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(PATH) >> $@
+	echo export LD_LIBRARY_PATH=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH) >> $@
 
 ################################################################################
 
