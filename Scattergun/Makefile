@@ -34,16 +34,30 @@ ROOT=$(HOME)/src
 USNISTGOV_ROOT=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment
 QUANTIS_ROOT=$(ROOT)/idq-quantis
 
-export PATH:=$(shell pwd)/bin:$(shell pwd)/src:$(USNISTGOV_ROOT):$(PATH)
+OUT=out/host/bin
+
+export PATH:=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(PATH)
 export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 ################################################################################
 
-all:
+ALL += $(OUT)/quantistool
+ALL += $(OUT)/seventool
+ALL += $(OUT)/seventool-binary
+ALL += $(OUT)/seventool-mnemonic
+ALL += $(OUT)/seventool-intrinsic
+ALL += $(OUT)/seventool-inline
+ALL += $(OUT)/characterize.sh
+ALL += $(OUT)/consume.sh
+ALL += $(OUT)/monitor.sh
+ALL += $(OUT)/onernginit.sh
+ALL += $(OUT)/scattergun.sh
+ALL += $(OUT)/truerngd.sh
+
+all:	$(ALL)
 
 clean:
-	rm -f src/quantistool src/seventool
-	rm -f src/seventool-binary src/seventool-mnemonic src/seventool-intrinsic src/seventool-inline
+	rm -rf $(ALL)
 
 .PHONY: all clean
 
@@ -59,38 +73,61 @@ QUANTIS_LDFLAGS += $(QUANTIS_LIBPATH)/libQuantis.a
 QUANTIS_LDFLAGS += -lusb-1.0
 QUANTIS_LDFLAGS += -lpthread
 
-src/quantistool: src/quantistool.c
+$(OUT)/quantistool: src/quantistool.c
 	$(CC) $(CFLAGS) $(QUANTIS_CFLAGS) -o $@ $^ $(LDFLAGS) $(QUANTIS_LDFLAGS)
 
 ################################################################################
 
-src/seventool:	src/seventool-mnemonic
-	mv $^ $@
+$(OUT)/seventool:	$(OUT)/seventool-mnemonic
+	cp $^ $@
 
-src/seventool-binary: src/seventool.c
+$(OUT)/seventool-binary: src/seventool.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 SEVEN_MNEMONIC += -DSCATTERGUN_HAS_RDRAND_MNEMONIC
 SEVEN_MNEMONIC += -DSCATTERGUN_HAS_RDSEED_MNEMONIC
 
-src/seventool-mnemonic: src/seventool.c
+$(OUT)/seventool-mnemonic: src/seventool.c
 	$(CC) $(CFLAGS) $(SEVEN_MNEMONIC) -o $@ $^ $(LDFLAGS)
 
 SEVEN_INTRINSIC += -DSCATTERGUN_HAS_RDRAND_INTRINSIC
 SEVEN_INTRINSIC += -DSCATTERGUN_HAS_RDSEED_INTRINSIC
 
-src/seventool-intrinsic: src/seventool.c
+$(OUT)/seventool-intrinsic: src/seventool.c
 	$(CC) $(CFLAGS) $(SEVEN_INTRINSIC) -o $@ $^ $(LDFLAGS)
 
 SEVEN_INLINE += -DSCATTERGUN_HAS_RDRAND_INLINE
 SEVEN_INLINE += -DSCATTERGUN_HAS_RDSEED_INTRINSIC
 
-src/seventool-inline: src/seventool.c
+$(OUT)/seventool-inline: src/seventool.c
 	$(CC) $(CFLAGS) $(SEVEN_INLINE) -o $@ $^ $(LDFLAGS)
 
-seventool-all:	src/seventool-binary src/seventool-mnemonic src/seventool-intrinsic src/seventool-inline
+################################################################################
 
-.PHONY:	seventool-all
+$(OUT)/characterize.sh:	bin/characterize.sh
+	cp $^ $@
+	chmod 775 $@
+
+$(OUT)/consume.sh:	bin/consume.sh
+	cp $^ $@
+	chmod 775 $@
+
+$(OUT)/monitor.sh:	bin/monitor.sh
+	cp $^ $@
+	chmod 775 $@
+
+$(OUT)/onernginit.sh:	bin/onernginit.sh
+	cp $^ $@
+	chmod 775 $@
+
+$(OUT)/scattergun.sh:	bin/scattergun.sh
+	cp $^ $@
+	chmod 775 $@
+
+$(OUT)/truerngd.sh:	bin/truerngd.sh
+	cp $^ $@
+	chmod 775 $@
+
 
 ################################################################################
 
@@ -183,7 +220,7 @@ RDRAND=scattergun_mercury_rdrand
 
 rdrand:	src/seventool
 	mkdir -p $(RDRAND)
-	( ( seventool -v -R -c | bash scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1 ) &
+	( ( seventool -v -R -r -c | bash scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1 ) &
 	tail -f $(RDRAND)/scattergun.log
 
 .PHONY: rdrand
