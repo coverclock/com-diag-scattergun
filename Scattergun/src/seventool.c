@@ -12,7 +12,7 @@
  *
  * USAGE
  *
- * seventool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R [ -r ] | -S ] [ -o PATH ]
+ * seventool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R [ -r ] | -S ] [ -c ] [ -x ] [ -o PATH ]
  *
  * EXAMPLES
  *
@@ -71,6 +71,25 @@ static void lprintf(const char * format, ...)
 }
 
 /**
+ * Emit a formatting string to either the system log or to standard error
+ * if verbosity is enabled.
+ * @param format is the printf format.
+ */
+static void lverbosef(const char * format, ...)
+{
+    if (verbose) {
+        va_list ap;
+        va_start(ap, format);
+        if (daemonize) {
+            vsyslog(LOG_DEBUG, format, ap);
+        } else {
+            vfprintf(stderr, format, ap);
+        }
+        va_end(ap);
+    }
+}
+
+/**
  * Emit a caller provider string and an error message string corresponding to
  * the current value of the error number (errno) to either the system log or
  * to standard error.
@@ -110,7 +129,7 @@ static void handler(int signum)
  */
 static void usage(int nomenu)
 {
-    lprintf("usage: %s [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R [ -r ] | -S ] [ -o PATH ]\n", program);
+    lprintf("usage: %s [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R [ -r ] | -S ] [ -c ] [ -x ] [ -o PATH ]\n", program);
     if (nomenu) { return; }
     lprintf("       -d            Enable debug mode\n");
     lprintf("       -v            Enable verbose mode\n");
@@ -119,6 +138,8 @@ static void usage(int nomenu)
     lprintf("       -R            Use the rdrand instruction\n");
     lprintf("       -r            Force the rdrand DRNG to reseed beforehand\n");
     lprintf("       -S            Use the rdseed instruction\n");
+    lprintf("       -c            Check for instruction, exit if unimplemented\n");
+    lprintf("       -x            Perform check only, exit afterwards\n");
     lprintf("       -o PATH       Write to PATH (which may be a fifo) instead of stdout\n");
     lprintf("       -h            Print help menu\n");
 }
@@ -136,14 +157,14 @@ static void usage(int nomenu)
 static void cpuid(uint32_t * ap, uint32_t * bp, uint32_t * cp, uint32_t * dp, uint32_t l, uint32_t s)
 {
     asm volatile ("cpuid" : "=a" (*ap), "=b" (*bp), "=c" (*cp), "=d" (*dp) : "a" (l), "c" (s) );
-    
-    lprintf("%s: cpuid\n", program);
-    lprintf("%s: leaf         %d\n", program, l);
-    lprintf("%s: subleaf      %d\n", program, s);
-    lprintf("%s: eax          0x%8.8x\n", program, *ap);
-    lprintf("%s: ebx          0x%8.8x\n", program, *bp);
-    lprintf("%s: ecx          0x%8.8x\n", program, *cp);
-    lprintf("%s: edx          0x%8.8x\n", program, *dp);
+ 
+    lverbosef("%s: cpuid\n", program);
+    lverbosef("%s: leaf         %d\n", program, l);
+    lverbosef("%s: subleaf      %d\n", program, s);
+    lverbosef("%s: eax          0x%8.8x\n", program, *ap);
+    lverbosef("%s: ebx          0x%8.8x\n", program, *bp);
+    lverbosef("%s: ecx          0x%8.8x\n", program, *cp);
+    lverbosef("%s: edx          0x%8.8x\n", program, *dp);
 }
 
 /**
@@ -205,23 +226,28 @@ static int query(void)
     cpuid(&a, &b, &c, &d, 0, 0);
 
     if ((memcmp((char *)&b, "Genu", 4) == 0) && (memcmp((char *)&d, "ineI", 4) == 0) && (memcmp((char *)&c, "ntel", 4) == 0)) {
-        lprintf("%s: cpu          Intel\n", program);
+
+        lverbosef("%s: cpu          Intel\n", program);
+
         cpuid(&a, &b, &c, &d, 1, 0);
         if (c & 0x40000000) {
-            lprintf("%s: rdrand       available\n", program);
+            lverbosef("%s: rdrand       available\n", program);
             result |= 1<<RDRAND;
         } else {
-            lprintf("%s: rdrand       unavailable\n", program);
+            lverbosef("%s: rdrand       unavailable\n", program);
         }
+
         cpuid(&a, &b, &c, &d, 7, 0);
         if (b & 0x00040000) {
-            lprintf("%s: rdseed       available\n", program);
+            lverbosef("%s: rdseed       available\n", program);
             result |= 1<<RDSEED;
         } else {
-            lprintf("%s: rdseed       unavailable\n", program);
+            lverbosef("%s: rdseed       unavailable\n", program);
         }
     } else {
-        lprintf("%s: cpu          other\n", program);
+
+        lverbosef("%s: cpu          other\n", program);
+
     }
 
     return result;
@@ -242,9 +268,7 @@ static int reseed(void)
     uint8_t carry = 1;
     int ii;
 
-    if (verbose) {
-        lprintf("%s: reseeding    %d\n", program, RESEED);
-    }
+    lverbosef("%s: reseeding    %d\n", program, RESEED);
 
     for (ii = 0; ii < RESEED; ++ii) {
         carry = rdrand(&word);
@@ -253,9 +277,7 @@ static int reseed(void)
         }
     }
 
-    if (verbose) {
-        lprintf("%s: reseeded     %d\n", program, count);
-    }
+    lverbosef("%s: reseeded     %d\n", program, count);
 
     return (count == RESEED);
 }
@@ -286,6 +308,8 @@ int main(int argc, char * argv[])
     const char * path = (const char *)0;
     enum mode mode = FAIL;
     int doreseed = 0;
+    int docheck = 0;
+    int doexit = 0;
     int opt;
     extern char * optarg;
     uint32_t word;
@@ -301,7 +325,7 @@ int main(int argc, char * argv[])
 
     program = ((program = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : program + 1;
 
-    while ((opt = getopt(argc, argv, "dvDo:i:hRrS")) >= 0) {
+    while ((opt = getopt(argc, argv, "dvDo:i:hRrScx")) >= 0) {
 
         switch (opt) {
 
@@ -342,6 +366,15 @@ int main(int argc, char * argv[])
             mode = RDSEED;
             break;
 
+        case 'c':
+            docheck = !0;
+            break;
+
+        case 'x':
+            docheck = !0;
+            doexit = !0;
+            break;
+
         default:
             error = !0;
             break;
@@ -361,38 +394,23 @@ int main(int argc, char * argv[])
             break;
         }
 
-        /*
-         * Daemonize if so configured. Why do we do this stuff with the
-         * system log? If we daemonize, we want to direct subsequent messages
-         * to the system log, since standard error will be redirected to
-         * /dev/null. But it is convenient to direct all the messages to the
-         * same place, so if a daemon we start off using the system log.
-         * But if daemon(3) works as I think it should (it is really under-
-         * documented), it should close the socket used to communicate with
-         * the system log daemon. So we close it (in case it isn't already
-         * closed) and (re)open it. (I am highly tempted not to use the
-         * daemon(3) function and port the equivalent function from Diminuto.)
-         */
-
         if (daemonize) {
-            openlog(ident, LOG_CONS | LOG_PID, LOG_DAEMON);
             if (daemon(0, 0) < 0) {
                 perror("daemon");
                 break;
             }
-            closelog();
             openlog(ident, LOG_CONS | LOG_PID, LOG_DAEMON);
+            lverbosef("%s: pid          %d\n", program, getpid());
         }
 
-        if (verbose) {
-            lprintf("%s: pid          %d\n", program, getpid());
-        }
-
-        if (verbose) {  
+        if (docheck) {  
             rc = query();
             if ((mode == RDRAND) && ((rc & (1 << RDRAND)) == 0)) {
                 break;
             } else if ((mode == RDSEED) && ((rc & (1 << RDSEED)) == 0)) {
+                break;
+            } else if (doexit) {
+                xc = 0;
                 break;
             } else {
                 /* Do nothing. */
@@ -432,9 +450,7 @@ int main(int argc, char * argv[])
          */
 
         if (path != (const char *)0) {
-            if (verbose) {
-                lprintf("%s: path         \"%s\"\n", program, path);
-            }
+            lverbosef("%s: path         \"%s\"\n", program, path);
             fp = fopen(path, "a");
             if (fp == (FILE *)0) {
                 lerror(path);
@@ -442,24 +458,22 @@ int main(int argc, char * argv[])
             }
         }
 
-        if (verbose) {
-            lprintf("%s: mode         %s\n", program, MODE[mode]);
-        }
+        lverbosef("%s: mode         %s\n", program, MODE[mode]);
 
         /*
          * Force a reseed if requested and if using rdrand.
          */
 
-        if (mode != RDRAND) {
+        if (!doreseed) {
             /* Do nothing. */
-        } else if (!doreseed) {
+        } else if (mode != RDRAND) {
             /* Do nothing. */
         } else if (reseed()) {
             /* Do nothing. */
-        } else if (!verbose) {
-            /* Do nothing. */
         } else {
-            lprintf("%s: reseed       failed\n", program);
+            errno = EBUSY;
+            lerror("reseed");
+            break;
         }
 
         /*
@@ -494,7 +508,8 @@ int main(int argc, char * argv[])
             if (carry) {
                 consecutive = 0;
             } else if ((++consecutive) >= CONSECUTIVE) {
-                lprintf("%s: consecutive=%zu\n", program, consecutive);
+                errno = EBUSY;
+                lerror("carry");
                 xc = 2;
                 break;
             } else if ((rc = nanosleep(&request, (struct timespec *)0)) >= 0) {
@@ -540,9 +555,7 @@ int main(int argc, char * argv[])
         fclose(fp);
     }
 
-    if (verbose) {
-        lprintf("%s: tries=%zu size=%zu reads=%zu total=%zu\n", program, tries, sizeof(word), reads, total);
-    }
+    lverbosef("%s: tries=%zu size=%zu reads=%zu total=%zu\n", program, tries, sizeof(word), reads, total);
 
     return xc;
 }
