@@ -75,11 +75,16 @@ echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) end rngtest"
 echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin ent"
 
 # sudo apt-get install ent
+# http://www.fourmilab.ch/random/random.zip
 
 if [[ -x /usr/bin/ent ]]; then
 	DATA="${SAVE}/ent.dat"
 	time dd of=${DATA} bs=1024 count=4096 iflag=fullblock
 	time /usr/bin/ent ${DATA}
+elif [[ -x ${HOME}/bin/ent ]]; then
+	DATA="${SAVE}/ent.dat"
+	time dd of=${DATA} bs=1024 count=4096 iflag=fullblock
+	time ${HOME}/bin/ent ${DATA}
 fi
 
 echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) end ent"
