@@ -12,7 +12,7 @@
  *
  * USAGE
  *
- * seventool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R | -S ] [ -o PATH ]
+ * seventool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R [ -r ] | -S ] [ -c ] [ -x ] [ -o PATH ]
  *
  * EXAMPLES
  *
@@ -26,30 +26,6 @@
  * regarding examining the capabilities of the host processor. This is part of
  * the Scattergun project.
  */
-
-#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
-#   define SCATTERGUN_HAS_RDRAND
-#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
-#   define SCATTERGUN_HAS_RDRAND
-#elif defined(SCATTERGUN_HAS_RDRAND_INSTRUCTION)
-#   define SCATTERGUN_HAS_RDRAND
-#else
-#   undef SCATTERGUN_HAS_RDRAND
-#endif
-
-#if defined(SCATTERGUN_HAS_RDSEED_INLINE)
-#   define SCATTERGUN_HAS_RDSEED
-#elif defined(SCATTERGUN_HAS_RDSEED_INTRINSIC)
-#   define SCATTERGUN_HAS_RDSEED
-#elif defined(SCATTERGUN_HAS_RDSEED_INSTRUCTION)
-#   define SCATTERGUN_HAS_RDSEED
-#else
-#   undef SCATTERGUN_HAS_RDSEED
-#endif
-
-#if !defined(SCATTERGUN_HAS_RDRAND) && !defined(SCATTERGUN_HAS_RDSEED)
-#   error Neither RDRAND nor RDSEED defined!
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -95,6 +71,25 @@ static void lprintf(const char * format, ...)
 }
 
 /**
+ * Emit a formatting string to either the system log or to standard error
+ * if verbosity is enabled.
+ * @param format is the printf format.
+ */
+static void lverbosef(const char * format, ...)
+{
+    if (verbose) {
+        va_list ap;
+        va_start(ap, format);
+        if (daemonize) {
+            vsyslog(LOG_DEBUG, format, ap);
+        } else {
+            vfprintf(stderr, format, ap);
+        }
+        va_end(ap);
+    }
+}
+
+/**
  * Emit a caller provider string and an error message string corresponding to
  * the current value of the error number (errno) to either the system log or
  * to standard error.
@@ -103,9 +98,9 @@ static void lprintf(const char * format, ...)
 static void lerror(const char * string)
 {
     if (daemonize) {
-        syslog(LOG_ERR, "%s: %s", string, strerror(errno));
+        syslog(LOG_ERR, "%s: %s\n", string, strerror(errno));
     } else {
-        fprintf(stderr, "%s: %s", string, strerror(errno));
+        fprintf(stderr, "%s: %s\n", string, strerror(errno));
     }
 }
 
@@ -134,14 +129,17 @@ static void handler(int signum)
  */
 static void usage(int nomenu)
 {
-    lprintf("usage: %s [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R | -S ] [ -o PATH ]\n", program);
+    lprintf("usage: %s [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -R [ -r ] | -S ] [ -c ] [ -x ] [ -o PATH ]\n", program);
     if (nomenu) { return; }
     lprintf("       -d            Enable debug mode\n");
     lprintf("       -v            Enable verbose mode\n");
     lprintf("       -D            Run as a daemon\n");
     lprintf("       -i IDENT      Use IDENT as the syslog identifier\n");
     lprintf("       -R            Use the rdrand instruction\n");
+    lprintf("       -r            Force the rdrand DRNG to reseed beforehand\n");
     lprintf("       -S            Use the rdseed instruction\n");
+    lprintf("       -c            Check for instruction, exit if unimplemented\n");
+    lprintf("       -x            Perform check only, exit afterwards\n");
     lprintf("       -o PATH       Write to PATH (which may be a fifo) instead of stdout\n");
     lprintf("       -h            Print help menu\n");
 }
@@ -156,17 +154,59 @@ static void usage(int nomenu)
  * @param l is the cpuid leaf to be loaded in register EAX.
  * @param s is the cpuid subleaf to be loaded into register ECX. 
  */
-static inline void cpuid(uint32_t * ap, uint32_t * bp, uint32_t * cp, uint32_t * dp, uint32_t l, uint32_t s)
+static void cpuid(uint32_t * ap, uint32_t * bp, uint32_t * cp, uint32_t * dp, uint32_t l, uint32_t s)
 {
     asm volatile ("cpuid" : "=a" (*ap), "=b" (*bp), "=c" (*cp), "=d" (*dp) : "a" (l), "c" (s) );
-    
-    lprintf("%s: cpuid\n", program);
-    lprintf("%s: leaf         %d\n", program, l);
-    lprintf("%s: subleaf      %d\n", program, s);
-    lprintf("%s: eax          0x%8.8x\n", program, *ap);
-    lprintf("%s: ebx          0x%8.8x\n", program, *bp);
-    lprintf("%s: ecx          0x%8.8x\n", program, *cp);
-    lprintf("%s: edx          0x%8.8x\n", program, *dp);
+ 
+    lverbosef("%s: cpuid\n", program);
+    lverbosef("%s: leaf         %d\n", program, l);
+    lverbosef("%s: subleaf      %d\n", program, s);
+    lverbosef("%s: eax          0x%8.8x\n", program, *ap);
+    lverbosef("%s: ebx          0x%8.8x\n", program, *bp);
+    lverbosef("%s: ecx          0x%8.8x\n", program, *cp);
+    lverbosef("%s: edx          0x%8.8x\n", program, *dp);
+}
+
+/**
+ * Run the rdrand instruction.
+ * @param wp points to the result word.
+ * @return the carry bit indicating success.
+ */
+static inline uint8_t rdrand(uint32_t * wp)
+{
+#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
+    return _rdrand32_step(wp);
+#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
+    return __builtin_ia32_rdrand32_step(wp);
+#elif defined(SCATTERGUN_HAS_RDRAND_MNEMONIC)
+    uint8_t carry = 1;
+    asm volatile ("rdrand %0; setc %1" : "=r" (*wp), "=qm" (carry));
+    return carry;
+#else
+    uint8_t carry = 1;
+    asm volatile (".byte 0x0f,0xc7,0xf0; setc %0" : "=qm" (carry), "=a" (*wp));
+    return carry;
+#endif
+}
+
+/**
+ * Run the rdseed instruction.
+ * @param wp points to the result word.
+ * @return the carry bit indicating success.
+ */
+static inline uint8_t rdseed(uint32_t * wp)
+{
+#if defined(SCATTERGUN_HAS_RDSEED_INTRINSIC)
+    return __builtin_ia32_rdseed32_step(wp);
+#elif defined(SCATTERGUN_HAS_RDSEED_MNEMONIC)
+    uint8_t carry = 1;
+    asm volatile ("rdseed %0; setc %1" : "=r" (*wp), "=qm" (carry));
+    return carry;
+#else
+    uint8_t carry = 1;
+    asm volatile (".byte 0x0f,0xc7,0xf8; setc %0" : "=qm" (carry), "=a" (*wp));
+    return carry;
+#endif
 }
 
 /**
@@ -184,27 +224,63 @@ static int query(void)
     uint32_t d;
 
     cpuid(&a, &b, &c, &d, 0, 0);
+
     if ((memcmp((char *)&b, "Genu", 4) == 0) && (memcmp((char *)&d, "ineI", 4) == 0) && (memcmp((char *)&c, "ntel", 4) == 0)) {
-        lprintf("%s: cpu          Intel\n", program);
+
+        lverbosef("%s: cpu          Intel\n", program);
+
         cpuid(&a, &b, &c, &d, 1, 0);
         if (c & 0x40000000) {
-            lprintf("%s: rdrand       available\n", program);
+            lverbosef("%s: rdrand       available\n", program);
             result |= 1<<RDRAND;
         } else {
-            lprintf("%s: rdrand       unavailable\n", program);
+            lverbosef("%s: rdrand       unavailable\n", program);
         }
+
         cpuid(&a, &b, &c, &d, 7, 0);
         if (b & 0x00040000) {
-            lprintf("%s: rdseed       available\n", program);
+            lverbosef("%s: rdseed       available\n", program);
             result |= 1<<RDSEED;
         } else {
-            lprintf("%s: rdseed       unavailable\n", program);
+            lverbosef("%s: rdseed       unavailable\n", program);
         }
+
     } else {
-        lprintf("%s: cpu          other\n", program);
+
+        lverbosef("%s: cpu          other\n", program);
+
     }
 
     return result;
+}
+
+/**
+ * Force the rdrand mechanism to reseed. We do this by calling rdrand just
+ * one more time than its reseed cycle. The rdrand DRNG is guaranteed to
+ * produce no more than (511 * 2) or 1022 64-bit results using the same seed.
+ * Where exactly in this loop the rdrand reseeds is transparent and unknowable.
+ * @return true if the all of the rdrand calls succeeded, false otherwise.
+ */
+static int reseed(void)
+{
+    static const int RESEED = ((511 * 2 * 64) / sizeof(uint32_t)) + 1;
+    int count = 0;
+    uint32_t word = 0;
+    uint8_t carry = 1;
+    int ii;
+
+    lverbosef("%s: reseeding    %d\n", program, RESEED);
+
+    for (ii = 0; ii < RESEED; ++ii) {
+        carry = rdrand(&word);
+        if (carry) {
+            ++count;
+        }
+    }
+
+    lverbosef("%s: reseeded     %d\n", program, count);
+
+    return (count == RESEED);
 }
 
 /**
@@ -232,12 +308,17 @@ int main(int argc, char * argv[])
     size_t consecutive = 0;
     const char * path = (const char *)0;
     enum mode mode = FAIL;
+    int doreseed = 0;
+    int docheck = 0;
+    int doexit = 0;
     int opt;
     extern char * optarg;
     uint32_t word;
     uint8_t carry;
     static const uint32_t CAFEBEEF = 0xCAFEBEEF;
     static const uint32_t DEADCODE = 0xDEADC0DE;
+    static const uint32_t NANOSECONDS = 1000000;
+    static const size_t CONSECUTIVE = 10;
 
     /*
      * Crack open the command line argument vector.
@@ -245,7 +326,7 @@ int main(int argc, char * argv[])
 
     program = ((program = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : program + 1;
 
-    while ((opt = getopt(argc, argv, "dvDo:i:hRS")) >= 0) {
+    while ((opt = getopt(argc, argv, "dvDo:i:hRrScx")) >= 0) {
 
         switch (opt) {
 
@@ -278,8 +359,21 @@ int main(int argc, char * argv[])
             mode = RDRAND;
             break;
 
+        case 'r':
+            doreseed = !0;
+            break;
+
         case 'S':
             mode = RDSEED;
+            break;
+
+        case 'c':
+            docheck = !0;
+            break;
+
+        case 'x':
+            docheck = !0;
+            doexit = !0;
             break;
 
         default:
@@ -301,38 +395,23 @@ int main(int argc, char * argv[])
             break;
         }
 
-        /*
-         * Daemonize if so configured. Why do we do this stuff with the
-         * system log? If we daemonize, we want to direct subsequent messages
-         * to the system log, since standard error will be redirected to
-         * /dev/null. But it is convenient to direct all the messages to the
-         * same place, so if a daemon we start off using the system log.
-         * But if daemon(3) works as I think it should (it is really under-
-         * documented), it should close the socket used to communicate with
-         * the system log daemon. So we close it (in case it isn't already
-         * closed) and (re)open it. (I am highly tempted not to use the
-         * daemon(3) function and port the equivalent function from Diminuto.)
-         */
-
         if (daemonize) {
-            openlog(ident, LOG_CONS | LOG_PID, LOG_DAEMON);
             if (daemon(0, 0) < 0) {
                 perror("daemon");
                 break;
             }
-            closelog();
             openlog(ident, LOG_CONS | LOG_PID, LOG_DAEMON);
+            lverbosef("%s: pid          %d\n", program, getpid());
         }
 
-        if (verbose) {
-            lprintf("%s: pid          %d\n", program, getpid());
-        }
-
-        if (verbose) {  
+        if (docheck) {  
             rc = query();
             if ((mode == RDRAND) && ((rc & (1 << RDRAND)) == 0)) {
                 break;
             } else if ((mode == RDSEED) && ((rc & (1 << RDSEED)) == 0)) {
+                break;
+            } else if (doexit) {
+                xc = 0;
                 break;
             } else {
                 /* Do nothing. */
@@ -372,9 +451,7 @@ int main(int argc, char * argv[])
          */
 
         if (path != (const char *)0) {
-            if (verbose) {
-                lprintf("%s: path         \"%s\"\n", program, path);
-            }
+            lverbosef("%s: path         \"%s\"\n", program, path);
             fp = fopen(path, "a");
             if (fp == (FILE *)0) {
                 lerror(path);
@@ -382,61 +459,59 @@ int main(int argc, char * argv[])
             }
         }
 
+        lverbosef("%s: mode         %s\n", program, MODE[mode]);
+
+        /*
+         * Force a reseed if requested and if using rdrand.
+         */
+
+        if (!doreseed) {
+            /* Do nothing. */
+        } else if (mode != RDRAND) {
+            /* Do nothing. */
+        } else if (reseed()) {
+            /* Do nothing. */
+        } else {
+            errno = EBUSY;
+            lerror("reseed");
+            break;
+        }
+
         /*
          * Enter our work loop.
          */
 
-        if (verbose) {
-            lprintf("%s: mode         %s\n", program, MODE[mode]);
-        }
+        request.tv_sec = NANOSECONDS / 1000000000;
+        request.tv_nsec = NANOSECONDS % 1000000000;
 
-        request.tv_sec = 0;
-        request.tv_nsec = 1000000;
-
-        word = DEADCODE;
-        carry = 1;
+        xc = 0;
 
         while (!done) {
+
             if (report) {
                 lprintf("%s: tries=%zu size=%zu reads=%zu total=%zu\n", program, tries, sizeof(word), reads, total);
                 report = 0;
             }
+
             ++tries;
+
             if (mode == RDRAND) {
-#if defined(SCATTERGUN_HAS_RDRAND_INLINE)
                 word = CAFEBEEF;
-                carry = _rdrand32_step(&word);
-#elif defined(SCATTERGUN_HAS_RDRAND_INTRINSIC)
-                word = CAFEBEEF;
-                carry = __builtin_ia32_rdrand32_step(&word);
-#elif defined(SCATTERGUN_HAS_RDRAND_INSTRUCTION)
-                word = CAFEBEEF;
-                carry = 1;
-                asm volatile ("rdrand %0; setc %1" : "=r" (word), "=qm" (carry) );
-#else
-                break;
-#endif
+                carry = rdrand(&word);
             } else if (mode == RDSEED) {
-#if SCATTERGUN_HAS_RDSEED_INLINE
                 word = CAFEBEEF;
-                carry = _rdseed32_step(&word);
-#elif SCATTERGUN_HAS_RDSEED_INTRINSIC
-                word = CAFEBEEF;
-                carry = __builtin_ia32_rdseed32_step(&word);
-#elif SCATTERGUN_HAS_RDSEED_INSTRUCTION
-                word = CAFEBEEF;
-                carry = 1;
-                asm volatile ("rdseed %0; setc %1" : "=r" (word), "=qm" (carry) );
-#else
-                break;
-#endif
+                carry = rdseed(&word);
             } else {
-                /* Do nothing (fail). */
+                word = DEADCODE;
+                carry = 1;
             }
+
             if (carry) {
                 consecutive = 0;
-            } else if ((++consecutive) >= 10) {
-                lprintf("%s: consecutive=%zu\n", program, consecutive);
+            } else if ((++consecutive) >= CONSECUTIVE) {
+                errno = EBUSY;
+                lerror("carry");
+                xc = 2;
                 break;
             } else if ((rc = nanosleep(&request, (struct timespec *)0)) >= 0) {
                 continue;
@@ -444,21 +519,32 @@ int main(int argc, char * argv[])
                 continue;
             } else {
                 lerror("nanosleep");
+                xc = 2;
                 break;
             }
+
             ++reads;
             total += sizeof(word);
+
             written = fwrite(&word, sizeof(word), 1, fp);
-            if (written < 1) {
+            if (written >= 1) {
+                /* Do nothing: nominal. */
+            } else if (!ferror(fp)) {
+                break;
+            } else if (errno == EPIPE) {
                 lerror("fwrite");
                 break;
+            } else {
+                lerror("fwrite");
+                xc = 2;
+                break;
             }
+
             if (debug) {
                 lprintf("%s: tries=%zu size=%zu reads=%zu total=%zu\n", program, tries, sizeof(word), reads, total);
             }
-        }
 
-        xc = 0;
+        }
 
     } while (0);
 
@@ -470,9 +556,7 @@ int main(int argc, char * argv[])
         fclose(fp);
     }
 
-    if (verbose) {
-        lprintf("%s: tries=%zu size=%zu reads=%zu total=%zu\n", program, tries, sizeof(word), reads, total);
-    }
+    lverbosef("%s: tries=%zu size=%zu reads=%zu total=%zu\n", program, tries, sizeof(word), reads, total);
 
     return xc;
 }
