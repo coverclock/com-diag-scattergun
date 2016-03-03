@@ -244,6 +244,7 @@ static int query(void)
         } else {
             lverbosef("%s: rdseed       unavailable\n", program);
         }
+
     } else {
 
         lverbosef("%s: cpu          other\n", program);

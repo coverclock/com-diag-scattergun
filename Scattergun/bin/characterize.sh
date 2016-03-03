@@ -9,10 +9,9 @@ RC=0
 ZERO=$(basename $0)
 ISO8601=$(date -u +%Y-%m-%dT%H:%M:%S)
 STAMP=${1-"${ISO8601}"}
-SOURCE=${2:-"/dev/random"}
 LABEL=${ZERO%\.sh}
 
-echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin ${STAMP} ${SOURCE}"
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin"
 
 ##################################################
 

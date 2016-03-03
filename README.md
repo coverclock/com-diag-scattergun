@@ -55,6 +55,8 @@ the system entropy pool on a Mac OS X system.
 
     ./Scattergun/etc/udev/rules.d/99-TrueRNG.rules
     ./Scattergun/etc/default/rng-tools-TrueRNG
+
+    ./Scattergun/etc/udev/rules.d/99-TrueRNGpro.rules
     ./Scattergun/etc/default/rng-tools-TrueRNGpro
 
 It has some udev rules and rng-tools configuration files that make it easy to

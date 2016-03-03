@@ -85,6 +85,8 @@ elif [[ -x ${HOME}/bin/ent ]]; then
 	DATA="${SAVE}/ent.dat"
 	time dd of=${DATA} bs=1024 count=4096 iflag=fullblock
 	time ${HOME}/bin/ent ${DATA}
+else
+	:
 fi
 
 echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) end ent"
