@@ -142,7 +142,6 @@ TRUERNG=scattergun_silver_TrueRNG
 TrueRNG:	/dev/TrueRNG
 	mkdir -p $(TRUERNG)
 	( ( dd if=/dev/TrueRNG | scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1 ) &
-	tail -f $(TRUERNG)/scattergun.log
 
 .PHONY: TrueRNG
 
@@ -153,7 +152,6 @@ TRUERNGPRO=scattergun_silver_TrueRNGpro
 TrueRNGpro:	/dev/TrueRNGpro
 	mkdir -p $(TRUERNGPRO)
 	( ( dd if=/dev/TrueRNGpro | scattergun.sh $(TRUERNGPRO) ) > $(TRUERNGPRO)/scattergun.log 2>&1 ) &
-	tail -f $(TRUERNGPRO)/scattergun.log
 
 .PHONY:	TrueRNGpro
 
@@ -164,7 +162,6 @@ QUANTIS=scattergun_silver_quantis
 quantis:	src/quantistool
 	mkdir -p $(QUANTIS)
 	( ( quantistool -v | scattergun.sh $(QUANTIS) ) > $(QUANTIS)/scattergun.log 2>&1 ) &
-	tail -f $(QUANTIS)/scattergun.log
 
 .PHONY:	quantis
 
@@ -175,7 +172,6 @@ ONERNG=scattergun_silver_onerng
 onerng:	/dev/OneRNG
 	mkdir -p $(ONERNG)
 	( ( dd if=/dev/OneRNG | scattergun.sh $(ONERNG) ) > $(ONERNG)/scattergun.log 2>&1 ) &
-	tail -f $(ONERNG)/scattergun.log
 
 .PHONY:	onerng
 
@@ -186,7 +182,6 @@ URANDOM=scattergun_silver_urandom
 urandom:	/dev/urandom
 	mkdir -p $(URANDOM)
 	( ( dd if=/dev/urandom | scattergun.sh $(URANDOM) ) > $(URANDOM)/scattergun.log 2>&1 ) &
-	tail -f $(URANDOM)/scattergun.log
 
 .PHONY:	urandom
 
@@ -197,7 +192,6 @@ RANDOM=scattergun_silver_random
 random:	/dev/random
 	mkdir -p $(RANDOM)
 	( ( dd if=/dev/random | scattergun.sh $(RANDOM) ) > $(RANDOM)/scattergun.log 2>&1 ) &
-	tail -f $(RANDOM)/scattergun.log
 
 .PHONY:	random
 
@@ -208,7 +202,6 @@ BCM2708=scattergun_betty_bcm2708
 bcm2708:	/dev/random
 	mkdir -p $(BCM2708)
 	( ( dd if=/dev/hwrng | scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1 ) &
-	tail -f $(BCM2708)/scattergun.log
 
 .PHONY:	bcm2708
 
@@ -219,7 +212,6 @@ RDRAND=scattergun_mercury_rdrand
 rdrand:	$(OUT)/seventool
 	mkdir -p $(RDRAND)
 	( ( seventool -v -R -r -c | scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1 ) &
-	tail -f $(RDRAND)/scattergun.log
 
 .PHONY: rdrand
 
@@ -230,7 +222,6 @@ RDSEED=scattergun_mercury_rdseed
 rdseed:	$(OUT)/seventool
 	mkdir -p $(RDSEED)
 	( ( seventool -v -S -c | scattergun.sh $(RDSEED) ) > $(RDSEED)/scattergun.log 2>&1 ) &
-	tail -f $(RDSEED)/scattergun.log
 
 .PHONY: rdseed
 
@@ -241,7 +232,6 @@ FAIL=scattergun_mercury_fail
 fail:	$(OUT)/seventool
 	mkdir -p $(FAIL)
 	( ( seventool -v | scattergun.sh $(FAIL) ) > $(FAIL)/scattergun.log 2>&1 ) &
-	tail -f $(FAIL)/scattergun.log
 
 .PHONY:	fail
 
