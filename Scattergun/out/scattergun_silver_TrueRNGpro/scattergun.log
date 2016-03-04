@@ -1,4 +1,4 @@
-scattergun.sh: 2016-02-01T23:32:39 begin scattergun_silver_TrueRNGPro
+scattergun.sh: 2016-02-01T23:32:39 begin scattergun_silver_TrueRNGpro
 scattergun.sh: 2016-02-01T23:32:39 begin png
 65536+0 records in
 65536+0 records out
@@ -70,7 +70,7 @@ scattergun.sh: 2016-02-01T23:32:56 begin SP800-90B
 real	0m9.661s
 user	0m0.023s
 sys	0m0.084s
-Read in file /home/jsloan/src/com-diag-scattergun/Scattergun/scattergun_silver_TrueRNGPro/sp800.dat, 4194304 bytes long.
+Read in file /home/jsloan/src/com-diag-scattergun/Scattergun/scattergun_silver_TrueRNGpro/sp800.dat, 4194304 bytes long.
 Dataset: 4194304 8-bit symbols.
 Output symbol values: min = 0, max = 255
 
@@ -219,7 +219,7 @@ time: (11709 sec)
 real	195m9.107s
 user	192m27.733s
 sys	2m27.059s
-Read in file /home/jsloan/src/com-diag-scattergun/Scattergun/scattergun_silver_TrueRNGPro/sp800.dat, 4194304 bytes long.
+Read in file /home/jsloan/src/com-diag-scattergun/Scattergun/scattergun_silver_TrueRNGpro/sp800.dat, 4194304 bytes long.
 Dataset: 4194304 8-bit symbols.
 Output symbol values: min = 0, max = 255
 - Collision test          : p(max) = 0.00784302, min-entropy = 6.99438
@@ -391,4 +391,4 @@ Preparing to run test 208.  ntuple = 0
 Preparing to run test 209.  ntuple = 0
         dab_monobit2|  12|  65000000|       1|0.44687961|  PASSED  
 scattergun.sh: 2016-02-08T18:56:41 end dieharder
-scattergun.sh: 2016-02-08T18:56:41 end scattergun_silver_TrueRNGPro 0
+scattergun.sh: 2016-02-08T18:56:41 end scattergun_silver_TrueRNGpro 0
