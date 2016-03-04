@@ -1,7 +1,7 @@
 /* vi: set ts=4 expandtab shiftwidth=4: */
 /**
  * @file
- * ID Quantique Quantis Tool<BR>
+ * Quantis Tool<BR>
  * Copyright 2016 Digital Aggregates Corporation, Colorado, USA.<BR>
  * "Digital Aggregates Corporation" is a registered trademark.<BR>
  * Licensed under the terms of the Scattergun license.<BR>
@@ -12,18 +12,18 @@
  *
  * USAGE
  *
- * quantistool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -o PATH ]
+ * quantistool [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -c ] [ -o PATH ]
  *
  * EXAMPLES
  *
  * ABSTRACT
  *
- * Continuously reads data from a Quantis hardware entropy generator and
- * writes it to standard output, or to a specified file system path. This
- * latter object could be a FIFO, which could allow generated entropy to be
- * read by another program, like rngd. Optionally does some other useful stuff
- * with the Quantis. This is part of the Scattergun project. This must be
- * linked with the Quantis library.
+ * Continuously reads data from a Quantis hardware entropy generator,
+ * manufactured by ID Quantique, and writes it to standard output, or to a
+ * specified file system path. This latter object could be a FIFO, which could
+ * allow generated entropy to be read by another program, like rngd. Optionally
+ * does some other useful stuff with the Quantis. This is part of the Scattergun
+ * project. This must be linked with the Quantis library.
  *
  * The Quantis software library I have restricts reads to sizes of no more
  * than 16 megabytes (16 * 1024 * 1024). But it restricts each individual
@@ -76,6 +76,25 @@ static void lprintf(const char * format, ...)
 }
 
 /**
+ * Emit a formatting string to either the system log or to standard error
+ * if verbosity is enabled.
+ * @param format is the printf format.
+ */
+static void lverbosef(const char * format, ...)
+{
+    if (verbose) {
+        va_list ap;
+        va_start(ap, format);
+        if (daemonize) {
+            vsyslog(LOG_DEBUG, format, ap);
+        } else {
+            vfprintf(stderr, format, ap);
+        }
+        va_end(ap);
+    }
+}
+
+/**
  * Emit a caller provider string and an error message string corresponding to
  * the current value of the error number (errno) to either the system log or
  * to standard error.
@@ -115,7 +134,7 @@ static void handler(int signum)
  */
 static void usage(int nomenu)
 {
-    lprintf("usage: %s [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -o PATH ]\n", program);
+    lprintf("usage: %s [ -h ] [ -d ] [ -v ] [ -D ] [ -i IDENT ] [ -u UNIT | -p UNIT ] [ -r BYTES ] [ -c ] [ -o PATH ]\n", program);
     if (nomenu) { return; }
     lprintf("       -d            Enable debug mode\n");
     lprintf("       -v            Enable verbose mode\n");
@@ -124,6 +143,7 @@ static void usage(int nomenu)
     lprintf("       -u UNIT       Use USB card UNIT\n");
     lprintf("       -p UNIT       Use PCI card UNIT\n");
     lprintf("       -r BYTES      Read at most BYTES bytes at a time (0 to exit)\n");
+    lprintf("       -c            Check for the requested device\n");
     lprintf("       -o PATH       Write to PATH (which may be a fifo) instead of stdout\n");
     lprintf("       -h            Print help menu\n");
 }
@@ -132,10 +152,14 @@ static void usage(int nomenu)
  * Query the Quantis API for the kinds of ID Quantique hardware it finds on
  * the PCI or the USB busses and its nature and emit the results to standard
  * error.
+ * @return true if the requested device is available, false otherwise.
  */
-static void query(void)
+static int query(QuantisDeviceType want, int unit)
 {
+    int rc = 0;
     int ii;
+
+    lverbosef("%s: device       detecting\n", program);
 
     for (ii = 0; ii < (sizeof(TYPES) / sizeof(TYPES[0])); ++ii) {
         QuantisDeviceType type = 0;
@@ -144,12 +168,17 @@ static void query(void)
         int jj;
 
         type = TYPES[ii];
-        software = QuantisGetDriverVersion(type);
         detected = QuantisCount(type);
 
-        lprintf("%s: type         %s\n", program, NAMES[ii]);
-        lprintf("%s: software     %f\n", program, software);
-        lprintf("%s: detected     %d\n", program, detected);
+        lverbosef("%s: type         %s\n", program, NAMES[ii]);
+        lverbosef("%s: detected     %d\n", program, detected);
+
+        if (detected <= 0) {
+            continue;
+        }
+
+        software = QuantisGetDriverVersion(type);
+        lverbosef("%s: software     %f\n", program, software);
 
         for (jj = 0; jj < detected; ++jj) {
             int hardware = 0;
@@ -166,15 +195,29 @@ static void query(void)
             mask = QuantisGetModulesMask(type, jj);
             status = QuantisGetModulesStatus(type, jj);
 
-            lprintf("%s: unit         %d\n", program, jj);
-            lprintf("%s: hardware     %d\n", program, hardware);
-            lprintf("%s: serial       \"%s\"\n", program, serial);
-            lprintf("%s: manufacturer \"%s\"\n", program, manufacturer);
-            lprintf("%s: power        %d\n", program, power);
-            lprintf("%s: modules      0x%8.8x\n", program, mask);
-            lprintf("%s: status       0x%8.8x\n", program, status);
+            lverbosef("%s: unit         %d\n", program, jj);
+            lverbosef("%s: hardware     %d\n", program, hardware);
+            lverbosef("%s: serial       \"%s\"\n", program, serial);
+            lverbosef("%s: manufacturer \"%s\"\n", program, manufacturer);
+            lverbosef("%s: power        %d\n", program, power);
+            lverbosef("%s: modules      0x%8.8x\n", program, mask);
+            lverbosef("%s: status       0x%8.8x\n", program, status);
+
+            if (want != type) {
+                /* Do nothing. */
+            } else if (unit != jj) {
+                /* Do nothing. */
+            } else if (status == 0x00000000) {
+                /* Do  nothing. */
+            } else {
+                rc = !0;
+            }
+
+            lverbosef("%s: device       %s\n", program, rc ? "present" : "absent");
         }
     }
+    
+    return rc;
 }
 
 /**
@@ -206,6 +249,8 @@ int main(int argc, char * argv[])
     const char * path = (const char *)0;
     int opt;
     extern char * optarg;
+    int ii;
+    int check = 0;
 
     /*
      * Crack open the command line argument vector.
@@ -213,7 +258,7 @@ int main(int argc, char * argv[])
 
     program = ((program = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : program + 1;
 
-    while ((opt = getopt(argc, argv, "dvDu:p:r:o:i:h")) >= 0) {
+    while ((opt = getopt(argc, argv, "dvDu:p:r:co:i:h")) >= 0) {
 
         switch (opt) {
 
@@ -237,6 +282,10 @@ int main(int argc, char * argv[])
         case 'p':
             type = QUANTIS_DEVICE_PCI;
             unit = strtoul(optarg, &end, 0);
+            break;
+
+        case 'c':
+            check = !0;
             break;
 
         case 'r':
@@ -281,6 +330,43 @@ int main(int argc, char * argv[])
         }
 
         /*
+         * Daemonize if so configured.
+         */
+
+        if (!daemonize) {
+            /* Do nothing. */
+        } else if (daemon(0, 0) < 0) {
+            perror("daemon");
+            break;
+        } else {
+            openlog(ident, LOG_CONS | LOG_PID, LOG_DAEMON);
+            lverbosef("%s: pid          %d\n", program, getpid());
+        }
+
+        for (ii = 0; ii < (sizeof(TYPES) / sizeof(TYPES[0])); ++ii) {
+            if (TYPES[ii] == type) {
+                lverbosef("%s: type         %s\n", program, NAMES[ii]);
+            }
+        }
+        lverbosef("%s: unit         %d\n", program, unit);
+        lverbosef("%s: bytes        %zu\n", program, size);
+        lverbosef("%s: maximum      %zu\n", program, (size_t)QUANTIS_MAX_READ_SIZE);
+
+        /*
+         * See what kind of hardware we have, and if it matches what
+         * the user requested.
+         */
+
+        rc = query(type, unit);
+        if (rc) {
+            /* Do nothing. */
+        } else if (!check) {
+            /* Do nothing. */
+        } else {
+            break;
+        }
+
+        /*
          * If the user specifies a read size of zero, we just exit. This
          * allows them to use the verbose option to query the Quantis
          * devices on the USB or PCI bus without actually doing anything
@@ -294,49 +380,6 @@ int main(int argc, char * argv[])
             size = QUANTIS_MAX_READ_SIZE;
         } else {
             /* Do nothing. */
-        }
-
-        /*
-         * Daemonize if so configured. Why do we do this stuff with the
-         * system log? If we daemonize, we want to direct subsequent messages
-         * to the system log, since standard error will be redirected to
-         * /dev/null. But it is convenient to direct all the messages to the
-         * same place, so if a daemon we start off using the system log.
-         * But if daemon(3) works as I think it should (it is really under-
-         * documented), it should close the socket used to communicate with
-         * the system log daemon. So we close it (in case it isn't already
-         * closed) and (re)open it. (I am highly tempted not to use the
-         * daemon(3) function and port the equivalent function from Diminuto.)
-         */
-
-        if (daemonize) {
-            openlog(ident, LOG_CONS | LOG_PID, LOG_DAEMON);
-            if (daemon(0, 0) < 0) {
-                perror("daemon");
-                break;
-            }
-            closelog();
-            openlog(ident, LOG_CONS | LOG_PID, LOG_DAEMON);
-        }
-
-        if (verbose) {
-            lprintf("%s: pid          %d\n", program, getpid());
-        }
-
-        if (verbose) {  
-            query();
-        }
-
-        if (verbose) {
-            int ii;
-
-            for (ii = 0; ii < (sizeof(TYPES) / sizeof(TYPES[0])); ++ii) {
-                if (TYPES[ii] == type) {
-                    lprintf("%s: type         %s\n", program, NAMES[ii]);
-                }
-            }
-            lprintf("%s: unit         %d\n", program, unit);
-            lprintf("%s: size         %zu\n", program, size);
         }
 
         buffer = malloc(size);
@@ -378,9 +421,7 @@ int main(int argc, char * argv[])
          */
 
         if (path != (const char *)0) {
-            if (verbose) {
-                lprintf("%s: path         \"%s\"\n", program, path);
-            }
+            lverbosef("%s: path         \"%s\"\n", program, path);
             fp = fopen(path, "a");
             if (fp == (FILE *)0) {
                 lerror(path);
@@ -400,10 +441,7 @@ int main(int argc, char * argv[])
                 break;
             }
             ++opens;
-
-            if (verbose) {
-                lprintf("%s: handle       %p\n", program, handle);
-            }
+            lverbosef("%s: handle       %p\n", program, handle);
 
             /*
              * Enter our input/output loop. If the read fails we try it again,
@@ -463,9 +501,7 @@ int main(int argc, char * argv[])
         free(buffer);
     }
 
-    if (verbose) {
-        lprintf("%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
-    }
+    lverbosef("%s: opens=%zu size=%zu reads=%zu total=%zu\n", program, opens, size, reads, total);
 
     return xc;
 }
