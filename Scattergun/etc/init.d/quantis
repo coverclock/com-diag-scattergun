@@ -1,0 +1,72 @@
+#! /bin/sh -e
+# vi: set ts=4:
+# Copyright 2016 Digital Aggregates Corporation, Colorado, USA.
+# http://github.com/coverclock/com-diag-scattergun
+# mailto:coverclock@diag.com
+# N.B. It is of more than abstract importance that "quantis" preceeds
+# "rng-tools" in the alphabet.
+### BEGIN INIT INFO
+# Provides:		quantistool
+# Required-Start:	$remote_fs $syslog
+# Required-Stop:	$remote_fs $syslog
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/local/sbin/quantistool
+NAME=quantis
+DESC="Quantis Hardware RNG daemon"
+PIDFILE=/var/run/${NAME}.pid
+HRNGDEVICE=/var/run/${NAME}.fifo
+ETCFILE=/etc/default/rng-tools
+OPTIONS="-D -i ${NAME} -v -u 0 -o ${HRNGDEVICE}"
+
+test -r ${ETCFILE} && . ${ETCFILE}
+
+test -x ${DAEMON} || exit 0
+
+test -p ${HRNGDEVICE} || mkfifo -m 770 ${HRNGDEVICE}
+
+START="--start --quiet --pidfile ${PIDFILE} --startas ${DAEMON} --name ${NAME}"
+case "$1" in
+	start)
+		echo -n "Starting $DESC: "
+		START="${START} -- ${OPTIONS}"
+		if start-stop-daemon ${START} >/dev/null 2>&1 ; then
+			echo "${NAME}."
+		elif start-stop-daemon --test ${START} >/dev/null 2>&1; then
+			echo "(failed)."
+			exit 1
+		else
+			echo "${DAEMON} already running."
+			exit 0
+		fi
+	;;
+	stop)
+		echo -n "Stopping $DESC: "
+		if start-stop-daemon --stop --quiet --pidfile ${PIDFILE} --startas ${DAEMON} --retry 10 --name ${NAME} >/dev/null 2>&1 ; then
+			echo "${NAME}."
+		elif start-stop-daemon --test ${START} >/dev/null 2>&1; then
+			echo "(not running)."
+			exit 0
+		else
+			echo "(failed)."
+			exit 1
+		fi
+	;;
+	restart)
+		$0 stop
+		exec $0 start	    
+		;;
+	force-reload)
+		$0 stop
+		exec $0 start	    
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|force-reload}" 1>&2
+		exit 1
+	;;
+esac
+
+exit 0

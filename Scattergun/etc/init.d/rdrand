@@ -3,10 +3,10 @@
 # Copyright 2016 Digital Aggregates Corporation, Colorado, USA.
 # http://github.com/coverclock/com-diag-scattergun
 # mailto:coverclock@diag.com
-# N.B. It is of more than abstract importance that "quantistool" preceeds
+# N.B. It is of more than abstract importance that "rdrand" preceeds
 # "rng-tools" in the alphabet.
 ### BEGIN INIT INFO
-# Provides:		quantistool
+# Provides:		rdrand
 # Required-Start:	$remote_fs $syslog
 # Required-Stop:	$remote_fs $syslog
 # Default-Start:	2 3 4 5
@@ -14,13 +14,13 @@
 ### END INIT INFO
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/local/sbin/quantistool
-NAME=quantistool
-DESC="quantistool Hardware RNG entropy generator daemon"
+DAEMON=/usr/local/sbin/seventool
+NAME=rdrand
+DESC="rdrand Hardware RNG daemon"
 PIDFILE=/var/run/${NAME}.pid
-HRNGDEVICE=/var/run/quantis.fifo
+HRNGDEVICE=/var/run/rdrand.fifo
 ETCFILE=/etc/default/rng-tools
-OPTIONS="-D -i ${NAME} -v -u 0 -o ${HRNGDEVICE}"
+OPTIONS="-D -i ${NAME} -v -R -r -c -o ${HRNGDEVICE}"
 
 test -r ${ETCFILE} && . ${ETCFILE}
 
