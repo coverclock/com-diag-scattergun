@@ -103,9 +103,9 @@ static void lverbosef(const char * format, ...)
 static void lerror(const char * string)
 {
     if (daemonize) {
-        syslog(LOG_ERR, "%s: %s", string, strerror(errno));
+        syslog(LOG_ERR, "%s: %s\n", string, strerror(errno));
     } else {
-        fprintf(stderr, "%s: %s", string, strerror(errno));
+        fprintf(stderr, "%s: %s\n", string, strerror(errno));
     }
 }
 
