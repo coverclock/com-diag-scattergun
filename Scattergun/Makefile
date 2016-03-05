@@ -4,29 +4,6 @@
 # https://github.com/coverclock/com-diag-scattergun
 # mailto:coverclock@diag.com
 
-# Depending on the device being tested, three systems were used.
-# 
-# "Silver"
-# Dell
-# Intel Core 2 Q6600 2.4GHz x4
-# Ubuntu 14.04 "trusty"
-# Linux 3.13.0
-# gcc 4.8.2
-#
-# "Mercury"
-# Dell
-# Intel Core i7-6700T 2.8GHz x8
-# Ubuntu 14.04.4 "trusty"
-# Linux 4.2.0
-# gcc 4.8.4
-#
-# "Betty"
-# Raspberry Pi 2 Model B v1.1
-# Broadcom BCM2836 Cortex-A7 ARMv7 x4
-# Raspbian (Debian) 7.8
-# Linux 3.8.11
-# gcc 4.6.3
-
 ################################################################################
 
 ROOT=$(HOME)/src
@@ -136,42 +113,81 @@ export PATH:=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(PATH)
 export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 ################################################################################
+# "Silver"
+# Dell
+# Intel Core 2 Q6600 2.4GHz x4
+# Ubuntu 14.04 "trusty"
+# Linux 3.13.0
+# gcc 4.8.2
+################################################################################
+
+# TrueRNG
+# ublt.it
+# US$49.95
+# http://ubld.it/products/truerng-hardware-random-number-generator/
+# 350Kbps
+# USB
+# semiconductor avalanche effect
 
 TRUERNG=scattergun_silver_TrueRNG
 
 TrueRNG:	/dev/TrueRNG
 	mkdir -p $(TRUERNG)
-	( ( dd if=/dev/TrueRNG | scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1 ) &
+	( dd if=/dev/TrueRNG | scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1
 
 .PHONY: TrueRNG
 
 ################################################################################
 
+# TrueRNGpro
+# ublt.it
+# US$99.00
+# http://ubld.it/products/truerngpro
+# 3.2Mbps
+# USB
+# semiconductor avalanche effect
+
 TRUERNGPRO=scattergun_silver_TrueRNGpro
 
 TrueRNGpro:	/dev/TrueRNGpro
 	mkdir -p $(TRUERNGPRO)
-	( ( dd if=/dev/TrueRNGpro | scattergun.sh $(TRUERNGPRO) ) > $(TRUERNGPRO)/scattergun.log 2>&1 ) &
+	( dd if=/dev/TrueRNGpro | scattergun.sh $(TRUERNGPRO) ) > $(TRUERNGPRO)/scattergun.log 2>&1
 
 .PHONY:	TrueRNGpro
 
 ################################################################################
 
+# Quantis-USB-4M
+# ID Quantique
+# Euro$990.00 (about US$1100.00)
+# http://www.idquantique.com/random-number-generation/quantis-random-number-generator/
+# 4Mbps
+# USB
+# beam splitter with photon counter
+
 QUANTIS=scattergun_silver_quantis
 
 quantis:	src/quantistool
 	mkdir -p $(QUANTIS)
-	( ( quantistool -v | scattergun.sh $(QUANTIS) ) > $(QUANTIS)/scattergun.log 2>&1 ) &
+	( quantistool -v | scattergun.sh $(QUANTIS) ) > $(QUANTIS)/scattergun.log 2>&1
 
 .PHONY:	quantis
 
 ################################################################################
 
-ONERNG=scattergun_silver_onerng
+# OneRNG
+# Moonbase Otago
+# US$40.00
+# http://onerng.info
+# 350Kbps
+# USB
+# semiconductor avalanche effect (and optionally atmospheric noise)
+
+ONERNG=scattergun_silver_OneRNG
 
 onerng:	/dev/OneRNG
 	mkdir -p $(ONERNG)
-	( ( dd if=/dev/OneRNG | scattergun.sh $(ONERNG) ) > $(ONERNG)/scattergun.log 2>&1 ) &
+	( dd if=/dev/OneRNG | scattergun.sh $(ONERNG) ) > $(ONERNG)/scattergun.log 2>&1
 
 .PHONY:	onerng
 
@@ -181,7 +197,7 @@ URANDOM=scattergun_silver_urandom
 
 urandom:	/dev/urandom
 	mkdir -p $(URANDOM)
-	( ( dd if=/dev/urandom | scattergun.sh $(URANDOM) ) > $(URANDOM)/scattergun.log 2>&1 ) &
+	( dd if=/dev/urandom | scattergun.sh $(URANDOM) ) > $(URANDOM)/scattergun.log 2>&1
 
 .PHONY:	urandom
 
@@ -191,37 +207,78 @@ RANDOM=scattergun_silver_random
 
 random:	/dev/random
 	mkdir -p $(RANDOM)
-	( ( dd if=/dev/random | scattergun.sh $(RANDOM) ) > $(RANDOM)/scattergun.log 2>&1 ) &
+	( dd if=/dev/random | scattergun.sh $(RANDOM) ) > $(RANDOM)/scattergun.log 2>&1
 
 .PHONY:	random
 
 ################################################################################
+# "Betty"
+# Raspberry Pi 2 Model B v1.1
+# Broadcom BCM2836 Cortex-A7 ARMv7 x4
+# Raspbian (Debian) 7.8
+# Linux 3.8.11
+# gcc 4.6.3
+################################################################################
+
+# Broadcom BCM2836 SoC
+# Raspberry Pi 2 B
+# US$35.00
+# https://www.raspberrypi.org/products/raspberry-pi-2-model-b/
+# undocumented
+# bcm2708-rng.ko
+# unknown
 
 BCM2708=scattergun_betty_bcm2708
 
 bcm2708:	/dev/random
 	mkdir -p $(BCM2708)
-	( ( dd if=/dev/hwrng | scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1 ) &
+	( dd if=/dev/hwrng | scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1
 
 .PHONY:	bcm2708
 
 ################################################################################
+# "Mercury"
+# Dell
+# Intel Core i7-6700T 2.8GHz x8
+# Ubuntu 14.04.4 "trusty"
+# Linux 4.2.0
+# gcc 4.8.4
+################################################################################
+
+# rdrand
+# Intel Ivy Bridge family
+# N/A
+# https://software.intel.com/en-us/articles/intel-digital-random-number-generator-drng-software-implementation-guide
+# 800MBps
+# Deterministic Random Bit Generator (DRBG)
+# AES-CBC-MAC, NIST SP800-90A compliant
+# thermal noise
 
 RDRAND=scattergun_mercury_rdrand
 
 rdrand:	$(OUT)/seventool
 	mkdir -p $(RDRAND)
-	( ( seventool -v -R -r -c | scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1 ) &
+	( seventool -v -R -r -c | scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1
 
 .PHONY: rdrand
 
 ################################################################################
 
+# rdseed
+# Intel Broadwell family
+# N/A
+# https://software.intel.com/en-us/articles/intel-digital-random-number-generator-drng-software-implementation-guide
+# N/A
+# Enhanced Non-deterministic Random Number Generator (ENRNG)
+# NIST SP800-90B and C compliant
+# thermal noise
+
+
 RDSEED=scattergun_mercury_rdseed
 
 rdseed:	$(OUT)/seventool
 	mkdir -p $(RDSEED)
-	( ( seventool -v -S -c | scattergun.sh $(RDSEED) ) > $(RDSEED)/scattergun.log 2>&1 ) &
+	( seventool -v -S -c | scattergun.sh $(RDSEED) ) > $(RDSEED)/scattergun.log 2>&1
 
 .PHONY: rdseed
 
@@ -231,7 +288,7 @@ FAIL=scattergun_mercury_fail
 
 fail:	$(OUT)/seventool
 	mkdir -p $(FAIL)
-	( ( seventool -v | scattergun.sh $(FAIL) ) > $(FAIL)/scattergun.log 2>&1 ) &
+	( seventool -v | scattergun.sh $(FAIL) ) > $(FAIL)/scattergun.log 2>&1
 
 .PHONY:	fail
 
