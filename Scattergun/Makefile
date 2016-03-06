@@ -114,7 +114,7 @@ export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 ################################################################################
 # "Silver"
-# Dell
+# Dell Inspiron 530
 # Intel Core 2 Q6600 2.4GHz x4
 # Ubuntu 14.04 "trusty"
 # Linux 3.13.0
@@ -193,6 +193,8 @@ onerng:	/dev/OneRNG
 
 ################################################################################
 
+# drivers/char/random.c
+
 URANDOM=scattergun_silver_urandom
 
 urandom:	/dev/urandom
@@ -202,6 +204,8 @@ urandom:	/dev/urandom
 .PHONY:	urandom
 
 ################################################################################
+
+# drivers/char/random.c
 
 RANDOM=scattergun_silver_random
 
@@ -220,12 +224,12 @@ random:	/dev/random
 # gcc 4.6.3
 ################################################################################
 
-# Broadcom BCM2836 SoC
-# Raspberry Pi 2 B
+# bcm2708 HWRNG
+# Raspberry Pi 2 B (Broadcom BCM2836 SoC)
 # US$35.00
 # https://www.raspberrypi.org/products/raspberry-pi-2-model-b/
 # undocumented
-# bcm2708-rng.ko
+# drivers/char/hw_random/bcm2708-rng.c
 # unknown
 
 BCM2708=scattergun_betty_bcm2708
@@ -238,21 +242,20 @@ bcm2708:	/dev/random
 
 ################################################################################
 # "Mercury"
-# Dell
+# Dell OptiPlex 7040
 # Intel Core i7-6700T 2.8GHz x8
 # Ubuntu 14.04.4 "trusty"
 # Linux 4.2.0
 # gcc 4.8.4
 ################################################################################
 
-# rdrand
+# rdrand Deterministic Random Bit Generator (DRBG)
 # Intel Ivy Bridge family
 # N/A
 # https://software.intel.com/en-us/articles/intel-digital-random-number-generator-drng-software-implementation-guide
 # 800MBps
-# Deterministic Random Bit Generator (DRBG)
-# AES-CBC-MAC, NIST SP800-90A compliant
-# thermal noise
+# arch/x86/include/asm/archrandom.h
+# AES-CBC-MAC, NIST SP800-90A compliant, thermal noise
 
 RDRAND=scattergun_mercury_rdrand
 
@@ -264,15 +267,13 @@ rdrand:	$(OUT)/seventool
 
 ################################################################################
 
-# rdseed
+# rdseed Enhanced Non-deterministic Random Number Generator (ENRNG)
 # Intel Broadwell family
 # N/A
 # https://software.intel.com/en-us/articles/intel-digital-random-number-generator-drng-software-implementation-guide
 # N/A
-# Enhanced Non-deterministic Random Number Generator (ENRNG)
-# NIST SP800-90B and C compliant
-# thermal noise
-
+# arch/x86/include/asm/archrandom.h
+# NIST SP800-90B and C compliant, thermal noise
 
 RDSEED=scattergun_mercury_rdseed
 
