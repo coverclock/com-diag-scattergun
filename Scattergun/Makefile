@@ -16,12 +16,14 @@ OUT=out/host/bin
 ################################################################################
 
 ALL  = $(OUT)/setup
+ALL += $(OUT)/crandom
 ALL += $(OUT)/quantistool
 ALL += $(OUT)/seventool
 ALL += $(OUT)/seventool-binary
 ALL += $(OUT)/seventool-mnemonic
 ALL += $(OUT)/characterize.sh
 ALL += $(OUT)/consume.sh
+ALL += $(OUT)/entropy.sh
 ALL += $(OUT)/monitor.sh
 ALL += $(OUT)/onernginit.sh
 ALL += $(OUT)/scattergun.sh
@@ -33,6 +35,11 @@ clean:
 	rm -rf $(ALL)
 
 .PHONY: all clean
+
+################################################################################
+
+$(OUT)/crandom:	src/crandom.c
+	$(CC) $(CFLAGS) -o $@ $^ ${LDFLAGS}
 
 ################################################################################
 
@@ -82,6 +89,10 @@ $(OUT)/characterize.sh:	bin/characterize.sh
 	chmod 775 $@
 
 $(OUT)/consume.sh:	bin/consume.sh
+	cp $^ $@
+	chmod 775 $@
+
+$(OUT)/entropy.sh:	bin/entropy.sh
 	cp $^ $@
 	chmod 775 $@
 
@@ -159,7 +170,7 @@ TrueRNGpro:	/dev/TrueRNGpro
 
 # Quantis-USB-4M
 # ID Quantique
-# Euro$990.00 (about US$1100.00)
+# Euro$990.00 (US$1100.00)
 # http://www.idquantique.com/random-number-generation/quantis-random-number-generator/
 # 4Mbps
 # USB
@@ -185,11 +196,11 @@ quantis:	src/quantistool
 
 ONERNG=scattergun_silver_OneRNG
 
-onerng:	/dev/OneRNG
+OneRNG:	/dev/OneRNG
 	mkdir -p $(ONERNG)
 	( dd if=/dev/OneRNG | scattergun.sh $(ONERNG) ) > $(ONERNG)/scattergun.log 2>&1
 
-.PHONY:	onerng
+.PHONY:	OneRNG
 
 ################################################################################
 

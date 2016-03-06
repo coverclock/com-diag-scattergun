@@ -16,6 +16,14 @@
  *
  * EXAMPLES
  *
+ * quantistool -v -U 0 -r 0
+ *
+ * quantistool -v -U 0 | dd of=random.dat bs=4096 count=1024 iflag=fullblock
+ * 
+ * mkfifo quantis.fifo
+ * chmod 666 quantis.fifo
+ * quantistool -D -i QUANTIS -U 0 -c -o quantis.fifo &
+ *
  * ABSTRACT
  *
  * Continuously reads data from a Quantis hardware entropy generator,
