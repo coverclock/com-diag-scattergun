@@ -91,3 +91,14 @@ MAC OS X
 It has a simple script (admittedly experimental) to use a ubld.it TrueRNG USB
 entropy generator (which is about the size and shape of a thumb drive) to fill
 the system entropy pool on a Mac OS X system.
+
+OTHER STUFF
+
+    ./Scattergun/src/bytes.c
+    ./Scattergun/src/cmrand48.c
+    ./Scattergun/src/crandom.c
+
+It includes some programs that emit constant bytes, random numbers
+generated using the C library's mrand48(3) function, or with the random(3)
+function. It is interesting to compare the results of the hardware entropy
+generators with those of these two pseudo-random number generators.
