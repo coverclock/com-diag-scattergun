@@ -17,6 +17,7 @@ OUT=out/host/bin
 
 ALL  = $(OUT)/setup
 ALL += $(OUT)/bytes
+ALL += $(OUT)/cmrand48
 ALL += $(OUT)/crandom
 ALL += $(OUT)/quantistool
 ALL += $(OUT)/seventool
@@ -40,6 +41,11 @@ clean:
 ################################################################################
 
 $(OUT)/bytes:	src/bytes.c
+	$(CC) $(CFLAGS) -o $@ $^ ${LDFLAGS}
+
+################################################################################
+
+$(OUT)/cmrand48:	src/cmrand48.c
 	$(CC) $(CFLAGS) -o $@ $^ ${LDFLAGS}
 
 ################################################################################
@@ -231,6 +237,16 @@ random:	/dev/random
 	( dd if=/dev/random | scattergun.sh $(RANDOM) ) > $(RANDOM)/scattergun.log 2>&1
 
 .PHONY:	random
+
+################################################################################
+
+CMRAND48=scattergun_silver_cmrand48
+
+cmrand48:	$(OUT)/cmrand48
+	mkdir -p $(CMRAND48)
+	( cmrand48 | scattergun.sh $(CMRAND48) ) > $(CMRAND48)/scattergun.log 2>&1
+
+.PHONY:	cmrand48
 
 ################################################################################
 
