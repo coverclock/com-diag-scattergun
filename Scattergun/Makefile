@@ -16,6 +16,7 @@ OUT=out/host/bin
 ################################################################################
 
 ALL  = $(OUT)/setup
+ALL += $(OUT)/bytes
 ALL += $(OUT)/crandom
 ALL += $(OUT)/quantistool
 ALL += $(OUT)/seventool
@@ -35,6 +36,11 @@ clean:
 	rm -rf $(ALL)
 
 .PHONY: all clean
+
+################################################################################
+
+$(OUT)/bytes:	src/bytes.c
+	$(CC) $(CFLAGS) -o $@ $^ ${LDFLAGS}
 
 ################################################################################
 
@@ -225,6 +231,26 @@ random:	/dev/random
 	( dd if=/dev/random | scattergun.sh $(RANDOM) ) > $(RANDOM)/scattergun.log 2>&1
 
 .PHONY:	random
+
+################################################################################
+
+CRANDOM=scattergun_silver_crandom
+
+crandom:	$(OUT)/crandom
+	mkdir -p $(CRANDOM)
+	( crandom | scattergun.sh $(CRANDOM) ) > $(CRANDOM)/scattergun.log 2>&1
+
+.PHONY:	crandom
+
+################################################################################
+
+ZEROS=scattergun_silver_zeros
+
+zeros:	$(OUT)/bytes
+	mkdir -p $(ZEROS)
+	( bytes 0x00 | scattergun.sh $(ZEROS) ) > $(ZEROS)/scattergun.log 2>&1
+
+.PHONY:	zeros
 
 ################################################################################
 # "Betty"
