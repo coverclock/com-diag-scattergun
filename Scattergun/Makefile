@@ -239,36 +239,6 @@ random:	/dev/random
 .PHONY:	random
 
 ################################################################################
-
-CMRAND48=scattergun_silver_cmrand48
-
-cmrand48:	$(OUT)/cmrand48
-	mkdir -p $(CMRAND48)
-	( cmrand48 | scattergun.sh $(CMRAND48) ) > $(CMRAND48)/scattergun.log 2>&1
-
-.PHONY:	cmrand48
-
-################################################################################
-
-CRANDOM=scattergun_silver_crandom
-
-crandom:	$(OUT)/crandom
-	mkdir -p $(CRANDOM)
-	( crandom | scattergun.sh $(CRANDOM) ) > $(CRANDOM)/scattergun.log 2>&1
-
-.PHONY:	crandom
-
-################################################################################
-
-ZEROS=scattergun_silver_zeros
-
-zeros:	$(OUT)/bytes
-	mkdir -p $(ZEROS)
-	( bytes 0x00 | scattergun.sh $(ZEROS) ) > $(ZEROS)/scattergun.log 2>&1
-
-.PHONY:	zeros
-
-################################################################################
 # "Betty"
 # Raspberry Pi 2 Model B v1.1
 # Broadcom BCM2836 Cortex-A7 ARMv7 x4
@@ -345,5 +315,35 @@ fail:	$(OUT)/seventool
 	( seventool -v | scattergun.sh $(FAIL) ) > $(FAIL)/scattergun.log 2>&1
 
 .PHONY:	fail
+
+################################################################################
+
+CMRAND48=scattergun_silver_cmrand48
+
+cmrand48:	$(OUT)/cmrand48
+	mkdir -p $(CMRAND48)
+	( cmrand48 | scattergun.sh $(CMRAND48) ) > $(CMRAND48)/scattergun.log 2>&1
+
+.PHONY:	cmrand48
+
+################################################################################
+
+CRANDOM=scattergun_silver_crandom
+
+crandom:	$(OUT)/crandom
+	mkdir -p $(CRANDOM)
+	( crandom | scattergun.sh $(CRANDOM) ) > $(CRANDOM)/scattergun.log 2>&1
+
+.PHONY:	crandom
+
+################################################################################
+
+ZEROS=scattergun_silver_zeros
+
+zeros:	$(OUT)/bytes
+	mkdir -p $(ZEROS)
+	( bytes 0x00 | scattergun.sh $(ZEROS) ) > $(ZEROS)/scattergun.log 2>&1
+
+.PHONY:	zeros
 
 ################################################################################
