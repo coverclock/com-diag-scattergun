@@ -318,7 +318,7 @@ fail:	$(OUT)/seventool
 
 ################################################################################
 
-CMRAND48=scattergun_silver_cmrand48
+CMRAND48=scattergun_mercury_cmrand48
 
 cmrand48:	$(OUT)/cmrand48
 	mkdir -p $(CMRAND48)
@@ -328,7 +328,7 @@ cmrand48:	$(OUT)/cmrand48
 
 ################################################################################
 
-CRANDOM=scattergun_silver_crandom
+CRANDOM=scattergun_mercury_crandom
 
 crandom:	$(OUT)/crandom
 	mkdir -p $(CRANDOM)
@@ -338,7 +338,7 @@ crandom:	$(OUT)/crandom
 
 ################################################################################
 
-ZEROS=scattergun_silver_zeros
+ZEROS=scattergun_mercury_zeros
 
 zeros:	$(OUT)/bytes
 	mkdir -p $(ZEROS)
