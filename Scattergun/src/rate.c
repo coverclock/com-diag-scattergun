@@ -33,7 +33,7 @@ static const char * program = "rate";
 static size_t reads = 0;
 static size_t total = 0;
 static int64_t then = 0;
-static int hup = 0;
+static int hungup = 0;
 
 /**
  * Handle a signal. In the event of a SIGPIPE or a SIGINT, the program shuts
@@ -44,7 +44,7 @@ static int hup = 0;
 static void handler(int signum)
 {
     if (signum == SIGHUP) {
-        hup = !0;
+        hungup = !0;
     } else {
         /* Do nothing. */
     }
@@ -96,24 +96,30 @@ int main(int argc, char * argv[])
     int fd = STDIN_FILENO;
     uint8_t * buffer = (uint8_t *)0;
     ssize_t bytes = 0;
+    size_t limit = ~0;
     int rc = 0;
     char * end = (char *)0;
-    struct sigaction action = { 0 };
+    struct sigaction sighup = { 0 };
     int opt;
     extern char * optarg;
 
     program = ((program = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : program + 1;
 
-    while ((opt = getopt(argc, argv, "dvDu:p:r:co:i:h")) >= 0) {
+    while ((opt = getopt(argc, argv, "f:l:r:")) >= 0) {
 
         switch (opt) {
 
-        case 'd':
-            debug = !0;
+        case 'f':
+            path = optarg;
             break;
 
-        case 'v':
-            verbose = !0;
+        case 'l':
+            limit = strtoul(optarg, &end, 0);
+            if (*end != '\0') {
+                errno = EINVAL;
+                perror(optarg);
+                error = !0;
+            }
             break;
 
         case 'r':
@@ -123,15 +129,6 @@ int main(int argc, char * argv[])
                 perror(optarg);
                 error = !0;
             }
-            break;
-
-        case 'f':
-            path = optarg;
-            break;
-
-        case 'h':
-            xc = 0;
-            error = !0;
             break;
 
         default:
@@ -148,15 +145,19 @@ int main(int argc, char * argv[])
 
     do {
 
+        if (error) {
+            break;
+        }
+
         buffer = malloc(size);
         if (buffer == (unsigned char *)0) {
             perror("malloc");
             break;
         }
 
-        action.sa_handler = handler;
-        action.sa_flags = SA_RESTART;
-        rc = sigaction(SIGHUP, &action, (struct sigaction *)0);
+        sighup.sa_handler = handler;
+        sighup.sa_flags = SA_RESTART;
+        rc = sigaction(SIGHUP, &sighup, (struct sigaction *)0);
         if (rc < 0) {
             perror("sigaction");
             break;
@@ -171,9 +172,9 @@ int main(int argc, char * argv[])
         }
 
         then = watch();
-        while (!0) {
+        while (limit > 0) {
 
-            bytes = read(fd, buffer, size);
+            bytes = read(fd, buffer, (size < limit) ? size : limit);
             if (bytes < 0) {
                 perror("read");
                 break;
@@ -183,6 +184,12 @@ int main(int argc, char * argv[])
             } else {
                 reads += 1;
                 total += bytes;
+                limit -= bytes;
+            }
+
+            if (hungup) {
+                report();
+                hungup = 0;
             }
     
         }
