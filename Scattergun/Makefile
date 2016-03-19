@@ -17,6 +17,7 @@ OUT=out/host/bin
 
 ALL  = $(OUT)/setup
 ALL += $(OUT)/bytes
+ALL += $(OUT)/rate
 ALL += $(OUT)/cmrand48
 ALL += $(OUT)/crandom
 ALL += $(OUT)/quantistool
@@ -93,6 +94,11 @@ SEVEN_INLINE += -DSCATTERGUN_HAS_RDSEED_INTRINSIC
 
 $(OUT)/seventool-inline: src/seventool.c
 	$(CC) $(CFLAGS) $(SEVEN_INLINE) -o $@ $^ $(LDFLAGS)
+
+################################################################################
+
+$(OUT)/rate:	src/rate.c
+	$(CC) $(CFLAGS) -o $@ $^ ${LDFLAGS}
 
 ################################################################################
 
