@@ -185,8 +185,8 @@ int main(int argc, char * argv[])
             }
         }
 
-        printf("%s: %zu bytes limit\n", program, limit);
-        printf("%s: %zu bytes requested\n", program, size);
+        fprintf(stderr, "%s: %zu bytes limit\n", program, limit);
+        fprintf(stderr, "%s: %zu bytes requested\n", program, size);
 
         remaining = limit;
         epoch = watch();
@@ -218,13 +218,13 @@ int main(int argc, char * argv[])
             burst = (bytes * 1000000) / duration;
 
             if (debug) {
-                printf("%s: %zu bytes %zu nanoseconds %lu kilobytes/second\n", program, bytes, duration, burst);
+                printf("%lu %zu %lu %zu %zu\n", elapsed, bytes, duration, burst, sustained);
             }
 
             if (verbose && ((burst > peak) || (burst < low))) {
-                printf("%s: %lu nanoseconds elapsed\n", program, elapsed);
-                printf("%s: %lu nanoseconds burst\n", program, duration);
-                printf("%s: %zu bytes read\n", program, bytes);
+                fprintf(stderr, "%s: %lu nanoseconds elapsed\n", program, elapsed);
+                fprintf(stderr, "%s: %lu nanoseconds burst\n", program, duration);
+                fprintf(stderr, "%s: %zu bytes read\n", program, bytes);
             }
 
             if (bytes < minimum) {
@@ -238,14 +238,14 @@ int main(int argc, char * argv[])
             if (burst < low) {
                 low = burst;
                 if (verbose) {
-                    printf("%s: %zu kilobytes/second low\n", program, low);
+                    fprintf(stderr, "%s: %zu kilobytes/second low\n", program, low);
                 }
             }
 
             if (burst > peak) {
                 peak = burst;
                 if (verbose) {
-                    printf("%s: %zu kilobytes/second peak\n", program, peak);
+                    fprintf(stderr, "%s: %zu kilobytes/second peak\n", program, peak);
                 }
             }
 
@@ -255,15 +255,15 @@ int main(int argc, char * argv[])
             perror("close");
         }
 
-        printf("%s: %zu bytes total\n", program, total);
-        printf("%s: %lu milliseconds elapsed\n", program, elapsed / 1000000);
-        printf("%s: %zu reads\n", program, reads);
-        printf("%s: %zu bytes minimum\n", program, minimum);
-        printf("%s: %zu bytes average\n", program, average);
-        printf("%s: %zu bytes maximum\n", program, maximum);
-        printf("%s: %zu kilobytes/second low\n", program, low);
-        printf("%s: %zu kilobytes/second sustained\n", program, sustained);
-        printf("%s: %zu kilobytes/second peak\n", program, peak);
+        fprintf(stderr, "%s: %zu bytes total\n", program, total);
+        fprintf(stderr, "%s: %lu milliseconds elapsed\n", program, elapsed / 1000000);
+        fprintf(stderr, "%s: %zu reads\n", program, reads);
+        fprintf(stderr, "%s: %zu bytes minimum\n", program, minimum);
+        fprintf(stderr, "%s: %zu bytes average\n", program, average);
+        fprintf(stderr, "%s: %zu bytes maximum\n", program, maximum);
+        fprintf(stderr, "%s: %zu kilobytes/second low\n", program, low);
+        fprintf(stderr, "%s: %zu kilobytes/second sustained\n", program, sustained);
+        fprintf(stderr, "%s: %zu kilobytes/second peak\n", program, peak);
 
     } while (0);
 
