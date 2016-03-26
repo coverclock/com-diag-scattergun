@@ -12,16 +12,16 @@
  *
  * USAGE
  *
- * rate [ -h ] [ -d ] [ -v ] [ -f PATH ] [ -r BYTES ] [ -t BYTES ]
+ * rate [ -h ] [ -c NANOSECONDS ] [ -v ] [ -f PATH ] [ -r BYTES ] [ -t BYTES ]
  *
  * OPTIONS
  *
- * -f PATH     Read from here instead of stdin.
- * -r BYTES    Read no more than this at a time.
- * -t BYTES    Read no more than this total.
- * -h          Display this menu.
- * -d          Display debug output.
- * -v          Display verbose output.
+ * -c NANOSECONDS  Display CSV output to stdout.
+ * -f PATH         Read from here instead of stdin.
+ * -h              Display this menu.
+ * -r BYTES        Read no more than this at a time.
+ * -t BYTES        Read no more than this total.
+ * -v              Display verbose output to stderr.
  *
  * EXAMPLES
  *
@@ -42,6 +42,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <fcntl.h>
 
 static const char * program = "rate";
@@ -50,7 +51,7 @@ static uint64_t watch(void)
 {
     int rc;
     uint64_t ticks = ~0;
-    struct timespec spec;
+    struct timespec spec = { 0 };
 
     rc = clock_gettime(CLOCK_MONOTONIC_RAW, &spec);
     if (rc == 0) {
@@ -64,15 +65,60 @@ static uint64_t watch(void)
     return ticks;
 }
 
+static uint64_t timer(uint64_t ns)
+{
+    int rc;
+    uint64_t ticks = ~0;
+    struct itimerval itimer = { 0 };
+
+    itimer.it_value.tv_sec = ns / 1000000000;
+    itimer.it_value.tv_usec = (ns % 1000000000) / 1000;
+    itimer.it_interval = itimer.it_value;
+    rc = setitimer(ITIMER_REAL, &itimer, (struct itimerval *)0);
+    if (rc == 0) {
+        ticks = itimer.it_value.tv_sec;
+        ticks *= 1000000000;
+        ticks += (itimer.it_value.tv_usec * 1000);
+    } else {
+        perror("setitimer");
+    }
+
+    return ticks;
+}
+
+static int alarmed = !0;
+
+static void alarming(int signum)
+{
+    if (signum == SIGALRM) {
+        alarmed = !0;
+    }
+}
+
+static int alarmable(void)
+{
+    int rc;
+    struct sigaction action = { 0 };
+
+    action.sa_handler = alarming;
+    action.sa_flags = SA_RESTART;
+    rc = sigaction(SIGALRM, &action, (struct sigaction *)0);
+    if (rc < 0) {
+        perror("sigaction");
+    }
+
+    return rc;
+}
+
 static void usage(void)
 {
-    fprintf(stderr, "usage: %s [ -d ] [ -f PATH ] [ -h ] [ -r BYTES ] [ -t BYTES ] [ -v ] \n", program);
-    fprintf(stderr, "       -d          Display debug output.\n");
-    fprintf(stderr, "       -f PATH     Read from here instead of stdin.\n");
-    fprintf(stderr, "       -h          Display this menu.\n");
-    fprintf(stderr, "       -r BYTES    Read no more than this at a time.\n");
-    fprintf(stderr, "       -t BYTES    Read no more than this total.\n");
-    fprintf(stderr, "       -v          Display verbose output.\n");
+    fprintf(stderr, "usage: %s [ -c NANOSECONDS ] [ -f PATH ] [ -h ] [ -r BYTES ] [ -t BYTES ] [ -v ] \n", program);
+    fprintf(stderr, "       -c NANOSECONDS  Display CSV output to stdout.\n");
+    fprintf(stderr, "       -f PATH         Read from here instead of stdin.\n");
+    fprintf(stderr, "       -h              Display this menu.\n");
+    fprintf(stderr, "       -r BYTES        Read no more than this at a time.\n");
+    fprintf(stderr, "       -t BYTES        Read no more than this total.\n");
+    fprintf(stderr, "       -v              Display verbose output to stderr.\n");
 }
 
 /**
@@ -92,19 +138,24 @@ int main(int argc, char * argv[])
     size_t remaining = 0;
     int rc = 0;
     char * end = (char *)0;
-    int debug = 0;
     int verbose = 0;
+    uint64_t period = 0;
     int opt;
     extern char * optarg;
 
     program = ((program = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : program + 1;
 
-    while ((opt = getopt(argc, argv, "df:ht:r:v")) >= 0) {
+    while ((opt = getopt(argc, argv, "c:f:ht:r:v")) >= 0) {
 
         switch (opt) {
 
-        case 'd':
-            debug = !0;
+        case 'c':
+            period = strtoul(optarg, &end, 0);
+            if ((*end != '\0') || (size == 0)) {
+                errno = EINVAL;
+                perror(optarg);
+                error = !0;
+            }
             break;
 
         case 'f':
@@ -188,6 +239,13 @@ int main(int argc, char * argv[])
         fprintf(stderr, "%s: %zu bytes limit\n", program, limit);
         fprintf(stderr, "%s: %zu bytes requested\n", program, size);
 
+        if (period > 0) {
+            fprintf(stderr, "%s: %lu nanoseconds period\n", program, period);
+            printf("%s,%s,%s,%s,%s\n", "ns elapsed", "bytes", "ns duration", "kbps burst", "kbps sustained");
+            alarmable();
+            timer(period);
+        }
+
         remaining = limit;
         epoch = watch();
         while (remaining >= size) {
@@ -217,8 +275,9 @@ int main(int argc, char * argv[])
             duration = now - then;
             burst = (bytes * 1000000) / duration;
 
-            if (debug) {
-                printf("%lu %zu %lu %zu %zu\n", elapsed, bytes, duration, burst, sustained);
+            if ((period > 0) && alarmed) {
+                printf("%lu,%zu,%lu,%zu,%zu\n", elapsed, bytes, duration, burst, sustained);
+                alarmed = 0;
             }
 
             if (verbose && ((burst > peak) || (burst < low))) {
