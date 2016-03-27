@@ -35,6 +35,7 @@
 
 int main(int argc, char * argv[])
 {
+    int32_t value;
     if (argc >= 2) {
         char * end;
         unsigned long seed;
@@ -47,7 +48,6 @@ int main(int argc, char * argv[])
         srand48(seed);
     }
     while (!0) {
-        int32_t value;
         value = mrand48();
         if (fwrite(&value, sizeof(value), 1, stdout) == 1) {
             /* Do nothing. */
