@@ -22,8 +22,8 @@
  *
  * ABSTRACT
  *
- * Continuously output binary numbers with the value zero. If an argument
- * is specified, a byte with that value is output instead.
+ * Continuously output eight-bit binary bytes with the value zero. If an
+ * argument is specified, a byte with that value is output instead.
  */
 
 #include <stdlib.h>

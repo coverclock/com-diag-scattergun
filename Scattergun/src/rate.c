@@ -29,7 +29,9 @@
  *
  * ABSTRACT
  *
- * Measures the sustained and peak rates of a data source.
+ * Measures the sustained and peak rates of a data source. Optionally outputs
+ * a comma separated value (CSV) file of performance metrics with the specified
+ * period.
  */
 
 #include <stdlib.h>

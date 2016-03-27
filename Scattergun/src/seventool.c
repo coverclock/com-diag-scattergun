@@ -18,10 +18,10 @@
  *
  * ABSTRACT
  *
- * Continuously reads a word of entropy using the rdrand or rdseed instructions
- * available on various Intel processors such as certain models of the i7 and
- * writes it to standard output, or to a specified file system path. This
- * latter object could be a FIFO, which could allow generated entropy to be
+ * Continuously reads thirty-two bits of entropy using the rdrand or rdseed
+ * instructions available on various Intel processors such as certain models of
+ * the i7 and writes it to standard output, or to a specified file system path.
+ * This latter object could be a FIFO, which could allow generated entropy to be
  * read by another program, like rngd. Optionally does some other useful stuff
  * regarding examining the capabilities of the host processor. This is part of
  * the Scattergun project.
