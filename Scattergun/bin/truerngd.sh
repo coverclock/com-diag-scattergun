@@ -16,7 +16,7 @@ ZERO=$(basename ${0})
 SOURCE=${1:-"/dev/TrueRNG"}
 SINK=${2:-"/dev/random"}
 RUNDIR=${3:-"/var/run"}
-ETCDIR=${4:-"/etc"}
+ETCDIR=${4:-"/etc/default"}
 LABEL=${ZERO%\.sh}
 
 if [ -r ${ETCDIR}/${LABEL}.conf ]; then
