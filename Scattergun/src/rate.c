@@ -243,7 +243,7 @@ int main(int argc, char * argv[])
 
         if (period > 0) {
             fprintf(stderr, "%s: %lu nanoseconds period\n", program, period);
-            printf("%s,%s,%s,%s,%s\n", "ns elapsed", "bytes", "ns duration", "kbps burst", "kbps sustained");
+            printf("%s,%s,%s,%s,%s,%s\n", "elapsed", "minimum", "maximum", "low", "peak", "sustained");
             alarmable();
             timer(period);
         }
@@ -277,11 +277,6 @@ int main(int argc, char * argv[])
             duration = now - then;
             burst = (bytes * 1000000) / duration;
 
-            if ((period > 0) && alarmed) {
-                printf("%lu,%zu,%lu,%zu,%zu\n", elapsed, bytes, duration, burst, sustained);
-                alarmed = 0;
-            }
-
             if (verbose && ((burst > peak) || (burst < low))) {
                 fprintf(stderr, "%s: %lu nanoseconds elapsed\n", program, elapsed);
                 fprintf(stderr, "%s: %lu nanoseconds burst\n", program, duration);
@@ -308,6 +303,11 @@ int main(int argc, char * argv[])
                 if (verbose) {
                     fprintf(stderr, "%s: %zu kilobytes/second peak\n", program, peak);
                 }
+            }
+
+            if ((period > 0) && alarmed) {
+                printf("%lu,%zu,%zu,%zu,%zu,%zu\n", elapsed, minimum, maximum, low, peak, sustained);
+                alarmed = 0;
             }
 
         }
