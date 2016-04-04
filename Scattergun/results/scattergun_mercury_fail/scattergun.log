@@ -1,21 +1,23 @@
-scattergun.sh: 2016-03-08T02:58:14 begin scattergun_mercury_crandom
-scattergun.sh: 2016-03-08T02:58:14 begin png
+seventool: mode         fail
+scattergun.sh: 2016-04-03T18:10:48 begin scattergun_mercury_fail
+scattergun.sh: 2016-04-03T18:10:48 begin png
 65536+0 records in
 65536+0 records out
-196608 bytes (197 kB) copied, 0.0647676 s, 3.0 MB/s
+196608 bytes (197 kB) copied, 0.0654707 s, 3.0 MB/s
 
-real	0m0.065s
-user	0m0.000s
-sys	0m0.064s
-scattergun.sh: 2016-03-08T02:58:15 end png
-scattergun.sh: 2016-03-08T02:58:15 begin rngtest
+real	0m0.066s
+user	0m0.008s
+sys	0m0.056s
+pnmtopng: 4 colors found
+scattergun.sh: 2016-04-03T18:10:48 end png
+scattergun.sh: 2016-04-03T18:10:48 begin rngtest
 1000+0 records in
 1000+0 records out
-2500000 bytes (2.5 MB) copied, 0.00567229 s, 441 MB/s
+2500000 bytes (2.5 MB) copied, 0.00940516 s, 266 MB/s
 
-real	0m0.006s
+real	0m0.010s
 user	0m0.000s
-sys	0m0.000s
+sys	0m0.004s
 rngtest 4
 Copyright (c) 2004 by Henrique de Moraes Holschuh
 This is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -28,48 +30,181 @@ rngtest: FIPS 140-2 failures: 999
 rngtest: FIPS 140-2(2001-10-10) Monobit: 999
 rngtest: FIPS 140-2(2001-10-10) Poker: 999
 rngtest: FIPS 140-2(2001-10-10) Runs: 999
-rngtest: FIPS 140-2(2001-10-10) Long run: 999
-rngtest: FIPS 140-2(2001-10-10) Continuous run: 0
-rngtest: input channel speed: (min=1.330; avg=40.540; max=18.626)Gibits/s
-rngtest: FIPS tests speed: (min=83.290; avg=119.156; max=135.273)Mibits/s
-rngtest: Program run time: 160555 microseconds
+rngtest: FIPS 140-2(2001-10-10) Long run: 0
+rngtest: FIPS 140-2(2001-10-10) Continuous run: 999
+rngtest: input channel speed: (min=1.242; avg=43.990; max=18.626)Gibits/s
+rngtest: FIPS tests speed: (min=100.918; avg=198.628; max=211.928)Mibits/s
+rngtest: Program run time: 96480 microseconds
 
-real	0m0.161s
-user	0m0.160s
+real	0m0.097s
+user	0m0.096s
 sys	0m0.000s
-scattergun.sh: 2016-03-08T02:58:15 end rngtest
-scattergun.sh: 2016-03-08T02:58:15 begin ent
+scattergun.sh: 2016-04-03T18:10:48 end rngtest
+scattergun.sh: 2016-04-03T18:10:48 begin ent
 4096+0 records in
 4096+0 records out
-4194304 bytes (4.2 MB) copied, 0.00962576 s, 436 MB/s
+4194304 bytes (4.2 MB) copied, 0.0156165 s, 269 MB/s
 
-real	0m0.010s
+real	0m0.016s
 user	0m0.000s
-sys	0m0.004s
-Entropy = 4.954705 bits per byte.
+sys	0m0.008s
+Entropy = 1.500000 bits per byte.
 
 Optimum compression would reduce the size
-of this 4194304 byte file by 38 percent.
+of this 4194304 byte file by 81 percent.
 
-Chi square distribution for 4194304 samples is 267985401.83, and randomly
+Chi square distribution for 4194304 samples is 398458880.00, and randomly
 would exceed this value 0.01 percent of the times.
 
-Arithmetic mean value of data bytes is 55.7166 (127.5 = random).
-Monte Carlo value for Pi is 3.956747014 (error 25.95 percent).
-Serial correlation coefficient is 0.344099 (totally uncorrelated = 0.0).
+Arithmetic mean value of data bytes is 202.2500 (127.5 = random).
+Monte Carlo value for Pi is 0.000000000 (error 100.00 percent).
+Serial correlation coefficient is -0.051845 (totally uncorrelated = 0.0).
 
-real	0m0.058s
-user	0m0.056s
+real	0m0.051s
+user	0m0.048s
 sys	0m0.000s
-scattergun.sh: 2016-03-08T02:58:15 end ent
-scattergun.sh: 2016-03-08T02:58:15 begin SP800-90B
-scattergun.sh: 2016-03-08T02:58:15 end SP800-90B
-scattergun.sh: 2016-03-08T02:58:15 begin dieharder
+scattergun.sh: 2016-04-03T18:10:49 end ent
+scattergun.sh: 2016-04-03T18:10:49 begin SP800-90B
+4096+0 records in
+4096+0 records out
+4194304 bytes (4.2 MB) copied, 0.0155555 s, 270 MB/s
+
+real	0m0.016s
+user	0m0.004s
+sys	0m0.004s
+Read in file /home/jsloan/src/com-diag-scattergun/Scattergun/scattergun_mercury_fail/sp800.dat, 4194304 bytes long.
+Dataset: 4194304 8-bit symbols.
+Output symbol values: min = 173, max = 222
+
+
+Compression Test:      
+	Scores                   Ranks
+	130                        1*
+	133                        1*
+	130                        1*
+	133                        1*
+	130                        1*
+	133                        1*
+	130                        1*
+	133                        1*
+	130                        1*
+	133                        1*
+	                         --- 
+	                          10
+Failed Compression Test
+
+Over/under Test:       
+	Scores                   Ranks
+	2  209716                  1*  512 
+	2  209716                  1*  524 
+	2  209716                  1*  492 
+	2  209716                  1*  517 
+	2  209716                  1*  476 
+	2  209716                  1*  505 
+	2  209716                  1*  505 
+	2  209716                  1*  497 
+	2  209716                  1*  469 
+	2  209716                  1*  494 
+	                         ---   --- 
+	                          10     0
+Failed Over/under Test
+
+Excursion Test:        
+	Scores                   Ranks
+	29.2499                    1*
+	29.25                      1*
+	29.2499                    1*
+	29.25                      1*
+	29.2499                    1*
+	29.25                      1*
+	29.2499                    1*
+	29.25                      1*
+	29.2499                    1*
+	29.25                      1*
+	                         --- 
+	                          10
+Failed Excursion Test
+
+Directional runs Test: 
+	Scores                   Ranks
+	209715     2  209715       1*    1* 1000*
+	209715     2  209714       1*    1* 1000*
+	209715     2  209715       1*    1* 1000*
+	209715     2  209714       1*    1* 1000*
+	209715     2  209715       1*    1* 1000*
+	209715     2  209714       1*    1* 1000*
+	209715     2  209715       1*    1* 1000*
+	209715     2  209714       1*    1* 1000*
+	209715     2  209715       1*    1* 1000*
+	209715     2  209714       1*    1* 1000*
+	                         ---   ---   --- 
+	                          10    10    10
+Failed Directional runs Test
+
+Covariance Test:       
+	Scores                   Ranks
+	-22.5629                   1*
+	-22.5638                   1*
+	-22.5629                   1*
+	-22.5638                   1*
+	-22.5629                   1*
+	-22.5638                   1*
+	-22.5629                   1*
+	-22.5638                   1*
+	-22.5629                   1*
+	-22.5638                   1*
+	                         --- 
+	                          10
+Failed Covariance Test
+
+Collision Test:        
+	Scores                   Ranks
+	3  3  3                 1000* 1000*  501 
+	2  2.99999  3           1000* 1000*  501 
+	3  3  3                 1000* 1000*  501 
+	2  2.99999  3           1000* 1000*  501 
+	3  3  3                 1000* 1000*  501 
+	2  2.99999  3           1000* 1000*  501 
+	3  3  3                 1000* 1000*  501 
+	2  2.99999  3           1000* 1000*  501 
+	3  3  3                 1000* 1000*  501 
+	2  2.99999  3           1000* 1000*  501 
+	                         ---   ---   --- 
+	                          10    10     0
+Failed Collision Test
+
+** Failed iid shuffle tests
+IID = False
+
+real	101m4.892s
+user	100m37.324s
+sys	0m33.000s
+Read in file /home/jsloan/src/com-diag-scattergun/Scattergun/scattergun_mercury_fail/sp800.dat, 4194304 bytes long.
+Dataset: 4194304 8-bit symbols.
+Output symbol values: min = 173, max = 222
+- Collision test          : p(max) = 0.496063, min-entropy = 1.0114
+- Partial collection test : p(max) = 0.992157, min-entropy = 0.0113599
+- Markov test (map 6 bits): p(max) = 5.68446e-14, min-entropy = 0.34375
+- Compression test        : p(max) = 0.874294, min-entropy = 0.193809
+- Frequency test          : p(max) = 0.5, min-entropy = 0.998277
+min-entropy = 0.0113599
+
+Compression sanity check...
+	dataset 1 compressed length = 1040, cutoff = 4764.7...Fail
+
+sanity check = FAIL
+time: (69.6462 sec)
+
+real	1m9.728s
+user	1m9.628s
+sys	0m0.160s
+scattergun.sh: 2016-04-03T19:53:03 end SP800-90B
+scattergun.sh: 2016-04-03T19:53:03 begin dieharder
 #=============================================================================#
 #            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
 #=============================================================================#
    rng_name    |rands/second|   Seed   |
-stdin_input_raw|  6.92e+07  | 393291142|
+stdin_input_raw|  6.97e+07  |4174079187|
 #=============================================================================#
         test_name   |ntup| tsamples |psamples|  p-value |Assessment
 #=============================================================================#
@@ -93,7 +228,7 @@ diehard_count_1s_byt|   0|    256000|     100|0.00000000|  FAILED
        diehard_craps|   0|    200000|     100|0.00000000|  FAILED  
        diehard_craps|   0|    200000|     100|0.00000000|  FAILED  
  marsaglia_tsang_gcd|   0|  10000000|     100|0.00000000|  FAILED  
- marsaglia_tsang_gcd|   0|  10000000|     100|0.80577085|  PASSED  
+ marsaglia_tsang_gcd|   0|  10000000|     100|0.00000000|  FAILED  
          sts_monobit|   1|    100000|     100|0.00000000|  FAILED  
             sts_runs|   2|    100000|     100|0.00000000|  FAILED  
           sts_serial|   1|    100000|     100|0.00000000|  FAILED  
@@ -183,6 +318,14 @@ rgb_minimum_distance|   5|     10000|    1000|0.00000000|  FAILED
      dab_bytedistrib|   0|  51200000|       1|0.00000000|  FAILED  
              dab_dct| 256|     50000|       1|0.00000000|  FAILED  
 Preparing to run test 207.  ntuple = 0
-/home/jsloan/src/com-diag-scattergun/Scattergun/out/host/bin/scattergun.sh: line 120:  2210 Aborted                 (core dumped) dieharder -a -g 200
-scattergun.sh: 2016-03-08T03:21:25 end dieharder
-scattergun.sh: 2016-03-08T03:21:25 end scattergun_mercury_crandom 0
+        dab_filltree|  32|  15000000|       1|0.00000000|  FAILED  
+        dab_filltree|  32|  15000000|       1|0.00000000|  FAILED  
+Preparing to run test 208.  ntuple = 0
+       dab_filltree2|   0|   5000000|       1|0.00000000|  FAILED  
+       dab_filltree2|   1|   5000000|       1|0.00000000|  FAILED  
+Preparing to run test 209.  ntuple = 0
+        dab_monobit2|  12|  65000000|       1|1.00000000|  FAILED  
+scattergun.sh: 2016-04-03T20:33:06 end dieharder
+scattergun.sh: 2016-04-03T20:33:06 end scattergun_mercury_fail 0
+fwrite: Broken pipe
+seventool: tries=61721928705 size=4 reads=61721928705 total=246887714820

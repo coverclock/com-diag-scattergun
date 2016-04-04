@@ -176,24 +176,6 @@ export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 # gcc 4.8.2
 ################################################################################
 
-# TrueRNG
-# ublt.it
-# US$49.95
-# http://ubld.it/products/truerng-hardware-random-number-generator/
-# 350Kbps
-# USB
-# semiconductor avalanche effect
-
-TRUERNG=scattergun_silver_TrueRNG
-
-TrueRNG:	/dev/TrueRNG
-	mkdir -p $(TRUERNG)
-	( dd if=/dev/TrueRNG | scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1
-
-.PHONY: TrueRNG
-
-################################################################################
-
 # TrueRNGpro
 # ublt.it
 # US$99.00
@@ -302,6 +284,24 @@ bcm2708:	/dev/random
 # Ubuntu 14.04.4 "trusty"
 # Linux 4.2.0
 # gcc 4.8.4
+################################################################################
+
+# TrueRNG
+# ublt.it
+# US$49.95
+# http://ubld.it/products/truerng-hardware-random-number-generator/
+# 350Kbps
+# USB
+# semiconductor avalanche effect
+
+TRUERNG=scattergun_mercury_TrueRNG
+
+TrueRNG:	/dev/TrueRNG
+	mkdir -p $(TRUERNG)
+	( dd if=/dev/TrueRNG | scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1
+
+.PHONY: TrueRNG
+
 ################################################################################
 
 # rdrand Deterministic Random Bit Generator (DRBG)
