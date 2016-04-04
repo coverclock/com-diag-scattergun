@@ -46,6 +46,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <fcntl.h>
+#include <float.h>
 
 static const char * program = "rate";
 
@@ -212,13 +213,12 @@ int main(int argc, char * argv[])
         ssize_t bytes = 0;
         size_t reads = 0;
         size_t total = 0;
-        size_t sustained = 0;
-        size_t burst = 0;
-        size_t average = 0;
         size_t minimum = ~0;
         size_t maximum = 0;
-        size_t low = ~0;
-        size_t peak = 0;
+        double sustained = 0.0;
+        double burst = 0.0;
+        double low = DBL_MAX;
+        double peak = 0;
 
         if (error) {
             break;
@@ -269,7 +269,10 @@ int main(int argc, char * argv[])
             if (then != ~0) {
 
                 duration = now - then;
-                burst = (bytes * 1000000) / duration;
+                burst = bytes;
+                burst *= 8;
+                burst *= 1000000;
+                burst /= duration;
 
                 if (burst < low) {
                     low = burst;
@@ -285,9 +288,6 @@ int main(int argc, char * argv[])
             total += bytes;
             remaining -= bytes;
 
-            elapsed = now - epoch;
-            sustained = (total * 1000000) / elapsed;
-
             if (bytes < minimum) {
                 minimum = bytes;
             }
@@ -296,10 +296,14 @@ int main(int argc, char * argv[])
                 maximum = bytes;
             }
 
-            average = (total + (reads / 2)) / reads;
+            elapsed = now - epoch;
+            sustained = total;
+            sustained *= 8;
+            sustained *= 1000000;
+            sustained /= elapsed;
 
             if ((period > 0) && (then != ~0) && alarmed) {
-                printf("%lu,%zu,%zu,%zu,%zu,%zu\n", elapsed, minimum, maximum, low, peak, sustained);
+                printf("%lu,%zu,%zu,%lf,%lf,%lf\n", elapsed, minimum, maximum, low, sustained, peak);
                 alarmed = 0;
             }
 
@@ -310,14 +314,14 @@ int main(int argc, char * argv[])
         }
 
         fprintf(stderr, "%s: %zu bytes total\n", program, total);
-        fprintf(stderr, "%s: %lu milliseconds elapsed\n", program, elapsed / 1000000);
+        fprintf(stderr, "%s: %lf milliseconds elapsed\n", program, elapsed / 1000000.0);
         fprintf(stderr, "%s: %zu reads\n", program, reads);
         fprintf(stderr, "%s: %zu bytes minimum\n", program, minimum);
-        fprintf(stderr, "%s: %zu bytes average\n", program, average);
+        fprintf(stderr, "%s: %lf bytes average\n", program, (0.0 + total) / reads);
         fprintf(stderr, "%s: %zu bytes maximum\n", program, maximum);
-        fprintf(stderr, "%s: %zu kilobytes/second low\n", program, low);
-        fprintf(stderr, "%s: %zu kilobytes/second sustained\n", program, sustained);
-        fprintf(stderr, "%s: %zu kilobytes/second peak\n", program, peak);
+        fprintf(stderr, "%s: %lf kilobits/second low\n", program, low);
+        fprintf(stderr, "%s: %lf kilobits/second sustained\n", program, sustained);
+        fprintf(stderr, "%s: %lf kilobits/second peak\n", program, peak);
 
     } while (0);
 
