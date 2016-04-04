@@ -250,11 +250,10 @@ int main(int argc, char * argv[])
 
         remaining = limit;
         epoch = watch();
+        now = ~0;
         while (remaining >= size) {
 
-            then = watch();
             bytes = read(fd, buffer, size);
-            now = watch();
             if (bytes < 0) {
                 perror("read");
                 break;
@@ -265,23 +264,29 @@ int main(int argc, char * argv[])
                 /* Do nothing. */
             }
 
+            then = now;
+            now = watch();
+            if (then != ~0) {
+
+                duration = now - then;
+                burst = (bytes * 1000000) / duration;
+
+                if (burst < low) {
+                    low = burst;
+                }
+
+                if (burst > peak) {
+                    peak = burst;
+                }
+
+            }
+
             reads += 1;
             total += bytes;
             remaining -= bytes;
 
-            average = (total + (reads / 2)) / reads;
-
             elapsed = now - epoch;
             sustained = (total * 1000000) / elapsed;
-
-            duration = now - then;
-            burst = (bytes * 1000000) / duration;
-
-            if (verbose && ((burst > peak) || (burst < low))) {
-                fprintf(stderr, "%s: %lu nanoseconds elapsed\n", program, elapsed);
-                fprintf(stderr, "%s: %lu nanoseconds burst\n", program, duration);
-                fprintf(stderr, "%s: %zu bytes read\n", program, bytes);
-            }
 
             if (bytes < minimum) {
                 minimum = bytes;
@@ -291,21 +296,9 @@ int main(int argc, char * argv[])
                 maximum = bytes;
             }
 
-            if (burst < low) {
-                low = burst;
-                if (verbose) {
-                    fprintf(stderr, "%s: %zu kilobytes/second low\n", program, low);
-                }
-            }
+            average = (total + (reads / 2)) / reads;
 
-            if (burst > peak) {
-                peak = burst;
-                if (verbose) {
-                    fprintf(stderr, "%s: %zu kilobytes/second peak\n", program, peak);
-                }
-            }
-
-            if ((period > 0) && alarmed) {
+            if ((period > 0) && (then != ~0) && alarmed) {
                 printf("%lu,%zu,%zu,%zu,%zu,%zu\n", elapsed, minimum, maximum, low, peak, sustained);
                 alarmed = 0;
             }
