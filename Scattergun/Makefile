@@ -21,6 +21,7 @@ ALL += $(OUT)/rate
 ALL += $(OUT)/cmrand48
 ALL += $(OUT)/crandom
 ALL += $(OUT)/quantistool
+ALL += $(OUT)/seed
 ALL += $(OUT)/seventool
 ALL += $(OUT)/seventool-binary
 ALL += $(OUT)/seventool-mnemonic
@@ -124,6 +125,13 @@ $(OUT)/seventool-inline: src/seventool.c
 # period.
 
 $(OUT)/rate:	src/rate.c
+	$(CC) $(CFLAGS) -o $@ $^ ${LDFLAGS}
+
+################################################################################
+
+# Generate an unsigned integer (-i) or an unsigned long (-l) seed.
+
+$(OUT)/seed:	src/seed.c
 	$(CC) $(CFLAGS) -o $@ $^ ${LDFLAGS}
 
 ################################################################################
