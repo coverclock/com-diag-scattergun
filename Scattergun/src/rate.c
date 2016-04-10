@@ -238,6 +238,10 @@ int main(int argc, char * argv[])
             }
         }
 
+        if (size > limit) {
+            size = limit;
+        }
+
         fprintf(stderr, "%s: %zu bytes limit\n", program, limit);
         fprintf(stderr, "%s: %zu bytes requested\n", program, size);
 
@@ -316,8 +320,17 @@ int main(int argc, char * argv[])
         fprintf(stderr, "%s: %zu bytes total\n", program, total);
         fprintf(stderr, "%s: %lf milliseconds elapsed\n", program, elapsed / 1000000.0);
         fprintf(stderr, "%s: %zu reads\n", program, reads);
-        fprintf(stderr, "%s: %zu bytes minimum\n", program, minimum);
+
+        if (reads <= 0) {
+            break;
+        }
+
         fprintf(stderr, "%s: %lf bytes average\n", program, (0.0 + total) / reads);
+        if (reads <= 1) {
+            break;
+        }
+
+        fprintf(stderr, "%s: %zu bytes minimum\n", program, minimum);
         fprintf(stderr, "%s: %zu bytes maximum\n", program, maximum);
         fprintf(stderr, "%s: %lf kilobits/second low\n", program, low);
         fprintf(stderr, "%s: %lf kilobits/second sustained\n", program, sustained);
