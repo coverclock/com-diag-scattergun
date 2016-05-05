@@ -279,11 +279,36 @@ random:	/dev/random
 
 BCM2708=scattergun_betty_bcm2708
 
-bcm2708:	/dev/random
+bcm2708:	/dev/hwrng
 	mkdir -p $(BCM2708)
 	( dd if=/dev/hwrng | scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1
 
 .PHONY:	bcm2708
+
+################################################################################
+# "Shortcake"
+# Raspberry Pi 3 Model B v1.2
+# Broadcom BCM2837 Cortex-A53 ARMv7 x4
+# Raspbian (Debian) 8.0
+# Linux 4.1.19
+# gcc 4.9.2
+################################################################################
+
+# bcm2708 HWRNG
+# Raspberry Pi 3 B (Broadcom BCM2837 SoC)
+# US$35.00
+# https://www.raspberrypi.org/products/raspberry-pi-3-model-b/
+# undocumented
+# drivers/char/hw_random/bcm2708-rng.c
+# unknown
+
+BCM2708_3=scattergun_shortcake_bcm2708
+
+bcm2708_3:	/dev/hwrng
+	mkdir -p $(BCM2708_3)
+	( dd if=/dev/hwrng | scattergun.sh $(BCM2708_3) ) > $(BCM2708_3)/scattergun.log 2>&1
+
+.PHONY:	bcm2708_3
 
 ################################################################################
 # "Mercury"
