@@ -46,6 +46,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <fcntl.h>
+#include <float.h>
 
 static const char * program = "rate";
 
@@ -88,7 +89,7 @@ static uint64_t timer(uint64_t ns)
     return ticks;
 }
 
-static int alarmed = !0;
+static int alarmed = 0;
 
 static void alarming(int signum)
 {
@@ -206,19 +207,20 @@ int main(int argc, char * argv[])
     do {
         uint64_t epoch = 0;
         uint64_t then = 0;
-        uint64_t now = 0;
+        uint64_t hence = ~0;
+        uint64_t now = ~0;
         uint64_t elapsed = 0;
         uint64_t duration = 0;
         ssize_t bytes = 0;
         size_t reads = 0;
+        size_t interval = 0;
         size_t total = 0;
-        size_t sustained = 0;
-        size_t burst = 0;
-        size_t average = 0;
         size_t minimum = ~0;
         size_t maximum = 0;
-        size_t low = ~0;
-        size_t peak = 0;
+        double instantaneous = 0.0;
+        double peak = 0;
+        double sustained = 0.0;
+        double current = 0.0;
 
         if (error) {
             break;
@@ -238,55 +240,42 @@ int main(int argc, char * argv[])
             }
         }
 
+        if (size > limit) {
+            size = limit;
+        }
+
         fprintf(stderr, "%s: %zu bytes limit\n", program, limit);
         fprintf(stderr, "%s: %zu bytes requested\n", program, size);
 
         if (period > 0) {
             fprintf(stderr, "%s: %lu nanoseconds period\n", program, period);
-            printf("%s,%s,%s,%s,%s\n", "ns elapsed", "bytes", "ns duration", "kbps burst", "kbps sustained");
+            printf("%s,%s,%s,%s,%s,%s\n", "Elapsed", "Minimum", "Maximum", "Current", "Sustained", "Peak");
             alarmable();
             timer(period);
         }
 
         remaining = limit;
         epoch = watch();
-        while (remaining >= size) {
 
-            then = watch();
-            bytes = read(fd, buffer, size);
-            now = watch();
-            if (bytes < 0) {
-                perror("read");
-                break;
-            } else if (bytes == 0) {
+        while (!0) {
+
+            if (remaining < size) {
                 xc = 0;
+                break;
+            } else if ((bytes = read(fd, buffer, size)) == 0) {
+                xc = 0;
+                break;
+            } else if (bytes < 0) {
+                perror("read");
                 break;
             } else {
                 /* Do nothing. */
             }
 
             reads += 1;
+            interval += bytes;
             total += bytes;
             remaining -= bytes;
-
-            average = (total + (reads / 2)) / reads;
-
-            elapsed = now - epoch;
-            sustained = (total * 1000000) / elapsed;
-
-            duration = now - then;
-            burst = (bytes * 1000000) / duration;
-
-            if ((period > 0) && alarmed) {
-                printf("%lu,%zu,%lu,%zu,%zu\n", elapsed, bytes, duration, burst, sustained);
-                alarmed = 0;
-            }
-
-            if (verbose && ((burst > peak) || (burst < low))) {
-                fprintf(stderr, "%s: %lu nanoseconds elapsed\n", program, elapsed);
-                fprintf(stderr, "%s: %lu nanoseconds burst\n", program, duration);
-                fprintf(stderr, "%s: %zu bytes read\n", program, bytes);
-            }
 
             if (bytes < minimum) {
                 minimum = bytes;
@@ -296,18 +285,44 @@ int main(int argc, char * argv[])
                 maximum = bytes;
             }
 
-            if (burst < low) {
-                low = burst;
-                if (verbose) {
-                    fprintf(stderr, "%s: %zu kilobytes/second low\n", program, low);
+            then = now;
+            now = watch();
+
+            elapsed = now - epoch;
+            sustained = total;
+            sustained *= 8;
+            sustained *= 1000000;
+            sustained /= elapsed;
+
+            if (then != ~0) {
+
+                duration = now - then;
+                instantaneous = bytes;
+                instantaneous *= 8;
+                instantaneous *= 1000000;
+                instantaneous /= duration;
+
+                if (instantaneous > peak) {
+                    peak = instantaneous;
                 }
+
             }
 
-            if (burst > peak) {
-                peak = burst;
-                if (verbose) {
-                    fprintf(stderr, "%s: %zu kilobytes/second peak\n", program, peak);
+            if (alarmed) {
+
+                if (hence != ~0) {
+                    duration = now - hence;
+                    current = interval;
+                    current *= 8;
+                    current *= 1000000;
+                    current /= duration;
+                    interval = 0;
+                    printf("%lu,%zu,%zu,%lf,%lf,%lf\n", elapsed, minimum, maximum, current, sustained, peak);
                 }
+
+                hence = now;
+                alarmed = 0;
+
             }
 
         }
@@ -317,14 +332,22 @@ int main(int argc, char * argv[])
         }
 
         fprintf(stderr, "%s: %zu bytes total\n", program, total);
-        fprintf(stderr, "%s: %lu milliseconds elapsed\n", program, elapsed / 1000000);
+        fprintf(stderr, "%s: %lf milliseconds elapsed\n", program, elapsed / 1000000.0);
         fprintf(stderr, "%s: %zu reads\n", program, reads);
+
+        if (reads <= 0) {
+            break;
+        }
+
+        fprintf(stderr, "%s: %lf bytes average\n", program, (0.0 + total) / reads);
+        if (reads <= 1) {
+            break;
+        }
+
         fprintf(stderr, "%s: %zu bytes minimum\n", program, minimum);
-        fprintf(stderr, "%s: %zu bytes average\n", program, average);
         fprintf(stderr, "%s: %zu bytes maximum\n", program, maximum);
-        fprintf(stderr, "%s: %zu kilobytes/second low\n", program, low);
-        fprintf(stderr, "%s: %zu kilobytes/second sustained\n", program, sustained);
-        fprintf(stderr, "%s: %zu kilobytes/second peak\n", program, peak);
+        fprintf(stderr, "%s: %lf kilobits/second sustained\n", program, sustained);
+        fprintf(stderr, "%s: %lf kilobits/second peak\n", program, peak);
 
     } while (0);
 
