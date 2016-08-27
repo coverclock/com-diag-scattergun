@@ -6,6 +6,8 @@
 
 ################################################################################
 
+PROJECT=scattergun
+
 ROOT=$(HOME)/src
 
 USNISTGOV_ROOT=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment
@@ -184,6 +186,10 @@ export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 # gcc 4.8.2
 ################################################################################
 
+TARGET=silver
+
+################################################################################
+
 # TrueRNGpro
 # ublt.it
 # US$99.00
@@ -192,7 +198,7 @@ export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 # USB
 # semiconductor avalanche effect
 
-TRUERNGPRO=scattergun_silver_TrueRNGpro
+TRUERNGPRO:=$(PROJECT)_$(TARGET)_TrueRNGpro
 
 $(TRUERNGPRO):	/dev/TrueRNGpro
 	mkdir -p $(TRUERNGPRO)
@@ -208,7 +214,7 @@ $(TRUERNGPRO):	/dev/TrueRNGpro
 # USB
 # beam splitter with photon counter
 
-QUANTIS=scattergun_silver_quantis
+QUANTIS:=$(PROJECT)_$(TARGET)_quantis
 
 $(QUANTIS):	src/quantistool
 	mkdir -p $(QUANTIS)
@@ -224,7 +230,7 @@ $(QUANTIS):	src/quantistool
 # USB
 # semiconductor avalanche effect (and optionally atmospheric noise)
 
-ONERNG=scattergun_silver_OneRNG
+ONERNG:=$(PROJECT)_$(TARGET)_OneRNG
 
 $(ONERNG):	/dev/OneRNG
 	mkdir -p $(ONERNG)
@@ -234,7 +240,7 @@ $(ONERNG):	/dev/OneRNG
 
 # drivers/char/random.c
 
-URANDOM=scattergun_silver_urandom
+URANDOM:=$(PROJECT)_$(TARGET)_urandom
 
 $(URANDOM):	/dev/urandom
 	mkdir -p $(URANDOM)
@@ -244,7 +250,7 @@ $(URANDOM):	/dev/urandom
 
 # drivers/char/random.c
 
-RANDOM=scattergun_silver_random
+RANDOM:=$(PROJECT)_$(TARGET)_random
 
 $(RANDOM):	/dev/random
 	mkdir -p $(RANDOM)
@@ -259,6 +265,10 @@ $(RANDOM):	/dev/random
 # gcc 4.6.3
 ################################################################################
 
+TARGET=betty
+
+################################################################################
+
 # bcm2708 HWRNG
 # Raspberry Pi 2 B (Broadcom BCM2836 SoC)
 # US$35.00
@@ -267,11 +277,11 @@ $(RANDOM):	/dev/random
 # drivers/char/hw_random/bcm2708-rng.c
 # unknown
 
-BCM2708=scattergun_betty_bcm2708
+BCM2708_2:=$(PROJECT)_$(TARGET)_bcm2708
 
-$(BCM2708):	/dev/hwrng
-	mkdir -p $(BCM2708)
-	( dd if=/dev/hwrng | scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1
+$(BCM2708_2):	/dev/hwrng
+	mkdir -p $(BCM2708_2)
+	( dd if=/dev/hwrng | scattergun.sh $(BCM2708_2) ) > $(BCM2708_2)/scattergun.log 2>&1
 
 ################################################################################
 # "Shortcake"
@@ -282,6 +292,10 @@ $(BCM2708):	/dev/hwrng
 # gcc 4.9.2
 ################################################################################
 
+TARGET=shortcake
+
+################################################################################
+
 # bcm2708 HWRNG
 # Raspberry Pi 3 B (Broadcom BCM2837 SoC)
 # US$35.00
@@ -290,7 +304,7 @@ $(BCM2708):	/dev/hwrng
 # drivers/char/hw_random/bcm2708-rng.c
 # unknown
 
-BCM2708_3=scattergun_shortcake_bcm2708
+BCM2708_3:=$(PROJECT)_$(TARGET)_bcm2708
 
 $(BCM2708_3):	/dev/hwrng
 	mkdir -p $(BCM2708_3)
@@ -305,6 +319,10 @@ $(BCM2708_3):	/dev/hwrng
 # gcc 4.8.4
 ################################################################################
 
+TARGET=mercury
+
+################################################################################
+
 # TrueRNG
 # ublt.it
 # US$49.95
@@ -313,11 +331,29 @@ $(BCM2708_3):	/dev/hwrng
 # USB
 # semiconductor avalanche effect
 
-TRUERNG=scattergun_mercury_TrueRNG
+TRUERNG:=$(PROJECT)_$(TARGET)_TrueRNG
 
 $(TRUERNG):	/dev/TrueRNG
 	mkdir -p $(TRUERNG)
 	( dd if=/dev/TrueRNG | scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1
+
+################################################################################
+
+# NeuG
+# GNU Press
+# US$50.00
+# https://shop.fsf.org/storage-devices/neug-usb-true-random-number-generator
+# N/A
+# USB
+# ADC noise
+
+NEUG:=$(PROJECT)_$(TARGET)_NeuG
+
+$(NEUG):	/dev/NeuG
+	mkdir -p $(NEUG)
+	( dd if=/dev/NeuG | scattergun.sh $(NEUG) ) > $(NEUG)/scattergun.log 2>&1
+
+.PHONY: NeuG
 
 ################################################################################
 
@@ -329,7 +365,7 @@ $(TRUERNG):	/dev/TrueRNG
 # arch/x86/include/asm/archrandom.h
 # AES-CBC-MAC, NIST SP800-90A compliant, thermal noise
 
-RDRAND=scattergun_mercury_rdrand
+RDRAND:=$(PROJECT)_$(TARGET)_rdrand
 
 $(RDRAND):	$(OUT)/seventool
 	mkdir -p $(RDRAND)
@@ -345,7 +381,7 @@ $(RDRAND):	$(OUT)/seventool
 # arch/x86/include/asm/archrandom.h
 # NIST SP800-90B and C compliant, thermal noise
 
-RDSEED=scattergun_mercury_rdseed
+RDSEED:=$(PROJECT)_$(TARGET)_rdseed
 
 $(RDSEED):	$(OUT)/seventool
 	mkdir -p $(RDSEED)
@@ -353,7 +389,7 @@ $(RDSEED):	$(OUT)/seventool
 
 ################################################################################
 
-FAIL=scattergun_mercury_fail
+FAIL:=$(PROJECT)_$(TARGET)_fail
 
 $(FAIL):	$(OUT)/seventool
 	mkdir -p $(FAIL)
@@ -361,7 +397,7 @@ $(FAIL):	$(OUT)/seventool
 
 ################################################################################
 
-CMRAND48=scattergun_mercury_cmrand48
+CMRAND48:=$(PROJECT)_$(TARGET)_cmrand48
 
 $(CMRAND48):	$(OUT)/cmrand48
 	mkdir -p $(CMRAND48)
@@ -369,7 +405,7 @@ $(CMRAND48):	$(OUT)/cmrand48
 
 ################################################################################
 
-CRANDOM=scattergun_mercury_crandom
+CRANDOM:=$(PROJECT)_$(TARGET)_crandom
 
 $(CRANDOM):	$(OUT)/crandom
 	mkdir -p $(CRANDOM)
@@ -377,7 +413,7 @@ $(CRANDOM):	$(OUT)/crandom
 
 ################################################################################
 
-ZEROS=scattergun_mercury_zeros
+ZEROS:=$(PROJECT)_$(TARGET)_zeros
 
 $(ZEROS):	$(OUT)/bytes
 	mkdir -p $(ZEROS)
