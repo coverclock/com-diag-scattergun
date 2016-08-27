@@ -194,11 +194,9 @@ export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 TRUERNGPRO=scattergun_silver_TrueRNGpro
 
-TrueRNGpro:	/dev/TrueRNGpro
+$(TRUERNGPRO):	/dev/TrueRNGpro
 	mkdir -p $(TRUERNGPRO)
 	( dd if=/dev/TrueRNGpro | scattergun.sh $(TRUERNGPRO) ) > $(TRUERNGPRO)/scattergun.log 2>&1
-
-.PHONY:	TrueRNGpro
 
 ################################################################################
 
@@ -212,11 +210,9 @@ TrueRNGpro:	/dev/TrueRNGpro
 
 QUANTIS=scattergun_silver_quantis
 
-quantis:	src/quantistool
+$(QUANTIS):	src/quantistool
 	mkdir -p $(QUANTIS)
 	( quantistool -v | scattergun.sh $(QUANTIS) ) > $(QUANTIS)/scattergun.log 2>&1
-
-.PHONY:	quantis
 
 ################################################################################
 
@@ -230,11 +226,9 @@ quantis:	src/quantistool
 
 ONERNG=scattergun_silver_OneRNG
 
-OneRNG:	/dev/OneRNG
+$(ONERNG):	/dev/OneRNG
 	mkdir -p $(ONERNG)
 	( dd if=/dev/OneRNG | scattergun.sh $(ONERNG) ) > $(ONERNG)/scattergun.log 2>&1
-
-.PHONY:	OneRNG
 
 ################################################################################
 
@@ -242,11 +236,9 @@ OneRNG:	/dev/OneRNG
 
 URANDOM=scattergun_silver_urandom
 
-urandom:	/dev/urandom
+$(URANDOM):	/dev/urandom
 	mkdir -p $(URANDOM)
 	( dd if=/dev/urandom | scattergun.sh $(URANDOM) ) > $(URANDOM)/scattergun.log 2>&1
-
-.PHONY:	urandom
 
 ################################################################################
 
@@ -254,11 +246,9 @@ urandom:	/dev/urandom
 
 RANDOM=scattergun_silver_random
 
-random:	/dev/random
+$(RANDOM):	/dev/random
 	mkdir -p $(RANDOM)
 	( dd if=/dev/random | scattergun.sh $(RANDOM) ) > $(RANDOM)/scattergun.log 2>&1
-
-.PHONY:	random
 
 ################################################################################
 # "Betty"
@@ -279,11 +269,9 @@ random:	/dev/random
 
 BCM2708=scattergun_betty_bcm2708
 
-bcm2708:	/dev/hwrng
+$(BCM2708):	/dev/hwrng
 	mkdir -p $(BCM2708)
 	( dd if=/dev/hwrng | scattergun.sh $(BCM2708) ) > $(BCM2708)/scattergun.log 2>&1
-
-.PHONY:	bcm2708
 
 ################################################################################
 # "Shortcake"
@@ -304,11 +292,9 @@ bcm2708:	/dev/hwrng
 
 BCM2708_3=scattergun_shortcake_bcm2708
 
-bcm2708_3:	/dev/hwrng
+$(BCM2708_3):	/dev/hwrng
 	mkdir -p $(BCM2708_3)
 	( dd if=/dev/hwrng | scattergun.sh $(BCM2708_3) ) > $(BCM2708_3)/scattergun.log 2>&1
-
-.PHONY:	bcm2708_3
 
 ################################################################################
 # "Mercury"
@@ -329,11 +315,9 @@ bcm2708_3:	/dev/hwrng
 
 TRUERNG=scattergun_mercury_TrueRNG
 
-TrueRNG:	/dev/TrueRNG
+$(TRUERNG):	/dev/TrueRNG
 	mkdir -p $(TRUERNG)
 	( dd if=/dev/TrueRNG | scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1
-
-.PHONY: TrueRNG
 
 ################################################################################
 
@@ -347,11 +331,9 @@ TrueRNG:	/dev/TrueRNG
 
 RDRAND=scattergun_mercury_rdrand
 
-rdrand:	$(OUT)/seventool
+$(RDRAND):	$(OUT)/seventool
 	mkdir -p $(RDRAND)
 	( seventool -v -R -r -c | scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1
-
-.PHONY: rdrand
 
 ################################################################################
 
@@ -365,50 +347,40 @@ rdrand:	$(OUT)/seventool
 
 RDSEED=scattergun_mercury_rdseed
 
-rdseed:	$(OUT)/seventool
+$(RDSEED):	$(OUT)/seventool
 	mkdir -p $(RDSEED)
 	( seventool -v -S -c | scattergun.sh $(RDSEED) ) > $(RDSEED)/scattergun.log 2>&1
-
-.PHONY: rdseed
 
 ################################################################################
 
 FAIL=scattergun_mercury_fail
 
-fail:	$(OUT)/seventool
+$(FAIL):	$(OUT)/seventool
 	mkdir -p $(FAIL)
 	( seventool -v | scattergun.sh $(FAIL) ) > $(FAIL)/scattergun.log 2>&1
-
-.PHONY:	fail
 
 ################################################################################
 
 CMRAND48=scattergun_mercury_cmrand48
 
-cmrand48:	$(OUT)/cmrand48
+$(CMRAND48):	$(OUT)/cmrand48
 	mkdir -p $(CMRAND48)
 	( cmrand48 | scattergun.sh $(CMRAND48) ) > $(CMRAND48)/scattergun.log 2>&1
-
-.PHONY:	cmrand48
 
 ################################################################################
 
 CRANDOM=scattergun_mercury_crandom
 
-crandom:	$(OUT)/crandom
+$(CRANDOM):	$(OUT)/crandom
 	mkdir -p $(CRANDOM)
 	( crandom | scattergun.sh $(CRANDOM) ) > $(CRANDOM)/scattergun.log 2>&1
-
-.PHONY:	crandom
 
 ################################################################################
 
 ZEROS=scattergun_mercury_zeros
 
-zeros:	$(OUT)/bytes
+$(ZEROS):	$(OUT)/bytes
 	mkdir -p $(ZEROS)
 	( bytes 0x00 | scattergun.sh $(ZEROS) ) > $(ZEROS)/scattergun.log 2>&1
-
-.PHONY:	zeros
 
 ################################################################################
