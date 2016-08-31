@@ -357,6 +357,24 @@ $(NEUG):	/dev/NeuG
 
 ################################################################################
 
+# NeuG
+# GNU Press
+# US$50.00
+# https://shop.fsf.org/storage-devices/neug-usb-true-random-number-generator
+# N/A
+# USB
+# ADC noise
+
+NEUG=scattergun_mercury_NeuG
+
+NeuG:	/dev/NeuG
+	mkdir -p $(NEUG)
+	( dd if=/dev/NeuG | scattergun.sh $(NEUG) ) > $(NEUG)/scattergun.log 2>&1
+
+.PHONY: NeuG
+
+################################################################################
+
 # rdrand Deterministic Random Bit Generator (DRBG)
 # Intel Ivy Bridge family
 # N/A
