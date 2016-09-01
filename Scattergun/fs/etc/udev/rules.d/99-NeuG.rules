@@ -1,0 +1,2 @@
+# fsf.org FSF-01 NeuG
+KERNEL=="ttyACM[0-9]*", SUBSYSTEMS=="usb", ACTION=="add", ATTRS{idVendor}=="234b", ATTRS{idProduct}=="0001", SYMLINK+="NeuG", RUN+="/bin/stty raw -echo -ixoff -F /dev/%k speed 3000000", MODE="0664"
