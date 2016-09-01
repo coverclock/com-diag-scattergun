@@ -27,10 +27,10 @@ entropy generators.
 ID QUANTIQUE QUANTIS
 
     ./Scattergun/src/quantistool.c
-    ./Scattergun/overlay/etc/init.d/quantis
-    ./Scattergun/overlay/etc/udev/rules.d/99-idq-quantis.rules
-    ./Scattergun/overlay/etc/init.d/rng-tools.diff
-    ./Scattergun/overlay/etc/default/rng-tools-quantis
+    ./Scattergun/fs/etc/init.d/quantis
+    ./Scattergun/fs/etc/udev/rules.d/99-idq-quantis.rules
+    ./Scattergun/fs/etc/init.d/rng-tools.diff
+    ./Scattergun/fs/etc/default/rng-tools-quantis
 
 It has a utility, written in C, that extracts random bits from the Quantis
 random number generator made by ID Quantique and write them to standard output,
@@ -46,8 +46,8 @@ like.
 INTEL RDRAND AND RDSEED
 
     ./Scattergun/src/seventool.c
-    ./Scattergun/overlay/etc/init.d/rdrand
-    ./Scattergun/overlay/etc/default/rng-tools-rdrand
+    ./Scattergun/fs/etc/init.d/rdrand
+    ./Scattergun/fs/etc/default/rng-tools-rdrand
 
 It has a utility, written in C, that examines the host processor using the
 Intel cpuid instruction, and if it indicates that the processor implements
@@ -57,11 +57,11 @@ can be a named pipe.
 
 UBLD.IT TRUERNG AND TRUERNGPRO
 
-    ./Scattergun/overlay/etc/udev/rules.d/99-TrueRNG.rules
-    ./Scattergun/overlay/etc/default/rng-tools-TrueRNG
+    ./Scattergun/fs/etc/udev/rules.d/99-TrueRNG.rules
+    ./Scattergun/fs/etc/default/rng-tools-TrueRNG
 
-    ./Scattergun/overlay/etc/udev/rules.d/99-TrueRNGpro.rules
-    ./Scattergun/overlay/etc/default/rng-tools-TrueRNGpro
+    ./Scattergun/fs/etc/udev/rules.d/99-TrueRNGpro.rules
+    ./Scattergun/fs/etc/default/rng-tools-TrueRNGpro
 
 It has some udev rules and rng-tools configuration files that make it easy to
 use a ubld.it TrueRNG or TrueRNGpro hardware entropy generators to fill the
@@ -69,16 +69,22 @@ system entropy pool on a GNU/Linux system.
 
 MOONBASE OTAGO ONERNG
 
-    ./Scattergun/overlay/etc/udev/rules.d/99-OneRNG.rules
-    ./Scattergun/overlay/etc/default/rng-tools-OneRNG
+    ./Scattergun/fs/etc/udev/rules.d/99-OneRNG.rules
+    ./Scattergun/fs/etc/default/rng-tools-OneRNG
 
 It has some udev rules and rng-tools configuration files that make it easy to
 use a Moonbase Otago OneRNG hardware entropy generators to fill the system
 entropy pool on a GNU/Linux system.
 
+GNU FST-1 NEUG
+
+    ./Scattergun/fs/etc/udev/rules.d/99-NeuG.rules
+
+It has some udev files and rng-tools configuration files.
+
 RASPBERRY PI BCM2708
 
-    ./Scattergun/overlay/etc/default/rng-tools-bcm2708
+    ./Scattergun/fs/etc/default/rng-tools-bcm2708
 
 It has an rng-tools configuration file so that the option Broadcom hardware
 random number generator device driver module can be used to fill the system
@@ -87,7 +93,7 @@ entropy pool on a Raspberry Pi 2 (and perhaps others).
 MAC OS X
 
     ./Scattergun/bin/truerngd.sh
-    ./Scattergun/overlay/etc/default/truerngd.conf
+    ./Scattergun/fs/etc/default/truerngd.conf
 
 It has a simple script (admittedly experimental) to use a ubld.it TrueRNG USB
 entropy generator (which is about the size and shape of a thumb drive) to fill
