@@ -8,18 +8,17 @@
 #
 # USAGE
 #
-# scattergun.sh [ DIRECTORY ]
+# scattergun.sh
 #
 # EXAMPLES
 #
-# dd if=/dev/random | scattergun.sh random-test
+# dd if=/dev/random | scattergun.sh
 #
 # ABSTRACT
 #
 # Runs a battery of tests on a random number generator by
 # reading ramdom bits from standard input. Saves generated
-# data files and other artifacts in the specified directory.
-# Creates the directory if it doesn't already exist.
+# data files and other artifacts in the current directory.
 # 
 
 RC=0
@@ -28,11 +27,9 @@ LABEL=${ZERO%\.sh}
 HOSTNAME=$(uname -n)
 SYSTEM=$(uname -r)
 ISO8601=$(date -u +%Y-%m-%dT%H:%M:%S)
-SAVE=${1-"${LABEL}_${HOSTNAME}_${SYSTEM}_${ISO8601}"}
+ROOT=$(basename $(pwd))
 
-echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin ${SAVE}"
-
-mkdir -p ${SAVE}
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin ${ROOT}"
 
 ##################################################
 
@@ -45,8 +42,8 @@ if [[ ! -x /usr/bin/rawtoppm ]]; then
 elif [[ ! -x /usr/bin/pnmtopng ]]; then
 	:
 else
-	DATA="${SAVE}/rawtoppm.dat"
-	IMAGE="${SAVE}/rawtoppm.png"
+	DATA="rawtoppm.dat"
+	IMAGE="rawtoppm.png"
 	time dd of=${DATA} bs=3 count=65536 iflag=fullblock
 	/usr/bin/rawtoppm -rgb 256 256 < ${DATA} | /usr/bin/pnmtopng > ${IMAGE}
 fi
@@ -62,7 +59,7 @@ echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin rngtest"
 # sudo /etc/init.d/rng-tools start
 
 if [[ -x /usr/bin/rngtest ]]; then
-	DATA="${SAVE}/rngtest.dat"
+	DATA="rngtest.dat"
 	BLOCKSIZE=$(( 20000 / 8 ))
 	time dd of=${DATA} bs=${BLOCKSIZE} count=1000 iflag=fullblock
 	time /usr/bin/rngtest -c 1000 < ${DATA}
@@ -78,11 +75,11 @@ echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin ent"
 # http://www.fourmilab.ch/random/random.zip
 
 if [[ -x /usr/bin/ent ]]; then
-	DATA="${SAVE}/ent.dat"
+	DATA="ent.dat"
 	time dd of=${DATA} bs=1024 count=4096 iflag=fullblock
 	time /usr/bin/ent ${DATA}
 elif [[ -x ${HOME}/bin/ent ]]; then
-	DATA="${SAVE}/ent.dat"
+	DATA="ent.dat"
 	time dd of=${DATA} bs=1024 count=4096 iflag=fullblock
 	time ${HOME}/bin/ent ${DATA}
 else
@@ -99,9 +96,9 @@ echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin SP800-90B"
 # export PATH=$PATH:$(pwd)/SP800-90B_EntropyAssessment
 
 NISTCODE=$(which iid_main.py)
-if [[ ! -z "${NISTCODE}" ]]; then
+if [[ -n "${NISTCODE}" ]]; then
 	NISTPATH=$(dirname ${NISTCODE})
-	DATA="$(pwd)/${SAVE}/sp800.dat"
+	DATA="$(pwd)/sp800.dat"
 	time dd of=${DATA} bs=1024 count=4096 iflag=fullblock
 	( cd ${NISTPATH}; time python iid_main.py ${DATA} 8 1000 -v )
 	( cd ${NISTPATH}; time python noniid_main.py ${DATA} 8 -v )
@@ -123,6 +120,6 @@ echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) end dieharder"
 
 ##################################################
 
-echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) end ${SAVE} ${RC}"
+echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) end ${ROOT} ${RC}"
 
 exit ${RC}

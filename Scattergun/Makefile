@@ -15,32 +15,49 @@ QUANTIS_ROOT=$(ROOT)/idq-quantis
 
 OUT=out/host/bin
 
+export SCATTERGUN_SOURCE
+export SCATTERGUN_DIRECTORY
+
 ################################################################################
 
-ALL  = $(OUT)/setup
-ALL += $(OUT)/bytes
-ALL += $(OUT)/rate
-ALL += $(OUT)/cmrand48
-ALL += $(OUT)/crandom
-#ALL += $(OUT)/quantistool
-ALL += $(OUT)/seed
-#ALL += $(OUT)/seventool
-#ALL += $(OUT)/seventool-binary
-#ALL += $(OUT)/seventool-mnemonic
-ALL += $(OUT)/characterize.sh
-ALL += $(OUT)/consume.sh
-ALL += $(OUT)/entropy.sh
-ALL += $(OUT)/monitor.sh
-ALL += $(OUT)/onernginit.sh
-ALL += $(OUT)/scattergun.sh
-ALL += $(OUT)/truerngd.sh
+COMMON  = $(OUT)/setup
+COMMON += $(OUT)/bytes
+COMMON += $(OUT)/rate
+COMMON += $(OUT)/cmrand48
+COMMON += $(OUT)/crandom
+COMMON += $(OUT)/seed
+COMMON += $(OUT)/characterize.sh
+COMMON += $(OUT)/consume.sh
+COMMON += $(OUT)/entropy.sh
+COMMON += $(OUT)/monitor.sh
+COMMON += $(OUT)/onernginit.sh
+COMMON += $(OUT)/scattergun.sh
+COMMON += $(OUT)/truerngd.sh
+
+QUANTUM  = $(OUT)/quantistool
+
+BROADWELL  = $(OUT)/seventool
+BROADWELL += $(OUT)/seventool-binary
+BROADWELL += $(OUT)/seventool-mnemonic
+
+ALL  = $(COMMON)
+ALL += $(QUANTUM)
+ALL += $(BROADWELL)
+
+default:	common
+
+common:	$(COMMON)
+
+quantum:	$(COMMON) $(QUANTUM)
+
+broadwell:	$(COMMON) $(BROADWELL)
 
 all:	$(ALL)
 
 clean:
 	rm -rf $(ALL)
 
-.PHONY: all clean
+.PHONY: default common quantum broadwell all clean
 
 ################################################################################
 
@@ -166,7 +183,6 @@ $(OUT)/truerngd.sh:	bin/truerngd.sh
 	cp $^ $@
 	chmod 775 $@
 
-
 ################################################################################
 
 $(OUT)/setup:
@@ -176,6 +192,24 @@ $(OUT)/setup:
 
 export PATH:=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(PATH)
 export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
+
+verify:
+	which iid_main.py
+
+.PHONY:	verify
+
+################################################################################
+
+job:
+	mkdir -p $(SCATTERGUN_DIRECTORY)
+	( cd $(SCATTERGUN_DIRECTORY); exec nohup make -f ../Makefile test & )
+
+.PHONY:	job
+
+test:
+	( $(SCATTERGUN_SOURCE) | scattergun.sh ) > scattergun.log 2>&1
+
+.PHONY:	test
 
 ################################################################################
 # "Silver"
@@ -201,8 +235,7 @@ TARGET=silver
 TRUERNGPRO:=$(PROJECT)_$(TARGET)_TrueRNGpro
 
 $(TRUERNGPRO):	/dev/TrueRNGpro
-	mkdir -p $(TRUERNGPRO)
-	( dd if=/dev/TrueRNGpro | scattergun.sh $(TRUERNGPRO) ) > $(TRUERNGPRO)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="dd if=/dev/TrueRNGpro" SCATTERGUN_DIRECTORY=$(TRUERNGPRO)
 
 ################################################################################
 
@@ -217,8 +250,7 @@ $(TRUERNGPRO):	/dev/TrueRNGpro
 QUANTIS:=$(PROJECT)_$(TARGET)_quantis
 
 $(QUANTIS):	src/quantistool
-	mkdir -p $(QUANTIS)
-	( quantistool -v | scattergun.sh $(QUANTIS) ) > $(QUANTIS)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="quantistool -v" SCATTERGUN_DIRECTORY=$(QUANTIS)
 
 ################################################################################
 
@@ -233,8 +265,7 @@ $(QUANTIS):	src/quantistool
 ONERNG:=$(PROJECT)_$(TARGET)_OneRNG
 
 $(ONERNG):	/dev/OneRNG
-	mkdir -p $(ONERNG)
-	( dd if=/dev/OneRNG | scattergun.sh $(ONERNG) ) > $(ONERNG)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="dd if=/dev/OneRNG" SCATTERGUN_DIRECTORY=$(ONERNG)
 
 ################################################################################
 
@@ -243,8 +274,7 @@ $(ONERNG):	/dev/OneRNG
 URANDOM:=$(PROJECT)_$(TARGET)_urandom
 
 $(URANDOM):	/dev/urandom
-	mkdir -p $(URANDOM)
-	( dd if=/dev/urandom | scattergun.sh $(URANDOM) ) > $(URANDOM)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="dd if=/dev/urandom" SCATTERGUN_DIRECTORY=$(URANDOM)
 
 ################################################################################
 
@@ -253,8 +283,7 @@ $(URANDOM):	/dev/urandom
 RANDOM:=$(PROJECT)_$(TARGET)_random
 
 $(RANDOM):	/dev/random
-	mkdir -p $(RANDOM)
-	( dd if=/dev/random | scattergun.sh $(RANDOM) ) > $(RANDOM)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="dd if=/dev/random" SCATTERGUN_DIRECTORY=$(RANDOM)
 
 ################################################################################
 # "Betty"
@@ -280,8 +309,7 @@ TARGET=betty
 BCM2708_2:=$(PROJECT)_$(TARGET)_bcm2708
 
 $(BCM2708_2):	/dev/hwrng
-	mkdir -p $(BCM2708_2)
-	( dd if=/dev/hwrng | scattergun.sh $(BCM2708_2) ) > $(BCM2708_2)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="dd if=/dev/hwrng" SCATTERGUN_DIRECTORY=$(BCM2708_2)
 
 ################################################################################
 # "Shortcake"
@@ -307,8 +335,7 @@ TARGET=shortcake
 BCM2708_3:=$(PROJECT)_$(TARGET)_bcm2708
 
 $(BCM2708_3):	/dev/hwrng
-	mkdir -p $(BCM2708_3)
-	( dd if=/dev/hwrng | scattergun.sh $(BCM2708_3) ) > $(BCM2708_3)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="dd if=/dev/hwrng" SCATTERGUN_DIRECTORY=$(BCM2708_3)
 
 ################################################################################
 # "Mercury"
@@ -334,8 +361,7 @@ TARGET=mercury
 TRUERNG:=$(PROJECT)_$(TARGET)_TrueRNG
 
 $(TRUERNG):	/dev/TrueRNG
-	mkdir -p $(TRUERNG)
-	( dd if=/dev/TrueRNG | scattergun.sh $(TRUERNG) ) > $(TRUERNG)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="dd if=/dev/TrueRNG" SCATTERGUN_DIRECTORY=$(TRUERNG)
 
 ################################################################################
 
@@ -350,26 +376,7 @@ $(TRUERNG):	/dev/TrueRNG
 NEUG:=$(PROJECT)_$(TARGET)_NeuG
 
 $(NEUG):	/dev/NeuG
-	mkdir -p $(NEUG)
-	( dd if=/dev/NeuG | scattergun.sh $(NEUG) ) > $(NEUG)/scattergun.log 2>&1
-
-.PHONY: NeuG
-
-################################################################################
-
-# NeuG
-# GNU Press
-# US$50.00
-# https://shop.fsf.org/storage-devices/neug-usb-true-random-number-generator
-# N/A
-# USB
-# ADC noise
-
-NEUG=scattergun_mercury_NeuG
-
-NeuG:	/dev/NeuG
-	mkdir -p $(NEUG)
-	( dd if=/dev/NeuG | scattergun.sh $(NEUG) ) > $(NEUG)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="dd if=/dev/NeuG" SCATTERGUN_DIRECTORY=$(NEUG)
 
 .PHONY: NeuG
 
@@ -386,8 +393,7 @@ NeuG:	/dev/NeuG
 RDRAND:=$(PROJECT)_$(TARGET)_rdrand
 
 $(RDRAND):	$(OUT)/seventool
-	mkdir -p $(RDRAND)
-	( seventool -v -R -r -c | scattergun.sh $(RDRAND) ) > $(RDRAND)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="seventool -v -R -r -c" SCATTERGUN_DIRECTORY=$(RDRAND)
 
 ################################################################################
 
@@ -402,39 +408,33 @@ $(RDRAND):	$(OUT)/seventool
 RDSEED:=$(PROJECT)_$(TARGET)_rdseed
 
 $(RDSEED):	$(OUT)/seventool
-	mkdir -p $(RDSEED)
-	( seventool -v -S -c | scattergun.sh $(RDSEED) ) > $(RDSEED)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="seventool -v -S -c" SCATTERGUN_DIRECTORY=$(RDSEED)
 
 ################################################################################
 
 FAIL:=$(PROJECT)_$(TARGET)_fail
 
 $(FAIL):	$(OUT)/seventool
-	mkdir -p $(FAIL)
-	( seventool -v | scattergun.sh $(FAIL) ) > $(FAIL)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="seventool -v" SCATTERGUN_DIRECTORY=$(FAIL)
 
 ################################################################################
 
 CMRAND48:=$(PROJECT)_$(TARGET)_cmrand48
 
 $(CMRAND48):	$(OUT)/cmrand48
-	mkdir -p $(CMRAND48)
-	( cmrand48 | scattergun.sh $(CMRAND48) ) > $(CMRAND48)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="cmrand48" SCATTERGUN_DIRECTORY=$(CMRAND48)
 
 ################################################################################
 
 CRANDOM:=$(PROJECT)_$(TARGET)_crandom
 
 $(CRANDOM):	$(OUT)/crandom
-	mkdir -p $(CRANDOM)
-	( crandom | scattergun.sh $(CRANDOM) ) > $(CRANDOM)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="crandom" SCATTERGUN_DIRECTORY=$(CRANDOM)
 
 ################################################################################
 
 ZEROS:=$(PROJECT)_$(TARGET)_zeros
 
 $(ZEROS):	$(OUT)/bytes
-	mkdir -p $(ZEROS)
-	( bytes 0x00 | scattergun.sh $(ZEROS) ) > $(ZEROS)/scattergun.log 2>&1
+	make job SCATTERGUN_SOURCE="bytes 0x00" SCATTERGUN_DIRECTORY=$(ZEROS)
 
-################################################################################

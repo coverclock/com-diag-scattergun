@@ -1,0 +1,13 @@
+# Copyright 2016 Digital Aggregates Corporation.
+
+SCATTERGUNS="/dev/NeuG /dev/OneRNG /dev/TrueRNG /dev/TrueRNGpro /var/run/quantis.fifo /var/run/rdrand.fifo"
+
+for SCATTERGUN in ${SCATTERGUNS}; do
+	if [[ -c ${SCATTERGUN} ]]; then
+		HRNGDEVICE=${SCATTERGUN}
+	elif [[ -p ${SCATTERGUN} ]]; then
+		HRNGDEVICE=${SCATTERGUN}
+	else
+		:
+	fi
+done
