@@ -1,0 +1,2 @@
+# Voicetronics BitBabbler Black and White
+SUBSYSTEM=="usb", ACTION=="add|change", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="7840", SYMLINK="BitBabbler", MODE="0666"

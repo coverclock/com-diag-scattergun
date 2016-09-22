@@ -202,7 +202,7 @@ verify:
 
 job:
 	mkdir -p $(SCATTERGUN_DIRECTORY)
-	( cd $(SCATTERGUN_DIRECTORY); exec nohup make -f ../Makefile test & )
+	( cd $(SCATTERGUN_DIRECTORY); exec nohup make -f ../Makefile test & jobs )
 
 .PHONY:	job
 
@@ -378,9 +378,38 @@ NEUG:=$(PROJECT)_$(TARGET)_NeuG
 $(NEUG):	/dev/NeuG
 	make job SCATTERGUN_SOURCE="dd if=/dev/NeuG" SCATTERGUN_DIRECTORY=$(NEUG)
 
-.PHONY: NeuG
+################################################################################
+
+# BitBabbler White
+# VoiceTronix Pty. Ltd.
+# AUS$199.00
+# https://bitbabbler.org
+# 2.5Mbps
+# USB
+# Shot, Johnson-Nyquist, Flicker, RF noise
+
+BITBABBLERWHITE:=$(PROJECT)_$(TARGET)_BitBabblerWhite
+
+$(BITBABBLERWHITE):	/dev/null
+	make job SCATTERGUN_SOURCE="dd if=/dev/null" SCATTERGUN_DIRECTORY=$(BITBABBLERWHITE)
 
 ################################################################################
+
+# BitBabbler Black
+# VoiceTronix Pty. Ltd.
+# AUS$49.00
+# https://bitbabbler.org
+# 625Kbps
+# USB
+# Shot, Johnson-Nyquist, Flicker, RF noise
+
+BITBABBLERBLACK:=$(PROJECT)_$(TARGET)_BitBabblerBlack
+
+$(BITBABBLERBLACK):	/dev/null
+	make job SCATTERGUN_SOURCE="dd if=/dev/null" SCATTERGUN_DIRECTORY=$(BITBABBLERBLACK)
+
+################################################################################
+
 
 # rdrand Deterministic Random Bit Generator (DRBG)
 # Intel Ivy Bridge family
