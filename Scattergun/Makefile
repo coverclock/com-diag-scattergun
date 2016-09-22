@@ -12,6 +12,7 @@ ROOT=$(HOME)/src
 
 USNISTGOV_ROOT=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment
 QUANTIS_ROOT=$(ROOT)/idq-quantis
+BITBABBLER_ROOT=$(ROOT)/bit-babbler-0.5
 
 OUT=out/host/bin
 
@@ -187,14 +188,15 @@ $(OUT)/truerngd.sh:	bin/truerngd.sh
 
 $(OUT)/setup:
 	cp /dev/null $@
-	echo export PATH=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(PATH) >> $@
+	echo export PATH=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(BITBABBLER_ROOT):$(PATH) >> $@
 	echo export LD_LIBRARY_PATH=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH) >> $@
 
-export PATH:=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(PATH)
+export PATH:=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(BITBABBLER_ROOT):$(PATH)
 export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 verify:
 	which iid_main.py
+	which seedd
 
 .PHONY:	verify
 
@@ -390,8 +392,8 @@ $(NEUG):	/dev/NeuG
 
 BITBABBLERWHITE:=$(PROJECT)_$(TARGET)_BitBabblerWhite
 
-$(BITBABBLERWHITE):	/dev/null
-	make job SCATTERGUN_SOURCE="dd if=/dev/null" SCATTERGUN_DIRECTORY=$(BITBABBLERWHITE)
+$(BITBABBLERWHITE):	/dev/BitBabbler
+	make job SCATTERGUN_SOURCE="seedd -o -c none" SCATTERGUN_DIRECTORY=$(BITBABBLERWHITE)
 
 ################################################################################
 
@@ -405,8 +407,8 @@ $(BITBABBLERWHITE):	/dev/null
 
 BITBABBLERBLACK:=$(PROJECT)_$(TARGET)_BitBabblerBlack
 
-$(BITBABBLERBLACK):	/dev/null
-	make job SCATTERGUN_SOURCE="dd if=/dev/null" SCATTERGUN_DIRECTORY=$(BITBABBLERBLACK)
+$(BITBABBLERBLACK):	/dev/BitBabbler
+	make job SCATTERGUN_SOURCE="seedd -o -c none" SCATTERGUN_DIRECTORY=$(BITBABBLERBLACK)
 
 ################################################################################
 
