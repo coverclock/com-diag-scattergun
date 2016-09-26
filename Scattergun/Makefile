@@ -382,6 +382,21 @@ $(NEUG):	/dev/NeuG
 
 ################################################################################
 
+# Trusted Computing Module 1.2
+# Dell Optiplex 7040
+# N/A
+# N/A
+# N/A
+# drivers/char/hw_random/tpm-rng.ko
+# N/A
+
+TPM:=$(PROJECT)_$(TARGET)_TPM
+
+$(TPM):	/dev/tpm0 /dev/hwrng
+	make job SCATTERGUN_SOURCE="dd if=/dev/hwrng" SCATTERGUN_DIRECTORY=$(TPM)
+
+################################################################################
+
 # BitBabbler White
 # VoiceTronix Pty. Ltd.
 # AUS$199.00
