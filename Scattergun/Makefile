@@ -510,7 +510,7 @@ TARGET=jaguar
 # AT97SC3204 Trusted Computing Module 1.2
 # Atmel
 # N/A
-# http://www.atmel.com/Images/Atmel-5295S-TPM-AT97SC3204-LPC-Interface-Datasheet-Summary.pdf
+# http://www.atmel.com/Images/Atmel-5295S-TPM-AT97SC3204-LPC-Interface-Datasheet-Summary.pdf http://csrc.nist.gov/groups/STM/cmvp/documents/140-1/140sp/140sp2014.pdf
 # N/A
 # drivers/char/hw_random/tpm-rng.ko
 # N/A
