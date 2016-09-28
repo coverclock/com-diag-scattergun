@@ -195,8 +195,20 @@ export PATH:=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(BITBABBLER_ROOT):$(PATH)
 export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 verify:
+	# sudo apt-get install netpbm
+	which rawtoppm
+	which pnmtopng
+	# sudo apt-get install rng-tools
+	which rngtest
+	# sudo apt-get install ent # http://www.fourmilab.ch/random/random.zip
+	which ent
+	# sudo apt-get install python
+	which python
+	# git clone http://github.com/usnistgov/SP800-90B_EntropyAssessment
 	which iid_main.py
-	which seedd
+	which noniid_main.py
+	# sudo apt-get install dieharder
+	which dieharder
 
 .PHONY:	verify
 
@@ -484,3 +496,26 @@ ZEROS:=$(PROJECT)_$(TARGET)_zeros
 $(ZEROS):	$(OUT)/bytes
 	make job SCATTERGUN_SOURCE="bytes 0x00" SCATTERGUN_DIRECTORY=$(ZEROS)
 
+################################################################################
+# "Jaguar"
+# Kontron ComExpress CBL6R901.001 X64
+# Intel Core i7-5650U 2.20GHz x4
+# Centos 7.2.1511
+# Linux 3.10.0-327.28.3.el8.x86_64
+# gcc 4.8.5
+################################################################################
+
+TARGET=jaguar
+
+# AT97SC3204 Trusted Computing Module 1.2
+# Atmel
+# N/A
+# http://www.atmel.com/Images/Atmel-5295S-TPM-AT97SC3204-LPC-Interface-Datasheet-Summary.pdf
+# N/A
+# drivers/char/hw_random/tpm-rng.ko
+# N/A
+
+AT97SC3204:=$(PROJECT)_$(TARGET)_AT97SC3204
+
+$(AT97SC3204):	/dev/tpm0 /dev/hwrng
+	make job SCATTERGUN_SOURCE="dd if=/dev/hwrng" SCATTERGUN_DIRECTORY=$(AT97SC3204)
