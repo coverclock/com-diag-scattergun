@@ -519,3 +519,33 @@ AT97SC3204:=$(PROJECT)_$(TARGET)_AT97SC3204
 
 $(AT97SC3204):	/dev/tpm0 /dev/hwrng
 	make job SCATTERGUN_SOURCE="dd if=/dev/hwrng" SCATTERGUN_DIRECTORY=$(AT97SC3204)
+
+################################################################################
+
+# rdrand Deterministic Random Bit Generator (DRBG)
+# Intel Ivy Bridge family
+# N/A
+# https://software.intel.com/en-us/articles/intel-digital-random-number-generator-drng-software-implementation-guide
+# 800MBps
+# arch/x86/include/asm/archrandom.h
+# AES-CBC-MAC, NIST SP800-90A compliant, thermal noise
+
+JAGUARRDRAND:=$(PROJECT)_$(TARGET)_rdrand
+
+$(JAGUARRDRAND):
+	make job SCATTERGUN_SOURCE="seventool -v -R -r -c" SCATTERGUN_DIRECTORY=$(JAGUARRDRAND)
+
+################################################################################
+
+# rdseed Enhanced Non-deterministic Random Number Generator (ENRNG)
+# Intel Broadwell family
+# N/A
+# https://software.intel.com/en-us/articles/intel-digital-random-number-generator-drng-software-implementation-guide
+# N/A
+# arch/x86/include/asm/archrandom.h
+# NIST SP800-90B and C compliant, thermal noise
+
+JAGUARRDSEED:=$(PROJECT)_$(TARGET)_rdseed
+
+$(JAGUARRDSEED):
+	make job SCATTERGUN_SOURCE="seventool -v -S -c" SCATTERGUN_DIRECTORY=$(JAGUARRDSEED)
