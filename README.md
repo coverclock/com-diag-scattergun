@@ -7,21 +7,24 @@ Licensed under the terms of the GNU GPL v2.
 This project represents my puttering around with hardware entropy sources and
 random number generation in Linux/GNU, and to a lesser extent, Mac OS X.
 
-Many thanks to my friend, occasional colleague, former office mate, and
-mentor REDACTED, who has a wealth of deep expertise in this domain.
+Many thanks to my friend, occasional colleague, former REDACTED office
+mate, and mentor REDACTED, who has a wealth of deep expertise in this
+domain. Also, thanks to my colleagues at REDACTED where while working on
+REDACTED I became interested in this topic. And finally, thanks to REDACTED
+at REDACTED who convinced me to give a talk on this topic.
 
 Scattergun includes a variety of artifacts that might be useful.
 
 TEST SUITE
 
     ./Scattergun/bin/scattergun.sh
+    ./Scattergun/dat
     ./Scattergun/Makefile
     ./Scattergun/out
-    ./Scattergun/results
 
 It has a script that runs a suite of tests (none of which I wrote) that
 assess the randomness of an entropy source, a Makefile to drive the tests,
-and the output of the test suite when it was run on a variety of hardware
+and the results of the test suite when it was run on a variety of hardware
 entropy generators.
 
 ID QUANTIQUE QUANTIS
@@ -80,15 +83,22 @@ GNU FST-1 NEUG
 
     ./Scattergun/fs/etc/udev/rules.d/99-NeuG.rules
 
-It has some udev files and rng-tools configuration files.
+It has some udev files for the GNU FST-1 NEUG hardware entropy generator.
+
+VOICETRONIX BITBABBLER WHITE AND BITBABBLER BLACK
+
+    ./Scattergun/fs/etc/udev/rules.d/99-BitBabbler.rules
+
+It has some udev files for the Voicetronix BitBabbler White and Black
+hardware engropy generators.
 
 RASPBERRY PI BCM2708
 
     ./Scattergun/fs/etc/default/rng-tools-bcm2708
 
-It has an rng-tools configuration file so that the option Broadcom hardware
+It has an rng-tools configuration file so that the optional Broadcom hardware
 random number generator device driver module can be used to fill the system
-entropy pool on a Raspberry Pi 2 (and perhaps others).
+entropy pool on a Raspberry Pi 2 or 3 (and perhaps others).
 
 MAC OS X
 
