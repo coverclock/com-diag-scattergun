@@ -364,7 +364,7 @@ TARGET=mercury
 
 ################################################################################
 
-# TrueRNG
+# TrueRNG v2
 # ublt.it
 # US$49.95
 # http://ubld.it/products/truerng-hardware-random-number-generator/
@@ -395,17 +395,17 @@ $(NEUG):	/dev/NeuG
 ################################################################################
 
 # Trusted Computing Module 1.2
-# Dell Optiplex 7040
+# Winbond Electronics Corporation (0x57454300 "WEC")
 # N/A
 # N/A
 # N/A
 # drivers/char/hw_random/tpm-rng.ko
 # N/A
 
-TPM:=$(PROJECT)_$(TARGET)_TPM
+TPMWEC:=$(PROJECT)_$(TARGET)_TPMWEC
 
-$(TPM):	/dev/tpm0 /dev/hwrng
-	make job SCATTERGUN_SOURCE="dd if=/dev/hwrng" SCATTERGUN_DIRECTORY=$(TPM)
+$(TPMWEC):	/dev/tpm0 /dev/hwrng
+	make job SCATTERGUN_SOURCE="dd if=/dev/hwrng" SCATTERGUN_DIRECTORY=$(TPMWEC)
 
 ################################################################################
 
