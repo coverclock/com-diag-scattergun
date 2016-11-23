@@ -187,8 +187,9 @@ $(OUT)/truerngd.sh:	bin/truerngd.sh
 ################################################################################
 
 $(OUT)/setup:
+	mkdir -p $(dir $@)
 	cp /dev/null $@
-	echo export PATH=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(BITBABBLER_ROOT):$(PATH) >> $@
+	echo export PATH=$(shell pwd)/$(dir $@):$(USNISTGOV_ROOT):$(BITBABBLER_ROOT):$(PATH) >> $@
 	echo export LD_LIBRARY_PATH=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH) >> $@
 
 export PATH:=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(BITBABBLER_ROOT):$(PATH)
@@ -228,7 +229,7 @@ test:
 ################################################################################
 # "Silver"
 # Dell Inspiron 530
-# Intel Core 2 Q6600 2.4GHz x4
+# Intel Core 2 Q6600 @ 2.4GHz x 4
 # Ubuntu 14.04 "trusty"
 # Linux 3.13.0
 # gcc 4.8.2
@@ -302,7 +303,7 @@ $(RANDOM):	/dev/random
 ################################################################################
 # "Betty"
 # Raspberry Pi 2 Model B v1.1
-# Broadcom BCM2836 Cortex-A7 ARMv7 x4
+# Broadcom BCM2836 Cortex-A7 ARMv7 x 4
 # Raspbian (Debian) 7.8
 # Linux 3.8.11
 # gcc 4.6.3
@@ -354,7 +355,7 @@ $(BCM2708_3):	/dev/hwrng
 ################################################################################
 # "Mercury"
 # Dell OptiPlex 7040
-# Intel Core i7-6700T 2.8GHz x8
+# Intel Core i7-6700T @ 2.8GHz x 8
 # Ubuntu 14.04.4 "trusty"
 # Linux 4.2.0
 # gcc 4.8.4
@@ -424,22 +425,6 @@ $(BITBABBLERWHITE):	/dev/BitBabbler
 
 ################################################################################
 
-# BitBabbler Black
-# VoiceTronix Pty. Ltd.
-# AUS$49.00
-# https://bitbabbler.org
-# 625Kbps
-# USB
-# Shot, Johnson-Nyquist, Flicker, RF noise
-
-BITBABBLERBLACK:=$(PROJECT)_$(TARGET)_BitBabblerBlack
-
-$(BITBABBLERBLACK):	/dev/BitBabbler
-	make job SCATTERGUN_SOURCE="seedd -o -c none" SCATTERGUN_DIRECTORY=$(BITBABBLERBLACK)
-
-################################################################################
-
-
 # rdrand Deterministic Random Bit Generator (DRBG)
 # Intel Ivy Bridge family
 # N/A
@@ -497,9 +482,35 @@ $(ZEROS):	$(OUT)/bytes
 	make job SCATTERGUN_SOURCE="bytes 0x00" SCATTERGUN_DIRECTORY=$(ZEROS)
 
 ################################################################################
+# "Nickle"
+# Intel NUC5i7RYH
+# Intel Core i7-5557U @ 3.10GHz x 8
+# Ubuntu 16.04.1 "xenial"
+# Linux 4.4.0
+# gcc 5.4.0
+################################################################################
+
+TARGET=nickle
+
+################################################################################
+
+# BitBabbler Black
+# VoiceTronix Pty. Ltd.
+# AUS$49.00
+# https://bitbabbler.org
+# 625Kbps
+# USB
+# Shot, Johnson-Nyquist, Flicker, RF noise
+
+BITBABBLERBLACK:=$(PROJECT)_$(TARGET)_BitBabblerBlack
+
+$(BITBABBLERBLACK):	/dev/BitBabbler
+	make job SCATTERGUN_SOURCE="seedd -o -c none" SCATTERGUN_DIRECTORY=$(BITBABBLERBLACK)
+
+################################################################################
 # "Jaguar"
 # Kontron ComExpress CBL6R901.001 X64
-# Intel Core i7-5650U 2.20GHz x4
+# Intel Core i7-5650U @ 2.20GHz x 4
 # Centos 7.2.1511
 # Linux 3.10.0-327.28.3.el8.x86_64
 # gcc 4.8.5

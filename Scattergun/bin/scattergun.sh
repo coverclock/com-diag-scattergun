@@ -60,8 +60,7 @@ echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) begin rngtest"
 
 if [[ -x /usr/bin/rngtest ]]; then
 	DATA="rngtest.dat"
-	BLOCKSIZE=$(( 20000 / 8 ))
-	time dd of=${DATA} bs=${BLOCKSIZE} count=1000 iflag=fullblock
+	time dd of=${DATA} bs=2508 count=1000 iflag=fullblock
 	time /usr/bin/rngtest -c 1000 < ${DATA}
 fi
 
@@ -100,8 +99,8 @@ if [[ -n "${NISTCODE}" ]]; then
 	NISTPATH=$(dirname ${NISTCODE})
 	DATA="$(pwd)/sp800.dat"
 	time dd of=${DATA} bs=1024 count=4096 iflag=fullblock
-	( cd ${NISTPATH}; time python iid_main.py ${DATA} 8 1000 -v )
-	( cd ${NISTPATH}; time python noniid_main.py ${DATA} 8 -v )
+	( cd ${NISTPATH}; time python iid_main.py    -v ${DATA} 8 )
+	( cd ${NISTPATH}; time python noniid_main.py -v ${DATA} 8 )
 fi
 
 echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) end SP800-90B"
