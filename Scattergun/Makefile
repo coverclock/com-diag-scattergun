@@ -535,6 +535,11 @@ JAGUARRDRAND:=$(PROJECT)_$(TARGET)_rdrand
 $(JAGUARRDRAND):
 	make job SCATTERGUN_SOURCE="seventool -v -R -r -c" SCATTERGUN_DIRECTORY=$(JAGUARRDRAND)
 
+JAGUARRDRANDWOR:=$(PROJECT)_$(TARGET)_rdrandwor
+
+$(JAGUARRDRANDWOR):
+	make job SCATTERGUN_SOURCE="seventool -R -c" SCATTERGUN_DIRECTORY=$(JAGUARRDRANDWOR)
+
 ################################################################################
 
 # rdseed Enhanced Non-deterministic Random Number Generator (ENRNG)
