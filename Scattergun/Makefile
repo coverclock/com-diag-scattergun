@@ -482,7 +482,7 @@ $(ZEROS):	$(OUT)/bytes
 	make job SCATTERGUN_SOURCE="bytes 0x00" SCATTERGUN_DIRECTORY=$(ZEROS)
 
 ################################################################################
-# "Nickle"
+# "Nickel"
 # Intel NUC5i7RYH
 # Intel Core i7-5557U @ 3.10GHz x 8
 # Ubuntu 16.04.1 "xenial"
@@ -490,7 +490,7 @@ $(ZEROS):	$(OUT)/bytes
 # gcc 5.4.0
 ################################################################################
 
-TARGET=nickle
+TARGET=nickel
 
 ################################################################################
 
