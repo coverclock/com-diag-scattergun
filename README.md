@@ -4,6 +4,8 @@ com-diag-scattergun
 Copyright 2015-2016 Digital Aggregates Corporation, Colorado, USA.
 Licensed under the terms of the GNU GPL v2.
 
+ABSTRACT
+
 This project represents my puttering around with hardware entropy sources and
 random number generation in Linux/GNU, and to a lesser extent, Mac OS X.
 
@@ -119,3 +121,12 @@ It includes some programs that emit constant bytes, random numbers
 generated using the C library's mrand48(3) function, or with the random(3)
 function. It is informative to compare the results of the hardware entropy
 generators with those of these two pseudo-random number generators.
+
+CONTACT
+
+    Chip Overclock
+    Digital Aggregates Corporation
+    3440 Youngfield Street, Suite 209
+    Wheat Ridge CO 80033 USA
+    http://www.diag.com
+    mailto:coverclock@diag.com
