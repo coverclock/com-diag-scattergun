@@ -509,6 +509,21 @@ $(BITBABBLERBLACK):	/dev/BitBabbler
 
 ################################################################################
 
+# TrueRNG v3
+# ublt.it
+# US$49.95
+# http://ubld.it/products/truerng-hardware-random-number-generator/
+# 400Kbps
+# USB
+# semiconductor avalanche effect
+
+TRUERNG:=$(PROJECT)_$(TARGET)_TrueRNGv3
+
+$(TRUERNG):	/dev/TrueRNG
+	make job SCATTERGUN_SOURCE="dd if=/dev/TrueRNG" SCATTERGUN_DIRECTORY=$(TRUERNG)
+
+################################################################################
+
 # Chaos Key
 # Altus Metrium via Garbee and Garbee
 # US$40.00
