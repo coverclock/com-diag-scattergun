@@ -508,6 +508,21 @@ $(BITBABBLERBLACK):	/dev/BitBabbler
 	make job SCATTERGUN_SOURCE="seedd -o -c none" SCATTERGUN_DIRECTORY=$(BITBABBLERBLACK)
 
 ################################################################################
+
+# TrueRNG v3
+# ublt.it
+# US$49.95
+# http://ubld.it/products/truerng-hardware-random-number-generator/
+# 400Kbps
+# USB
+# semiconductor avalanche effect
+
+TRUERNG:=$(PROJECT)_$(TARGET)_TrueRNGv3
+
+$(TRUERNG):	/dev/TrueRNG
+	make job SCATTERGUN_SOURCE="dd if=/dev/TrueRNG" SCATTERGUN_DIRECTORY=$(TRUERNG)
+
+################################################################################
 # "Jaguar"
 # Kontron ComExpress CBL6R901.001 X64
 # Intel Core i7-5650U @ 2.20GHz x 4
