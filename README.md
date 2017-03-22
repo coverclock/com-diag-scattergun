@@ -9,11 +9,9 @@ ABSTRACT
 This project represents my puttering around with hardware entropy sources and
 random number generation in Linux/GNU, and to a lesser extent, Mac OS X.
 
-Many thanks to my friend, occasional colleague, former REDACTED office
-mate, and mentor REDACTED, who has a wealth of deep expertise in this
-domain. Also, thanks to my colleagues at REDACTED where while working on
-REDACTED I became interested in this topic. And finally, thanks to REDACTED
-at REDACTED who convinced me to give a talk on this topic.
+For too much information, see my blog article about this project.
+
+<http://coverclock.blogspot.com/2017/02/the-need-for-non-determinacy.html>
 
 Scattergun includes a variety of artifacts that might be useful.
 
@@ -60,7 +58,7 @@ either the rdrand or rdseed instruction, extracts random bits using the
 specified instruction and writes them to standard output, or to a file which
 can be a named pipe.
 
-UBLD.IT TRUERNG AND TRUERNGPRO
+UBLD.IT TRUERNGV2, TRUERNGPRO, TRUERNGV3
 
     ./Scattergun/fs/etc/udev/rules.d/99-TrueRNG.rules
     ./Scattergun/fs/etc/default/rng-tools-TrueRNG
@@ -72,7 +70,7 @@ It has some udev rules and rng-tools configuration files that make it easy to
 use a ubld.it TrueRNG or TrueRNGpro hardware entropy generators to fill the
 system entropy pool on a GNU/Linux system.
 
-MOONBASE OTAGO ONERNG
+MOONBASE OTAGO ONERNG AND ONERNG V3.0
 
     ./Scattergun/fs/etc/udev/rules.d/99-OneRNG.rules
     ./Scattergun/fs/etc/default/rng-tools-OneRNG
@@ -101,6 +99,14 @@ RASPBERRY PI BCM2708
 It has an rng-tools configuration file so that the optional Broadcom hardware
 random number generator device driver module can be used to fill the system
 entropy pool on a Raspberry Pi 2 or 3 (and perhaps others).
+
+ALTUS METRUM CHAOS KEY
+
+    ./Scattergun/fs/etc/udev/rules.d/99-ChaosKey.rules
+
+WAYWORD GEEK INFINITE NOISE
+
+    ./Scattergun/fs/etc/udev/rules.d/99-InfiniteNoise.rules
 
 MAC OS X
 
