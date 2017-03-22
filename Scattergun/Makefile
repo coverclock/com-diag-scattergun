@@ -508,6 +508,36 @@ $(BITBABBLERBLACK):	/dev/BitBabbler
 	make job SCATTERGUN_SOURCE="seedd -o -c none" SCATTERGUN_DIRECTORY=$(BITBABBLERBLACK)
 
 ################################################################################
+
+# Chaos Key
+# Altus Metrium via Garbee and Garbee
+# US$40.00
+# http://altusmetrum.org/ChaosKey/
+# N/A
+# USB
+# Shot
+
+CHAOSKEY:=$(PROJECT)_$(TARGET)_ChaosKey
+
+$(CHAOSKEY):	/dev/chaoskey0
+	make job SCATTERGUN_SOURCE="dd if=/dev/chaoskey0" SCATTERGUN_DIRECTORY=$(CHAOSKEY)
+
+################################################################################
+
+# Infinite Noise
+# Wayward Geek via Tindie
+# US$35.00
+# https://www.tindie.com/products/WaywardGeek/infinite-noise-true-random-number-generator/
+# 150Kbps
+# USB
+# Thermal
+
+INFINITENOISE:=$(PROJECT)_$(TARGET)_InfiniteNoise
+
+$(INFINITENOISE):	/dev/InfiniteNoise
+	make job SCATTERGUN_SOURCE="infnoise" SCATTERGUN_DIRECTORY=$(INFINITENOISE)
+
+################################################################################
 # "Jaguar"
 # Kontron ComExpress CBL6R901.001 X64
 # Intel Core i7-5650U @ 2.20GHz x 4
@@ -517,6 +547,8 @@ $(BITBABBLERBLACK):	/dev/BitBabbler
 ################################################################################
 
 TARGET=jaguar
+
+################################################################################
 
 # AT97SC3204 Trusted Computing Module 1.2
 # Atmel

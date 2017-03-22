@@ -1,0 +1,2 @@
+# altusmetrium.org Chaos Key
+KERNEL=="chaoskey*", OWNER="root", GROUP="plugdev", MODE="0664"
