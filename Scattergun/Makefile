@@ -562,10 +562,10 @@ $(INFINITENOISE):	/dev/InfiniteNoise
 # USB
 # semiconductor avalanche effect (and optionally atmospheric noise)
 
-ONERNGV3:=$(PROJECT)_$(TARGET)_OneRNGv3
+ONERNGV30:=$(PROJECT)_$(TARGET)_OneRNGv30
 
-$(ONERNGV3):	/dev/OneRNG
-	make job SCATTERGUN_SOURCE="dd if=/dev/OneRNG" SCATTERGUN_DIRECTORY=$(ONERNGV3)
+$(ONERNGV30):	/dev/OneRNG
+	make job SCATTERGUN_SOURCE="dd if=/dev/OneRNG" SCATTERGUN_DIRECTORY=$(ONERNGV30)
 
 ################################################################################
 # "Jaguar"
