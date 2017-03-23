@@ -553,6 +553,21 @@ $(INFINITENOISE):	/dev/InfiniteNoise
 	make job SCATTERGUN_SOURCE="infnoise" SCATTERGUN_DIRECTORY=$(INFINITENOISE)
 
 ################################################################################
+
+# OneRNG v3.0
+# Moonbase Otago
+# US$40.00
+# http://onerng.info
+# 350Kbps
+# USB
+# semiconductor avalanche effect (and optionally atmospheric noise)
+
+ONERNGV3:=$(PROJECT)_$(TARGET)_OneRNGv3
+
+$(ONERNGV3):	/dev/OneRNG
+	make job SCATTERGUN_SOURCE="dd if=/dev/OneRNG" SCATTERGUN_DIRECTORY=$(ONERNGV3)
+
+################################################################################
 # "Jaguar"
 # Kontron ComExpress CBL6R901.001 X64
 # Intel Core i7-5650U @ 2.20GHz x 4
