@@ -1,0 +1,2 @@
+# Wayward Geek Infinite Noise
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", ENV{ID_MM_DEVICE_IGNORE}="1", SYMLINK+="InfiniteNoise", MODE="0666"
