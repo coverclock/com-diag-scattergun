@@ -549,8 +549,11 @@ $(CHAOSKEY):	/dev/chaoskey0
 
 INFINITENOISE:=$(PROJECT)_$(TARGET)_InfiniteNoise
 
-$(INFINITENOISE):	/dev/InfiniteNoise
-	make job SCATTERGUN_SOURCE="infnoise" SCATTERGUN_DIRECTORY=$(INFINITENOISE)
+$(INFINITENOISE):	/usr/local/bin/infnoise
+	make job SCATTERGUN_SOURCE="/usr/local/bin/infnoise" SCATTERGUN_DIRECTORY=$(INFINITENOISE)
+
+# N.B. /usr/local/bin/infnoise must be SETUID root.
+# -rwsrwsr-x 1 root root 37488 Apr 21 15:19 /usr/local/bin/infnoise
 
 ################################################################################
 
