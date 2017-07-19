@@ -395,7 +395,7 @@ $(NEUG):	/dev/NeuG
 
 ################################################################################
 
-# Trusted Computing Module 1.2
+# Trusted Computing Module TCG 1.2 FW 5.81
 # Winbond Electronics Corporation (0x57454300 "WEC")
 # N/A
 # N/A
@@ -404,6 +404,9 @@ $(NEUG):	/dev/NeuG
 # N/A
 
 TPMWEC:=$(PROJECT)_$(TARGET)_TPMWEC
+
+# cat /sys/class/tpm/tpm0/device/caps
+# modprobe tpm-rng
 
 $(TPMWEC):	/dev/tpm0 /dev/hwrng
 	make job SCATTERGUN_SOURCE="dd if=/dev/hwrng" SCATTERGUN_DIRECTORY=$(TPMWEC)
