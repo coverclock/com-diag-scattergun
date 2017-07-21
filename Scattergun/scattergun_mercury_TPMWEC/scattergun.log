@@ -1,79 +1,0 @@
-scattergun.sh: 2017-07-19T17:21:03 begin scattergun_mercury_TPMWEC
-scattergun.sh: 2017-07-19T17:21:03 begin png
-65536+0 records in
-65536+0 records out
-196608 bytes (197 kB, 192 KiB) copied, 147.44 s, 1.3 kB/s
-
-real	2m27.442s
-user	0m0.000s
-sys	0m0.288s
-scattergun.sh: 2017-07-19T17:23:31 end png
-scattergun.sh: 2017-07-19T17:23:31 begin rngtest
-1000+0 records in
-1000+0 records out
-2508000 bytes (2.5 MB, 2.4 MiB) copied, 1881.21 s, 1.3 kB/s
-
-real	31m21.213s
-user	0m0.304s
-sys	0m0.000s
-rngtest 5
-Copyright (c) 2004 by Henrique de Moraes Holschuh
-This is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-rngtest: starting FIPS tests...
-rngtest: bits received from input: 20000032
-rngtest: FIPS 140-2 successes: 999
-rngtest: FIPS 140-2 failures: 1
-rngtest: FIPS 140-2(2001-10-10) Monobit: 0
-rngtest: FIPS 140-2(2001-10-10) Poker: 0
-rngtest: FIPS 140-2(2001-10-10) Runs: 1
-rngtest: FIPS 140-2(2001-10-10) Long run: 0
-rngtest: FIPS 140-2(2001-10-10) Continuous run: 0
-rngtest: input channel speed: (min=4000000000.000; avg=37523452157.598; max=0.000)bits/s
-rngtest: FIPS tests speed: (min=20.575; avg=92.491; max=98.826)Mibits/s
-rngtest: Program run time: 206910 microseconds
-
-real	0m0.209s
-user	0m0.208s
-sys	0m0.000s
-scattergun.sh: 2017-07-19T17:54:52 end rngtest
-scattergun.sh: 2017-07-19T17:54:52 begin ent
-4096+0 records in
-4096+0 records out
-4194304 bytes (4.2 MB, 4.0 MiB) copied, 3145.53 s, 1.3 kB/s
-
-real	52m25.529s
-user	0m0.000s
-sys	0m0.588s
-Entropy = 7.999958 bits per byte.
-
-Optimum compression would reduce the size
-of this 4194304 byte file by 0 percent.
-
-Chi square distribution for 4194304 samples is 242.59, and randomly
-would exceed this value 70.17 percent of the times.
-
-Arithmetic mean value of data bytes is 127.4853 (127.5 = random).
-Monte Carlo value for Pi is 3.143214362 (error 0.05 percent).
-Serial correlation coefficient is -0.000255 (totally uncorrelated = 0.0).
-
-real	0m0.099s
-user	0m0.096s
-sys	0m0.000s
-scattergun.sh: 2017-07-19T18:47:18 end ent
-scattergun.sh: 2017-07-19T18:47:18 begin SP800-90B
-4096+0 records in
-4096+0 records out
-4194304 bytes (4.2 MB, 4.0 MiB) copied, 3145.65 s, 1.3 kB/s
-
-real	52m25.649s
-user	0m0.000s
-sys	0m0.584s
-reading 4194304 bytes of data
-Read in file /home/jsloan/src/com-diag-scattergun/Scattergun/scattergun_mercury_TPMWEC/sp800.dat, 4194304 bytes long.
-Dataset: 4194304 8-bit symbols, 256 symbols in alphabet.
-Output symbol values: min = 0, max = 255
-
-Calculating statistics on original sequence
-Calculating statistics on permuted sequences
-permutation tests:	0.00 percent completepermutation tests:	0.01 percent completepermutation tests:	0.02 percent completepermutation tests:	0.03 percent completepermutation tests:	0.04 percent completepermutation tests:	0.05 percent completepermutation tests:	0.06 percent completepermutation tests:	0.07 percent completepermutation tests:	0.08 percent completepermutation tests:	0.09 percent completepermutation tests:	0.10 percent completepermutation tests:	0.11 percent completepermutation tests:	0.12 percent completepermutation tests:	0.13 percent completepermutation tests:	0.14 percent completepermutation tests:	0.15 percent completepermutation tests:	0.16 percent completepermutation tests:	0.17 percent completepermutation tests:	0.18 percent completepermutation tests:	0.19 percent completepermutation tests:	0.20 percent completepermutation tests:	0.21 percent completepermutation tests:	0.22 percent completepermutation tests:	0.23 percent completepermutation tests:	0.24 percent completepermutation tests:	0.25 percent completepermutation tests:	0.26 percent completepermutation tests:	0.27 percent completepermutation tests:	0.28 percent completepermutation tests:	0.29 percent completepermutation tests:	0.30 percent completepermutation tests:	0.31 percent completepermutation tests:	0.32 percent completepermutation tests:	0.33 percent completepermutation tests:	0.34 percent completepermutation tests:	0.35 percent completepermutation tests:	0.36 percent completepermutation tests:	0.37 percent completepermutation tests:	0.38 percent completepermutation tests:	0.39 percent completepermutation tests:	0.40 percent completepermutation tests:	0.41 percent completepermutation tests:	0.42 percent completepermutation tests:	0.43 percent completepermutation tests:	0.44 percent completepermutation tests:	0.45 percent completepermutation tests:	0.46 percent completepermutation tests:	0.47 percent completepermutation tests:	0.48 percent completepermutation tests:	0.49 percent completepermutation tests:	0.50 percent completepermutation tests:	0.51 percent completepermutation tests:	0.52 percent completepermutation tests:	0.53 percent completepermutation tests:	0.54 percent completepermutation tests:	0.55 percent completepermutation tests:	0.56 percent completepermutation tests:	0.57 percent completepermutation tests:	0.58 percent completepermutation tests:	0.59 percent completepermutation tests:	0.60 percent completepermutation tests:	0.61 percent completepermutation tests:	0.62 percent completepermutation tests:	0.63 percent completepermutation tests:	0.64 percent completepermutation tests:	0.65 percent completepermutation tests:	0.66 percent completepermutation tests:	0.67 percent completepermutation tests:	0.68 percent completepermutation tests:	0.69 percent completepermutation tests:	0.70 percent completepermutation tests:	0.71 percent completepermutation tests:	0.72 percent completepermutation tests:	0.73 percent completepermutation tests:	0.74 percent completepermutation tests:	0.75 percent completepermutation tests:	0.76 percent completepermutation tests:	0.77 percent completepermutation tests:	0.78 percent completepermutation tests:	0.79 percent completepermutation tests:	0.80 percent completepermutation tests:	0.81 percent completepermutation tests:	0.82 percent completepermutation tests:	0.83 percent completepermutation tests:	0.84 percent completepermutation tests:	0.85 percent completepermutation tests:	0.86 percent completepermutation tests:	0.87 percent completepermutation tests:	0.88 percent completepermutation tests:	0.89 percent completepermutation tests:	0.90 percent completepermutation tests:	0.91 percent completepermutation tests:	0.92 percent completepermutation tests:	0.93 percent completepermutation tests:	0.94 percent completepermutation tests:	0.95 percent completepermutation tests:	0.96 percent completepermutation tests:	0.97 percent completepermutation tests:	0.98 percent completepermutation tests:	0.99 percent completepermutation tests:	1.00 percent completepermutation tests:	1.01 percent completepermutation tests:	1.02 percent completepermutation tests:	1.03 percent completepermutation tests:	1.04 percent completepermutation tests:	1.05 percent completepermutation tests:	1.06 percent completepermutation tests:	1.07 percent completepermutation tests:	1.08 percent completepermutation tests:	1.09 percent completepermutation tests:	1.10 percent completepermutation tests:	1.11 percent completepermutation tests:	1.12 percent completepermutation tests:	1.13 percent completepermutation tests:	1.14 percent completepermutation tests:	1.15 percent completepermutation tests:	1.16 percent completepermutation tests:	1.17 percent completepermutation tests:	1.18 percent completepermutation tests:	1.19 percent completepermutation tests:	1.20 percent completepermutation tests:	1.21 percent completepermutation tests:	1.22 percent completepermutation tests:	1.23 percent completepermutation tests:	1.24 percent completepermutation tests:	1.25 percent completepermutation tests:	1.26 percent completepermutation tests:	1.27 percent completepermutation tests:	1.28 percent completepermutation tests:	1.29 percent completepermutation tests:	1.30 percent completepermutation tests:	1.31 percent completepermutation tests:	1.32 percent completepermutation tests:	1.33 percent completepermutation tests:	1.34 percent completepermutation tests:	1.35 percent completepermutation tests:	1.36 percent completepermutation tests:	1.37 percent completepermutation tests:	1.38 percent completepermutation tests:	1.39 percent completepermutation tests:	1.40 percent completepermutation tests:	1.41 percent completepermutation tests:	1.42 percent completepermutation tests:	1.43 percent completepermutation tests:	1.44 percent completepermutation tests:	1.45 percent completepermutation tests:	1.46 percent completepermutation tests:	1.47 percent completepermutation tests:	1.48 percent completepermutation tests:	1.49 percent completepermutation tests:	1.50 percent completepermutation tests:	1.51 percent completepermutation tests:	1.52 percent completepermutation tests:	1.53 percent completepermutation tests:	1.54 percent completepermutation tests:	1.55 percent completepermutation tests:	1.56 percent completepermutation tests:	1.57 percent completepermutation tests:	1.58 percent completepermutation tests:	1.59 percent completepermutation tests:	1.60 percent completepermutation tests:	1.61 percent completepermutation tests:	1.62 percent completepermutation tests:	1.63 percent completepermutation tests:	1.64 percent completepermutation tests:	1.65 percent completepermutation tests:	1.66 percent completepermutation tests:	1.67 percent completepermutation tests:	1.68 percent completepermutation tests:	1.69 percent completepermutation tests:	1.70 percent completepermutation tests:	1.71 percent completepermutation tests:	1.72 percent completepermutation tests:	1.73 percent completepermutation tests:	1.74 percent completepermutation tests:	1.75 percent completepermutation tests:	1.76 percent completepermutation tests:	1.77 percent completepermutation tests:	1.78 percent completepermutation tests:	1.79 percent completepermutation tests:	1.80 percent completepermutation tests:	1.81 percent completepermutation tests:	1.82 percent completepermutation tests:	1.83 percent completepermutation tests:	1.84 percent completepermutation tests:	1.85 percent completepermutation tests:	1.86 percent completepermutation tests:	1.87 percent completepermutation tests:	1.88 percent completepermutation tests:	1.89 percent completepermutation tests:	1.90 percent completepermutation tests:	1.91 percent completepermutation tests:	1.92 percent completepermutation tests:	1.93 percent complete
