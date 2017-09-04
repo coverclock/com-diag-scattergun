@@ -395,7 +395,7 @@ $(NEUG):	/dev/NeuG
 
 ################################################################################
 
-# Trusted Computing Module 1.2
+# Trusted Computing Module TCG 1.2 FW 5.81
 # Winbond Electronics Corporation (0x57454300 "WEC")
 # N/A
 # N/A
@@ -405,7 +405,19 @@ $(NEUG):	/dev/NeuG
 
 TPMWEC:=$(PROJECT)_$(TARGET)_TPMWEC
 
+# cat /sys/class/tpm/tpm0/device/caps
+# modprobe tpm-rng
+# sudo chmod 666 /dev/hwrng
+## /home/jsloan/src/com-diag-scattergun/Scattergun/out/host/bin/scattergun.sh: line 104: 27193 Killed
+## python noniid_main.py
+## https://stackoverflow.com/questions/25000496/python-script-terminated-by-sigkill-rather-than-throwing-memoryerror
+## https://serverfault.com/questions/362589/effects-of-configuring-vm-overcommit-memory/510857#510857
+# sudo vi /etc/sysctl.conf
+# vm.overcommit_memory = 2
+# vm.overcommit_ratio = 100
+
 $(TPMWEC):	/dev/tpm0 /dev/hwrng
+	test -r /dev/hwrng
 	make job SCATTERGUN_SOURCE="dd if=/dev/hwrng" SCATTERGUN_DIRECTORY=$(TPMWEC)
 
 ################################################################################
