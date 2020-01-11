@@ -11,11 +11,11 @@
  *
  * USAGE
  *
- * getrandom
+ * getrandom [ -d ] [ -v ] [ -r ] [ -n ]
  *
  * EXAMPLES
  *
- * getrandom | dd of=random.dat bs=4096 count=1024 iflag=fullblock
+ * getrandom -r | dd of=random.dat bs=4096 count=1024 iflag=fullblock
  * 
  * ABSTRACT
  *
@@ -66,19 +66,24 @@ static ssize_t mygetrandom(void * pp, size_t ss, unsigned int flags)
 int main(int argc, char * argv[])
 {
     ssize_t length = -1;
-    int32_t value = -1;
-    uint8_t * here = (uint8_t *)0;;
+    uint32_t value = 0;
+    uint8_t * here = (uint8_t *)0;
     size_t size = 0;
     ssize_t (*fp)(void *, size_t, unsigned int) = &getrandom;
     unsigned int flags = 0;
+    int verbose = 0;
     int ndx = 0;
+    const char * name = (const char *)0;
+    name = ((name = strrchr(argv[0], '/')) == (char *)0) ? argv[0] : name + 1;
     for (ndx = 1; ndx < argc; ++ndx) {
         if (strncmp(argv[ndx], "-d", sizeof("-d")) == 0) {
             fp = &mygetrandom;
-        } else if (strncmp(argv[ndx], "-r", sizeof("-r")) == 0) {
-            flags |= GRND_RANDOM;
         } else if (strncmp(argv[ndx], "-n", sizeof("-n")) == 0) {
             flags |= GRND_NONBLOCK;
+        } else if (strncmp(argv[ndx], "-r", sizeof("-r")) == 0) {
+            flags |= GRND_RANDOM;
+        } else if (strncmp(argv[ndx], "-v", sizeof("-v")) == 0) {
+            verbose = !0;
         } else {
             errno = EINVAL;
             perror(argv[ndx]);
@@ -90,6 +95,7 @@ int main(int argc, char * argv[])
         size = sizeof(value);
         while (size > 0) {
             length = (*fp)(here, size, flags);
+            if (verbose) fprintf(stderr, "%s: [%zd]\n", name, length);
             if (length < 0) {
                 perror("getrandom");
                 return 1;

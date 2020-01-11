@@ -11,6 +11,7 @@ PROJECT=scattergun
 ROOT=$(HOME)/src
 
 USNISTGOV_ROOT=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment
+USNISTGOV_ROOT+=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment/cpp
 QUANTIS_ROOT=$(ROOT)/idq-quantis
 BITBABBLER_ROOT=$(ROOT)/bit-babbler-0.5
 
@@ -205,19 +206,19 @@ export PATH:=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(BITBABBLER_ROOT):$(PATH)
 export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 verify:
-	# sudo apt-get install netpbm
+	echo sudo apt-get install netpbm
 	which rawtoppm
 	which pnmtopng
-	# sudo apt-get install rng-tools
+	echo sudo apt-get install rng-tools
 	which rngtest
-	# sudo apt-get install ent # http://www.fourmilab.ch/random/random.zip
+	echo sudo apt-get install ent # http://www.fourmilab.ch/random/random.zip
 	which ent
-	# sudo apt-get install python
+	echo sudo apt-get install python
 	which python
-	# git clone http://github.com/usnistgov/SP800-90B_EntropyAssessment
-	which iid_main.py
-	which noniid_main.py
-	# sudo apt-get install dieharder
+	echo git clone http://github.com/usnistgov/SP800-90B_EntropyAssessment
+	which iid_main.py || which ea_iid
+	which noniid_main.py || which ea_non_iid
+	echo sudo apt-get install dieharder
 	which dieharder
 
 .PHONY:	verify
@@ -651,3 +652,24 @@ JAGUARRDSEED:=$(PROJECT)_$(TARGET)_rdseed
 
 $(JAGUARRDSEED):
 	make job SCATTERGUN_SOURCE="seventool -v -S -c" SCATTERGUN_DIRECTORY=$(JAGUARRDSEED)
+
+################################################################################
+# "Cadmium"
+# Intel NUC7i7BNH
+# Intel Core i7-7567U @ 3.5GHz x 2 x 2
+# Ubuntu 19.04 "disco"
+# Linux 5.0.0
+# gcc 8.3.0
+################################################################################
+
+TARGET=cadmium
+
+################################################################################
+
+# getrandom(2) system call with the GRND_RANDOM flag
+# /dev/random pool fed by rngd using a TrueRNG v3 (see above)
+
+GETRANDOMR:=$(PROJECT)_$(TARGET)_getrandomr
+
+$(GETRANDOMR):	$(OUT)/getrandom
+	make job SCATTERGUN_SOURCE="getrandom -r" SCATTERGUN_DIRECTORY=$(GETRANDOMR)
