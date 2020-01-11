@@ -10,8 +10,7 @@ PROJECT=scattergun
 
 ROOT=$(HOME)/src
 
-USNISTGOV_ROOT=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment
-USNISTGOV_ROOT+=$(ROOT)/usnistgov/SP800-90B_EntropyAssessment/cpp
+USNISTGOV_ROOT=$(ROOT)/SP800-90B_EntropyAssessment:$(ROOT)/SP800-90B_EntropyAssessment/cpp
 QUANTIS_ROOT=$(ROOT)/idq-quantis
 BITBABBLER_ROOT=$(ROOT)/bit-babbler-0.5
 
@@ -206,6 +205,8 @@ export PATH:=$(shell pwd)/$(OUT):$(USNISTGOV_ROOT):$(BITBABBLER_ROOT):$(PATH)
 export LD_LIBRARY_PATH:=$(QUANTIS_LIBPATH):$(LD_LIBRARY_PATH)
 
 verify:
+	echo PATH=$(PATH)
+	echo LD_LIBRARY_PATH=$(LD_LIBRARY_PATH)
 	echo sudo apt-get install netpbm
 	which rawtoppm
 	which pnmtopng
@@ -215,6 +216,7 @@ verify:
 	which ent
 	echo sudo apt-get install python
 	which python
+	echo apt-get install libdivsufsort-dev
 	echo git clone http://github.com/usnistgov/SP800-90B_EntropyAssessment
 	which iid_main.py || which ea_iid
 	which noniid_main.py || which ea_non_iid
