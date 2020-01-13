@@ -1,0 +1,469 @@
+scattergun.sh: 2020-01-10T22:00:47 begin scattergun_cadmium_getrandomr
+scattergun.sh: 2020-01-10T22:00:47 begin png
+65536+0 records in
+65536+0 records out
+196608 bytes (197 kB, 192 KiB) copied, 0.185462 s, 1.1 MB/s
+
+real	0m0.187s
+user	0m0.015s
+sys	0m0.130s
+scattergun.sh: 2020-01-10T22:00:48 end png
+scattergun.sh: 2020-01-10T22:00:48 begin rngtest
+1000+0 records in
+1000+0 records out
+2508000 bytes (2.5 MB, 2.4 MiB) copied, 2.21422 s, 1.1 MB/s
+
+real	0m2.215s
+user	0m0.000s
+sys	0m0.009s
+rngtest 5
+Copyright (c) 2004 by Henrique de Moraes Holschuh
+This is free software; see the source for copying conditions.  There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+rngtest: starting FIPS tests...
+rngtest: bits received from input: 20000032
+rngtest: FIPS 140-2 successes: 1000
+rngtest: FIPS 140-2 failures: 0
+rngtest: FIPS 140-2(2001-10-10) Monobit: 0
+rngtest: FIPS 140-2(2001-10-10) Poker: 0
+rngtest: FIPS 140-2(2001-10-10) Runs: 0
+rngtest: FIPS 140-2(2001-10-10) Long run: 0
+rngtest: FIPS 140-2(2001-10-10) Continuous run: 0
+rngtest: input channel speed: (min=10000000000.000; avg=19841269841.270; max=0.000)bits/s
+rngtest: FIPS tests speed: (min=143.410; avg=178.452; max=211.928)Mibits/s
+rngtest: Program run time: 108026 microseconds
+
+real	0m0.109s
+user	0m0.105s
+sys	0m0.004s
+scattergun.sh: 2020-01-10T22:00:50 end rngtest
+scattergun.sh: 2020-01-10T22:00:50 begin ent
+4096+0 records in
+4096+0 records out
+4194304 bytes (4.2 MB, 4.0 MiB) copied, 3.68037 s, 1.1 MB/s
+
+real	0m3.681s
+user	0m0.009s
+sys	0m0.009s
+Entropy = 7.999954 bits per byte.
+
+Optimum compression would reduce the size
+of this 4194304 byte file by 0 percent.
+
+Chi square distribution for 4194304 samples is 265.32, and randomly
+would exceed this value 31.55 percent of the times.
+
+Arithmetic mean value of data bytes is 127.4911 (127.5 = random).
+Monte Carlo value for Pi is 3.142768042 (error 0.04 percent).
+Serial correlation coefficient is -0.000190 (totally uncorrelated = 0.0).
+
+real	0m0.076s
+user	0m0.076s
+sys	0m0.000s
+scattergun.sh: 2020-01-10T22:00:54 end ent
+scattergun.sh: 2020-01-10T22:00:54 begin SP800-90B
+4096+0 records in
+4096+0 records out
+4194304 bytes (4.2 MB, 4.0 MiB) copied, 3.71577 s, 1.1 MB/s
+
+real	0m3.716s
+user	0m0.010s
+sys	0m0.010s
+Opening file: '/home/jsloan/src/com-diag-scattergun/Scattergun/scattergun_cadmium_getrandomr/sp800.dat'
+Loaded 4194304 samples of 256 distinct 8-bit-wide symbols
+Number of Binary samples: 33554432
+Calculating baseline statistics...
+	Raw Mean: 127.556877
+	Median: 128.000000
+	Binary: false
+
+Literal MCV Estimate: mode = 16718, p-hat = 0.0039858818054199219, p_u = 0.0040651286784209525
+Bitstring MCV Estimate: mode = 16778234, p-hat = 0.50003033876419067, p_u = 0.50025267597018508
+H_original: 7.942483
+H_bitstring: 0.999271
+min(H_original, 8 X H_bitstring): 7.942483
+
+Chi square independence
+	score = 65315.129462
+	degrees of freedom = 65280
+	p-value = 0.460549
+
+Chi square goodness of fit
+	score = 2425.140365
+	degrees of freedom = 2295
+	p-value = 0.029010
+
+** Passed chi square tests
+
+LiteralLongest Repeated Substring results
+	P_col: 0.00390649
+	Length of LRS: 5
+	Pr(X >= 1): 0.999666
+** Passed length of longest repeated substring test
+
+Beginning initial tests...
+
+Initial test results
+              excursion: 181321
+     numDirectionalRuns: 2.79676e+06
+     lenDirectionalRuns: 9
+  numIncreasesDecreases: 2.10586e+06
+          numRunsMedian: 2.09768e+06
+          lenRunsMedian: 22
+           avgCollision: 19.7227
+           maxCollision: 76
+         periodicity(1): 16559
+         periodicity(2): 16264
+         periodicity(8): 16582
+        periodicity(16): 16482
+        periodicity(32): 16396
+          covariance(1): 6.82335e+10
+          covariance(2): 6.82422e+10
+          covariance(8): 6.82585e+10
+         covariance(16): 6.82459e+10
+         covariance(32): 6.82539e+10
+            compression: 4.4767e+06
+
+Beginning permutation tests... these may take some time
+Permutation Test (core 0): 0 tests passed
+Permutation Test (core 3): 0 tests passed
+Permutation Test (core 2): 0 tests passed
+Permutation Test (core 1): 0 tests passed
+Permutation Test (core 0): 0 tests passed
+Permutation Test (core 3): 0 tests passed
+Permutation Test (core 2): 0 tests passed
+Permutation Test (core 1): 0 tests passed
+Permutation Test (core 0): 0 tests passed
+Permutation Test (core 3): 0 tests passed
+Permutation Test (core 2): 1 tests passed
+Permutation Test (core 1): 2 tests passed
+Permutation Test (core 0): 2 tests passed
+Permutation Test (core 3): 3 tests passed
+Permutation Test (core 2): 3 tests passed
+Permutation Test (core 1): 4 tests passed
+Permutation Test (core 0): 6 tests passed
+Permutation Test (core 3): 6 tests passed
+Permutation Test (core 2): 7 tests passed
+Permutation Test (core 1): 8 tests passed
+Permutation Test (core 0): 8 tests passed
+Permutation Test (core 3): 8 tests passed
+Permutation Test (core 2): 9 tests passed
+Permutation Test (core 1): 9 tests passed
+Permutation Test (core 0): 9 tests passed
+Permutation Test (core 3): 10 tests passed
+Permutation Test (core 2): 10 tests passed
+Permutation Test (core 1): 10 tests passed
+Permutation Test (core 0): 10 tests passed
+Permutation Test (core 3): 10 tests passed
+Permutation Test (core 2): 10 tests passed
+Permutation Test (core 1): 11 tests passed
+Permutation Test (core 0): 11 tests passed
+Permutation Test (core 3): 11 tests passed
+Permutation Test (core 2): 11 tests passed
+Permutation Test (core 1): 11 tests passed
+Permutation Test (core 0): 11 tests passed
+Permutation Test (core 3): 11 tests passed
+Permutation Test (core 2): 12 tests passed
+Permutation Test (core 1): 12 tests passed
+Permutation Test (core 0): 13 tests passed
+Permutation Test (core 3): 13 tests passed
+Permutation Test (core 2): 13 tests passed
+Permutation Test (core 1): 13 tests passed
+Permutation Test (core 0): 13 tests passed
+Permutation Test (core 3): 13 tests passed
+Permutation Test (core 2): 13 tests passed
+Permutation Test (core 1): 13 tests passed
+Permutation Test (core 0): 14 tests passed
+Permutation Test (core 0): 14 tests passed
+Permutation Test (core 0): 14 tests passed
+Permutation Test (core 0): 15 tests passed
+Permutation Test (core 0): 15 tests passed
+Permutation Test (core 0): 15 tests passed
+Permutation Test (core 3): 15 tests passed
+Permutation Test (core 0): 15 tests passed
+Permutation Test (core 1): 15 tests passed
+Permutation Test (core 3): 15 tests passed
+Permutation Test (core 2): 15 tests passed
+Permutation Test (core 0): 16 tests passed
+Permutation Test (core 1): 16 tests passed
+Permutation Test (core 3): 16 tests passed
+Permutation Test (core 2): 16 tests passed
+Permutation Test (core 0): 16 tests passed
+Permutation Test (core 1): 16 tests passed
+Permutation Test (core 3): 16 tests passed
+Permutation Test (core 2): 16 tests passed
+Permutation Test (core 0): 16 tests passed
+Permutation Test (core 1): 17 tests passed
+Permutation Test (core 3): 17 tests passed
+Permutation Test (core 2): 17 tests passed
+Permutation Test (core 0): 17 tests passed
+Permutation Test (core 1): 17 tests passed
+Permutation Test (core 3): 17 tests passed
+Permutation Test (core 2): 17 tests passed
+Permutation Test (core 0): 17 tests passed
+Permutation Test (core 1): 17 tests passed
+Permutation Test (core 3): 17 tests passed
+Permutation Test (core 2): 17 tests passed
+Permutation Test (core 0): 17 tests passed
+Permutation Test (core 1): 17 tests passed
+Permutation Test (core 3): 17 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+Permutation Test (core 3): 18 tests passed
+Permutation Test (core 2): 18 tests passed
+Permutation Test (core 0): 18 tests passed
+Permutation Test (core 1): 18 tests passed
+
+
+                statistic  C[i][0]  C[i][1]  C[i][2]
+----------------------------------------------------
+                excursion       6       0      29
+       numDirectionalRuns       6       0      22
+       lenDirectionalRuns       2       4       2
+    numIncreasesDecreases       6       0      73
+            numRunsMedian       7       0       6
+            lenRunsMedian       1       5       1
+             avgCollision       6       0       9
+             maxCollision       4       2       4
+           periodicity(1)       6       0     116
+           periodicity(2)      16       0       6
+           periodicity(8)       6       0      59
+          periodicity(16)       6       0      13
+          periodicity(32)       6       0       6
+            covariance(1)      31       0       6
+            covariance(2)       7       0       6
+            covariance(8)       6       0      50
+           covariance(16)       6       0      10
+           covariance(32)       6       0      42
+              compression      39       0       6
+(* denotes failed test)
+
+** Passed IID permutation tests
+
+
+real	0m31.860s
+user	1m50.808s
+sys	0m0.436s
+Opening file: '/home/jsloan/src/com-diag-scattergun/Scattergun/scattergun_cadmium_getrandomr/sp800.dat'
+Loaded 4194304 samples of 256 distinct 8-bit-wide symbols
+Number of Binary Symbols: 33554432
+
+Running non-IID tests...
+
+Running Most Common Value Estimate...
+Bitstring MCV Estimate: mode = 16778234, p-hat = 0.50003033876419067, p_u = 0.50025267597018508
+	Most Common Value Estimate (bit string) = 0.999271 / 1 bit(s)
+Literal MCV Estimate: mode = 16718, p-hat = 0.0039858818054199219, p_u = 0.0040651286784209525
+	Most Common Value Estimate = 7.942483 / 8 bit(s)
+
+Running Entropic Statistic Estimates (bit strings only)...
+Bitstring Collision Estimate: X-bar = 2.5000077113749337, sigma-hat = 0.50000001856704512, p = 0.51311173464341664
+	Collision Test Estimate (bit string) = 0.962655 / 1 bit(s)
+Bitstring Markov Estimate: P_0 = 0.49996966123580933, P_1 = 0.50003033876419067, P_0,0 = 0.49999803292736533, P_0,1 = 0.50000196707263467, P_1,0 = 0.49994126318307774, P_1,1 = 0.50005873681692226, p_max = 2.9830863904616706e-39
+	Markov Test Estimate (bit string) = 0.999831 / 1 bit(s)
+Bitstring Compression Estimate: X-bar = 5.2174346263750806, sigma-hat = 1.0154843770996689, p = 0.021504021572481546
+	Compression Test Estimate (bit string) = 0.923208 / 1 bit(s)
+
+Running Tuple Estimates...
+Bitstring t-Tuple Estimate: t = 21, p-hat_max = 0.52167010685538329, p_u = 0.52189223514740835
+Bitstring LRS Estimate: u = 22, v = 47, p-hat = 0.50067409037010913, p_u = 0.50089642737445361
+	T-Tuple Test Estimate (bit string) = 0.938176 / 1 bit(s)
+Literal t-Tuple Estimate: t = 2, p-hat_max = 0.0050508211259273931, p_u = 0.0051399808307828693
+Literal LRS Estimate: u = 3, v = 5, p-hat = 0.0039133846285916811, p_u = 0.0039919103615277517
+	T-Tuple Test Estimate = 7.604021 / 8 bit(s)
+	LRS Test Estimate (bit string) = 0.997416 / 1 bit(s)
+	LRS Test Estimate = 7.968705 / 8 bit(s)
+
+Running Predictor Estimates...
+Bitstring MultiMCW Prediction Estimate: N = 33554369, Pglobal' = 0.50005748554723917 (C = 16771653) Plocal can't affect result (r = 27)
+	Multi Most Common in Window (MultiMCW) Prediction Test Estimate (bit string) = 0.999834 / 1 bit(s)
+Literal MultiMCW Prediction Estimate: N = 4194241, Pglobal' = 0.0039859682843724738 (C = 16389) Plocal can't affect result (r = 3)
+	Multi Most Common in Window (MultiMCW) Prediction Test Estimate = 7.970854 / 8 bit(s)
+Bitstring Lag Prediction Estimate: N = 33554431, Pglobal' = 0.50004821712249592 (C = 16771373) Plocal can't affect result (r = 24)
+	Lag Prediction Test Estimate (bit string) = 0.999861 / 1 bit(s)
+Literal Lag Prediction Estimate: N = 4194303, Pglobal' = 0.0040227513856679071 (C = 16542) Plocal = 0.0070088040820848862 (r = 4)
+	Lag Prediction Test Estimate = 7.156616 / 8 bit(s)
+Bitstring MultiMMC Prediction Estimate: N = 33554430, Pglobal' = 0.50022642013143293 (C = 16777352) Plocal can't affect result (r = 23)
+	Multi Markov Model with Counting (MultiMMC) Prediction Test Estimate (bit string) = 0.999347 / 1 bit(s)
+Literal MultiMMC Prediction Estimate: N = 4194302, Pglobal' = 0.0039558093424078202 (C = 16264) Plocal can't affect result (r = 3)
+	Multi Markov Model with Counting (MultiMMC) Prediction Test Estimate = 7.981811 / 8 bit(s)
+Bitstring LZ78Y Prediction Estimate: N = 33554415, Pglobal' = 0.50014424023463 (C = 16774587) Plocal can't affect result (r = 26)
+	LZ78Y Prediction Test Estimate (bit string) = 0.999584 / 1 bit(s)
+Literal LZ78Y Prediction Estimate: N = 4194287, Pglobal' = 0.0039572683673960345 (C = 16270) Plocal can't affect result (r = 3)
+	LZ78Y Prediction Test Estimate = 7.981279 / 8 bit(s)
+
+H_original: 7.156616
+H_bitstring: 0.923208
+
+min(H_original, 8 X H_bitstring): 7.156616
+
+
+real	0m54.365s
+user	0m54.187s
+sys	0m0.176s
+scattergun.sh: 2020-01-10T22:02:24 end SP800-90B
+scattergun.sh: 2020-01-10T22:02:24 begin dieharder
+#=============================================================================#
+#            dieharder version 3.31.1 Copyright 2003 Robert G. Brown          #
+#=============================================================================#
+   rng_name    |rands/second|   Seed   |
+stdin_input_raw|  2.78e+05  | 323097105|
+#=============================================================================#
+        test_name   |ntup| tsamples |psamples|  p-value |Assessment
+#=============================================================================#
+   diehard_birthdays|   0|       100|     100|0.30736880|  PASSED  
+      diehard_operm5|   0|   1000000|     100|0.22210823|  PASSED  
+  diehard_rank_32x32|   0|     40000|     100|0.10283839|  PASSED  
+    diehard_rank_6x8|   0|    100000|     100|0.11649081|  PASSED  
+   diehard_bitstream|   0|   2097152|     100|0.55777503|  PASSED  
+        diehard_opso|   0|   2097152|     100|0.41575032|  PASSED  
+        diehard_oqso|   0|   2097152|     100|0.26564006|  PASSED  
+         diehard_dna|   0|   2097152|     100|0.86799077|  PASSED  
+diehard_count_1s_str|   0|    256000|     100|0.73918926|  PASSED  
+diehard_count_1s_byt|   0|    256000|     100|0.34257658|  PASSED  
+ diehard_parking_lot|   0|     12000|     100|0.96817716|  PASSED  
+    diehard_2dsphere|   2|      8000|     100|0.98910052|  PASSED  
+    diehard_3dsphere|   3|      4000|     100|0.47138259|  PASSED  
+     diehard_squeeze|   0|    100000|     100|0.61546768|  PASSED  
+        diehard_sums|   0|       100|     100|0.03866607|  PASSED  
+        diehard_runs|   0|    100000|     100|0.07814946|  PASSED  
+        diehard_runs|   0|    100000|     100|0.71903955|  PASSED  
+       diehard_craps|   0|    200000|     100|0.77082234|  PASSED  
+       diehard_craps|   0|    200000|     100|0.82723074|  PASSED  
+ marsaglia_tsang_gcd|   0|  10000000|     100|0.97958345|  PASSED  
+ marsaglia_tsang_gcd|   0|  10000000|     100|0.95978260|  PASSED  
+         sts_monobit|   1|    100000|     100|0.17705050|  PASSED  
+            sts_runs|   2|    100000|     100|0.86531890|  PASSED  
+          sts_serial|   1|    100000|     100|0.59991186|  PASSED  
+          sts_serial|   2|    100000|     100|0.34602699|  PASSED  
+          sts_serial|   3|    100000|     100|0.27725115|  PASSED  
+          sts_serial|   3|    100000|     100|0.33104998|  PASSED  
+          sts_serial|   4|    100000|     100|0.08393336|  PASSED  
+          sts_serial|   4|    100000|     100|0.50360626|  PASSED  
+          sts_serial|   5|    100000|     100|0.55823354|  PASSED  
+          sts_serial|   5|    100000|     100|0.30907195|  PASSED  
+          sts_serial|   6|    100000|     100|0.53057452|  PASSED  
+          sts_serial|   6|    100000|     100|0.73865137|  PASSED  
+          sts_serial|   7|    100000|     100|0.61129480|  PASSED  
+          sts_serial|   7|    100000|     100|0.75213590|  PASSED  
+          sts_serial|   8|    100000|     100|0.63323164|  PASSED  
+          sts_serial|   8|    100000|     100|0.37699468|  PASSED  
+          sts_serial|   9|    100000|     100|0.32617790|  PASSED  
+          sts_serial|   9|    100000|     100|0.29945202|  PASSED  
+          sts_serial|  10|    100000|     100|0.40987364|  PASSED  
+          sts_serial|  10|    100000|     100|0.88820020|  PASSED  
+          sts_serial|  11|    100000|     100|0.36514731|  PASSED  
+          sts_serial|  11|    100000|     100|0.57466369|  PASSED  
+          sts_serial|  12|    100000|     100|0.41408864|  PASSED  
+          sts_serial|  12|    100000|     100|0.44440677|  PASSED  
+          sts_serial|  13|    100000|     100|0.59007946|  PASSED  
+          sts_serial|  13|    100000|     100|0.22009719|  PASSED  
+          sts_serial|  14|    100000|     100|0.23447435|  PASSED  
+          sts_serial|  14|    100000|     100|0.59274642|  PASSED  
+          sts_serial|  15|    100000|     100|0.89966717|  PASSED  
+          sts_serial|  15|    100000|     100|0.47565527|  PASSED  
+          sts_serial|  16|    100000|     100|0.67170617|  PASSED  
+          sts_serial|  16|    100000|     100|0.84480225|  PASSED  
+         rgb_bitdist|   1|    100000|     100|0.03985697|  PASSED  
+         rgb_bitdist|   2|    100000|     100|0.85336049|  PASSED  
+         rgb_bitdist|   3|    100000|     100|0.68300550|  PASSED  
+         rgb_bitdist|   4|    100000|     100|0.19591297|  PASSED  
+         rgb_bitdist|   5|    100000|     100|0.26668489|  PASSED  
+         rgb_bitdist|   6|    100000|     100|0.23590069|  PASSED  
+         rgb_bitdist|   7|    100000|     100|0.16847010|  PASSED  
+         rgb_bitdist|   8|    100000|     100|0.84026461|  PASSED  
+         rgb_bitdist|   9|    100000|     100|0.05111118|  PASSED  
+         rgb_bitdist|  10|    100000|     100|0.02980873|  PASSED  
+         rgb_bitdist|  11|    100000|     100|0.71020423|  PASSED  
+         rgb_bitdist|  12|    100000|     100|0.94805082|  PASSED  
+rgb_minimum_distance|   2|     10000|    1000|0.90824471|  PASSED  
+rgb_minimum_distance|   3|     10000|    1000|0.07109839|  PASSED  
+rgb_minimum_distance|   4|     10000|    1000|0.07907501|  PASSED  
+rgb_minimum_distance|   5|     10000|    1000|0.30968893|  PASSED  
+    rgb_permutations|   2|    100000|     100|0.63048312|  PASSED  
+    rgb_permutations|   3|    100000|     100|0.83163489|  PASSED  
+    rgb_permutations|   4|    100000|     100|0.45700892|  PASSED  
+    rgb_permutations|   5|    100000|     100|0.51274128|  PASSED  
+      rgb_lagged_sum|   0|   1000000|     100|0.45595505|  PASSED  
+      rgb_lagged_sum|   1|   1000000|     100|0.90079163|  PASSED  
+      rgb_lagged_sum|   2|   1000000|     100|0.14300736|  PASSED  
+      rgb_lagged_sum|   3|   1000000|     100|0.33235327|  PASSED  
+      rgb_lagged_sum|   4|   1000000|     100|0.99692975|   WEAK   
+      rgb_lagged_sum|   5|   1000000|     100|0.80737001|  PASSED  
+      rgb_lagged_sum|   6|   1000000|     100|0.09893086|  PASSED  
+      rgb_lagged_sum|   7|   1000000|     100|0.61256842|  PASSED  
+      rgb_lagged_sum|   8|   1000000|     100|0.47508772|  PASSED  
+      rgb_lagged_sum|   9|   1000000|     100|0.30060901|  PASSED  
+      rgb_lagged_sum|  10|   1000000|     100|0.57698350|  PASSED  
+      rgb_lagged_sum|  11|   1000000|     100|0.37257619|  PASSED  
+      rgb_lagged_sum|  12|   1000000|     100|0.37781073|  PASSED  
+      rgb_lagged_sum|  13|   1000000|     100|0.74842433|  PASSED  
+      rgb_lagged_sum|  14|   1000000|     100|0.29043487|  PASSED  
+      rgb_lagged_sum|  15|   1000000|     100|0.64066677|  PASSED  
+      rgb_lagged_sum|  16|   1000000|     100|0.82304991|  PASSED  
+      rgb_lagged_sum|  17|   1000000|     100|0.37041835|  PASSED  
+      rgb_lagged_sum|  18|   1000000|     100|0.33197864|  PASSED  
+      rgb_lagged_sum|  19|   1000000|     100|0.52561256|  PASSED  
+      rgb_lagged_sum|  20|   1000000|     100|0.65115054|  PASSED  
+      rgb_lagged_sum|  21|   1000000|     100|0.44819625|  PASSED  
+      rgb_lagged_sum|  22|   1000000|     100|0.74507292|  PASSED  
+      rgb_lagged_sum|  23|   1000000|     100|0.74627833|  PASSED  
+      rgb_lagged_sum|  24|   1000000|     100|0.58503355|  PASSED  
+      rgb_lagged_sum|  25|   1000000|     100|0.44347565|  PASSED  
+      rgb_lagged_sum|  26|   1000000|     100|0.10617709|  PASSED  
+      rgb_lagged_sum|  27|   1000000|     100|0.69142151|  PASSED  
+      rgb_lagged_sum|  28|   1000000|     100|0.95782536|  PASSED  
+      rgb_lagged_sum|  29|   1000000|     100|0.00705583|  PASSED  
+      rgb_lagged_sum|  30|   1000000|     100|0.41432750|  PASSED  
+      rgb_lagged_sum|  31|   1000000|     100|0.66317342|  PASSED  
+      rgb_lagged_sum|  32|   1000000|     100|0.83618115|  PASSED  
+     rgb_kstest_test|   0|     10000|    1000|0.76116166|  PASSED  
+     dab_bytedistrib|   0|  51200000|       1|0.37990731|  PASSED  
+             dab_dct| 256|     50000|       1|0.08255867|  PASSED  
+Preparing to run test 207.  ntuple = 0
+        dab_filltree|  32|  15000000|       1|0.92132319|  PASSED  
+        dab_filltree|  32|  15000000|       1|0.16664402|  PASSED  
+Preparing to run test 208.  ntuple = 0
+       dab_filltree2|   0|   5000000|       1|0.21004446|  PASSED  
+       dab_filltree2|   1|   5000000|       1|0.49402405|  PASSED  
+Preparing to run test 209.  ntuple = 0
+        dab_monobit2|  12|  65000000|       1|0.93410877|  PASSED  
+scattergun.sh: 2020-01-13T11:58:34 end dieharder
+scattergun.sh: 2020-01-13T11:58:34 end scattergun_cadmium_getrandomr 0
