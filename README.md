@@ -3,8 +3,17 @@ com-diag-scattergun
 
 [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/coverclock)
 
-Copyright 2015-2016 Digital Aggregates Corporation, Colorado, USA.
+Copyright 2015-2020 Digital Aggregates Corporation, Colorado, USA.
 Licensed under the terms of the GNU GPL v2.
+
+# CONTACT
+
+Chip Overclock    
+Digital Aggregates Corporation    
+3440 Youngfield Street, Suite 209    
+Wheat Ridge CO 80033 USA    
+<http://www.diag.com>    
+<mailto:coverclock@diag.com>    
 
 # ABSTRACT
 
@@ -124,22 +133,15 @@ the system entropy pool on a Mac OS X system.
     ./Scattergun/src/bytes.c
     ./Scattergun/src/cmrand48.c
     ./Scattergun/src/crandom.c
+    ./Scattergun/src/getrandom.c
 
 It includes some programs that emit constant bytes, random numbers
-generated using the C library's mrand48(3) function, or with the random(3)
-function. It is informative to compare the results of the hardware entropy
-generators with those of these two pseudo-random number generators.
+generated using the C library's mrand48(3) function, with the random(3)
+function, or with the getrandom(2) system call. It is informative to
+compare the results of the hardware entropy generators with those of
+the pseudo-random number generators.
 
 # NOTES
 
 If you send a SIGUSR1 to the dd command process, it will print I/O statistics
 and then continue on its merry way.
-
-# CONTACT
-
-    Chip Overclock
-    Digital Aggregates Corporation
-    3440 Youngfield Street, Suite 209
-    Wheat Ridge CO 80033 USA
-    http://www.diag.com
-    mailto:coverclock@diag.com
