@@ -1,7 +1,7 @@
 com-diag-scattergun
 -------------------
 
-Evaluating hardware entropy sources and random number generators using a vast suite of tests.
+Evaluating hardware entropy sources and random number generators using a suite of tests.
 
 # Copyright
 
