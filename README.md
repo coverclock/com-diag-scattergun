@@ -1,6 +1,8 @@
 com-diag-scattergun
 -------------------
 
+Evaluating hardware entropy sources and random number generators using a vast suite of tests.
+
 # Copyright
 
 Copyright 2015-2020 Digital Aggregates Corporation, Colorado, USA.
