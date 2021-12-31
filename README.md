@@ -11,10 +11,6 @@ Copyright 2015-2020 Digital Aggregates Corporation, Colorado, USA.
 
 Licensed under the terms of the GNU GPL v2.
 
-# Say Thanks!
-
-[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/coverclock)
-
 # CONTACT
 
 Chip Overclock    
