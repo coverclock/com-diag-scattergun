@@ -1,10 +1,26 @@
 com-diag-scattergun
 -------------------
 
-Copyright 2015-2016 Digital Aggregates Corporation, Colorado, USA.
+Evaluating hardware entropy sources and random number generators using a suite of tests.
+
+# Copyright
+
+Copyright 2015-2020 Digital Aggregates Corporation, Colorado, USA.
+
+# License
+
 Licensed under the terms of the GNU GPL v2.
 
-ABSTRACT
+# CONTACT
+
+Chip Overclock    
+Digital Aggregates Corporation    
+3440 Youngfield Street, Suite 209    
+Wheat Ridge CO 80033 USA    
+<http://www.diag.com>    
+<mailto:coverclock@diag.com>    
+
+# ABSTRACT
 
 This project represents my puttering around with hardware entropy sources and
 random number generation in Linux/GNU, and to a lesser extent, Mac OS X.
@@ -15,7 +31,7 @@ For too much information, see my blog article about this project.
 
 Scattergun includes a variety of artifacts that might be useful.
 
-TEST SUITE
+# TEST SUITE
 
     ./Scattergun/bin/scattergun.sh
     ./Scattergun/dat
@@ -27,7 +43,7 @@ assess the randomness of an entropy source, a Makefile to drive the tests,
 and the results of the test suite when it was run on a variety of hardware
 entropy generators.
 
-ID QUANTIQUE QUANTIS
+## ID QUANTIQUE QUANTIS
 
     ./Scattergun/src/quantistool.c
     ./Scattergun/fs/etc/init.d/quantis
@@ -46,7 +62,7 @@ into a Linux server so it can be used as an entropy source for the system
 entropy pool for the the generation of seeds for cryptographic keys and the
 like.
 
-INTEL RDRAND AND RDSEED
+## INTEL RDRAND AND RDSEED
 
     ./Scattergun/src/seventool.c
     ./Scattergun/fs/etc/init.d/rdrand
@@ -58,7 +74,7 @@ either the rdrand or rdseed instruction, extracts random bits using the
 specified instruction and writes them to standard output, or to a file which
 can be a named pipe.
 
-UBLD.IT TRUERNGV2, TRUERNGPRO, TRUERNGV3
+## UBLD.IT TRUERNGV2, TRUERNGPRO, TRUERNGV3
 
     ./Scattergun/fs/etc/udev/rules.d/99-TrueRNG.rules
     ./Scattergun/fs/etc/default/rng-tools-TrueRNG
@@ -70,7 +86,7 @@ It has some udev rules and rng-tools configuration files that make it easy to
 use a ubld.it TrueRNG or TrueRNGpro hardware entropy generators to fill the
 system entropy pool on a GNU/Linux system.
 
-MOONBASE OTAGO ONERNG AND ONERNG V3.0
+## MOONBASE OTAGO ONERNG AND ONERNG V3.0
 
     ./Scattergun/fs/etc/udev/rules.d/99-OneRNG.rules
     ./Scattergun/fs/etc/default/rng-tools-OneRNG
@@ -79,20 +95,20 @@ It has some udev rules and rng-tools configuration files that make it easy to
 use a Moonbase Otago OneRNG hardware entropy generators to fill the system
 entropy pool on a GNU/Linux system.
 
-GNU FST-1 NEUG
+## GNU FST-1 NEUG
 
     ./Scattergun/fs/etc/udev/rules.d/99-NeuG.rules
 
 It has some udev files for the GNU FST-1 NEUG hardware entropy generator.
 
-VOICETRONIX BITBABBLER WHITE AND BITBABBLER BLACK
+## VOICETRONIX BITBABBLER WHITE AND BITBABBLER BLACK
 
     ./Scattergun/fs/etc/udev/rules.d/99-BitBabbler.rules
 
 It has some udev files for the Voicetronix BitBabbler White and Black
 hardware engropy generators.
 
-RASPBERRY PI BCM2708
+## RASPBERRY PI BCM2708
 
     ./Scattergun/fs/etc/default/rng-tools-bcm2708
 
@@ -100,15 +116,15 @@ It has an rng-tools configuration file so that the optional Broadcom hardware
 random number generator device driver module can be used to fill the system
 entropy pool on a Raspberry Pi 2 or 3 (and perhaps others).
 
-ALTUS METRUM CHAOS KEY
+## ALTUS METRUM CHAOS KEY
 
     ./Scattergun/fs/etc/udev/rules.d/99-ChaosKey.rules
 
-WAYWORD GEEK INFINITE NOISE
+## WAYWORD GEEK INFINITE NOISE
 
     ./Scattergun/fs/etc/udev/rules.d/99-InfiniteNoise.rules
 
-MAC OS X
+## MAC OS X
 
     ./Scattergun/bin/truerngd.sh
     ./Scattergun/fs/etc/default/truerngd.conf
@@ -117,22 +133,20 @@ It has a simple script (admittedly experimental) to use a ubld.it TrueRNG USB
 entropy generator (which is about the size and shape of a thumb drive) to fill
 the system entropy pool on a Mac OS X system.
 
-OTHER STUFF
+## OTHER STUFF
 
     ./Scattergun/src/bytes.c
     ./Scattergun/src/cmrand48.c
     ./Scattergun/src/crandom.c
+    ./Scattergun/src/getrandom.c
 
 It includes some programs that emit constant bytes, random numbers
-generated using the C library's mrand48(3) function, or with the random(3)
-function. It is informative to compare the results of the hardware entropy
-generators with those of these two pseudo-random number generators.
+generated using the C library's mrand48(3) function, with the random(3)
+function, or with the getrandom(2) system call. It is informative to
+compare the results of the hardware entropy generators with those of
+the pseudo-random number generators.
 
-CONTACT
+# NOTES
 
-    Chip Overclock
-    Digital Aggregates Corporation
-    3440 Youngfield Street, Suite 209
-    Wheat Ridge CO 80033 USA
-    http://www.diag.com
-    mailto:coverclock@diag.com
+If you send a SIGUSR1 to the dd command process, it will print I/O statistics
+and then continue on its merry way.

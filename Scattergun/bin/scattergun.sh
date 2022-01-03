@@ -103,6 +103,15 @@ if [[ -n "${NISTCODE}" ]]; then
 	( cd ${NISTPATH}; time python noniid_main.py -v ${DATA} 8 )
 fi
 
+NISTCODE=$(which ea_iid)
+if [[ -n "${NISTCODE}" ]]; then
+	NISTPATH=$(dirname ${NISTCODE})
+	DATA="$(pwd)/sp800.dat"
+	time dd of=${DATA} bs=1024 count=4096 iflag=fullblock
+	( cd ${NISTPATH}; time ea_iid     -v ${DATA} 8 )
+	( cd ${NISTPATH}; time ea_non_iid -v ${DATA} 8 )
+fi
+
 echo "${ZERO}: $(date -u +%Y-%m-%dT%H:%M:%S) end SP800-90B"
 
 ##################################################
